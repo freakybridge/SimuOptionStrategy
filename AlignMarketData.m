@@ -1,4 +1,4 @@
-function port = AlignMarketData(path, port, exit_timing)
+function [port, time_axis] = AlignMarketData(path, port)
 
 time_axis = [];
 
@@ -10,8 +10,7 @@ for i = 1 : length(port)
     data = data(:, 3 : end);
     
     data = [datenum(data(:, 1)), cell2mat(data(:, 2 : end))];
-    data = data(data(:, 1) >= datenum(port(i). entry_timing) & data(:, 1) <= datenum(exit_timing), :);
-    time_axis = union(time_axis, datenum(data(:, 1)));
+    time_axis = union(time_axis, data(:, 1));
     
     port(i).md = data;
 end
@@ -20,34 +19,29 @@ end
 % 对齐行情
 for i = 1 : length(port)
     md = port(i).md;
-    data = zeros(length(time_axis), 9);
-    data(:, 3) = time_axis;
+    this_axis = time_axis(time_axis >= md(1, 1) & time_axis <= md(end, 1));
+    
+    curr_md = zeros(length(this_axis), 9);    
+    curr_md(:, 3) = this_axis;
     [~, loc] = ismember(md(:, 1), time_axis);
-    data(loc, 4 : end) = md(:, 2 : end);
+    curr_md(loc, 4 : end) = md(:, 2 : end);
     
-    data(:, 1) = arrayfun(@(x) str2double(datestr(x, 'yyyymmdd')), data(:, 3));
-    data(:, 2) = arrayfun(@(x) str2double(datestr(x, 'HHMM')), data(:, 3));
+    curr_md(:, 1) = arrayfun(@(x) str2double(datestr(x, 'yyyymmdd')), curr_md(:, 3));
+    curr_md(:, 2) = arrayfun(@(x) str2double(datestr(x, 'HHMM')), curr_md(:, 3));
     
-    for j = 2 : size(data, 1)
-        if data(j, 7) == 0
-            data(j, 4 : 7) = data(j - 1, 7);
+    for j = 2 : size(curr_md, 1)
+        if curr_md(j, 7) == 0
+            curr_md(j, 4 : 7) = curr_md(j - 1, 7);
         end
     end
-     port(i).md = data;
+    port(i).md = curr_md;
 end
 
 
+% 截取时间轴
+start_point = min(datenum({port.entry_timing}));
+end_point = max(datenum({port.exit_timing}));
+time_axis = time_axis(time_axis >=  start_point & time_axis <= end_point);
+
 
 end
-% 
-%     for j = 1 : size(data, 1)
-%         str = datestr(data{j, 2}, 'yyyymmddHHMM');
-%         data{j, 1} =  str2double(str(1 : 8));
-%         data{j, 2} =  str2double(str(9 : end));
-%     end
-%     md = cell2mat(data);    
-%     
-%     tmp = md(:, 1) * 1000 + md(:, 2);
-%     
-%     
-%     markdata{i} = md;
