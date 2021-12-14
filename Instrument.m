@@ -11,7 +11,6 @@ classdef Instrument < handle
     
     properties (Hidden)
         expire = [];
-        date_start = [];
         map_cp_num;
         map_num_cp;
         excel_file;
@@ -34,8 +33,6 @@ classdef Instrument < handle
             obj.call_or_put = obj.map_cp_num(cp);
             obj.strike = k;
             obj.unit = ut;
-            obj.date_start = '2015-02-09 09:30';
-            obj.AddMove(obj.date_start, 0);
             obj.FindExcel(home_path);
             
         end
@@ -84,19 +81,15 @@ classdef Instrument < handle
         % 模拟交易
         function Simulation(obj)
             % 标记头寸
-            for i = 2 : size(obj.move, 1)
-                if (i ~= size(obj.move, 1))
-                    tm_s = obj.move(i - 1, 1);
-                    tm_e = obj.move(i, 1);
-                    pos = obj.move(i - 1, 4);   
-                else
-                    tm_s = obj.move(i, 1);
-                    tm_e = obj.expire;
-                    pos = obj.move(i, 4);   
-                end
+            obj.move = sortrows(obj.move, 1);
+            tm_e = obj.expire;
+            for i = 1 : size(obj.move, 1)
+                tm_s = obj.move(i, 1);
+                pos = obj.move(i, 4);
                 loc = obj.md(:, 1) >= tm_s & obj.md(:, 1) < tm_e;
                 obj.md(loc, 10) = pos;
             end
+            obj.md(i, 13) = 0;
             
             % 计算盈亏
             loc_s = find(obj.md(:, 10) ~= 0, 1, 'first');
@@ -113,14 +106,17 @@ classdef Instrument < handle
                     pnl_yd = (price_trade - price_yd) * obj.unit * pos_yd;
                     pnl_td = (price_td - price_trade) * obj.unit * pos_td;
                 else
-                    pnl_yd = 0;
-                    pnl_td = (price_td - price_yd) * obj.unit * pos_td;
+                    pnl_yd = (price_td - price_yd) * obj.unit * pos_td;
+                    pnl_td = 0;
                 end
-                pnl_acc = pnl_yd + pnl_td;               
+                pnl_acc = pnl_yd + pnl_td + obj.md(i - 1, 13);               
                 obj.md(i, 11 : 13) = [pnl_yd, pnl_td, pnl_acc];
             end
-            
-            
+        end
+        
+        % 合约全名
+        function ret = GetFullSymbol(obj)
+            ret = [obj.symbol, '-',  num2str(obj.dlmonth), '-', obj.map_num_cp(obj.call_or_put), '-', num2str(obj.strike, '%.03f')];
         end
     end
     
@@ -130,7 +126,7 @@ classdef Instrument < handle
             loc = strfind(hm_path, '\');
             obj.excel_file = [hm_path(1 : loc(end)), ...
                 obj.under, '-5m\', ...                
-                obj.symbol, '-',  num2str(obj.dlmonth), '-', obj.map_num_cp(obj.call_or_put), '-', num2str(obj.strike, '%.03f'), ...
+                obj.GetFullSymbol(), ...
                 '.xlsx'];
         end
     end
@@ -154,6 +150,28 @@ classdef Instrument < handle
             end
             time_vec = datevec(tm_axis_std);
             tm_axis_std = [tm_axis_std, time_vec(:, 1) * 10000 + time_vec(:, 2) * 100 + time_vec(:, 3), time_vec(:, 4) * 100 + time_vec(:, 5)];
+        end
+        
+        % 获取组合pnl
+        function [pnl, legends] = GetPnL(portfolio)
+            % 统计
+            keys = portfolio.keys;
+            pnl = zeros(size(portfolio(keys{1}).md, 1), length(keys));
+            tm_ax = portfolio(keys{1}).md(:, 1 : 3);
+            for i = 1 : length(keys)
+                pnl(:, i) = portfolio(keys{i}).md(:, 13);
+            end
+            pnl(:, end + 1) = sum(pnl, 2);
+            pnl = [tm_ax, pnl];
+            pnl = pnl(find(pnl(:, end) ~= 0, 1, 'first') : end, :);
+            
+            % 输出图示
+            legends = cell(length(keys), 1);
+            for i = 1 : length(keys)
+                legends{i} = portfolio(keys{i}).GetFullSymbol();
+            end
+            legends{end + 1} = 'portfolio';
+            
         end
     end
 end
