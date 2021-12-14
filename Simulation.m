@@ -1,5 +1,5 @@
-function Simulation(port)
 
+function Simulation(port)
 
 keys = port.keys;
 for i = 1 : length(keys)
