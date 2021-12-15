@@ -11,6 +11,7 @@ classdef Instrument < handle
     
     properties (Hidden)
         expire = [];
+        listed_date = [];
         map_cp_num;
         map_num_cp;
         excel_file;
@@ -21,8 +22,8 @@ classdef Instrument < handle
     
     methods
         % ³õÊ¼»¯
-        function obj = Instrument(symb, ud, ep, cp, k, ut, home_path)
-            obj.symbol = num2str(symb);
+        function obj = Instrument(symb, ud, ep, cp, k, ut, ldt, home_path)
+            obj.symbol = symb;
             obj.under = ud;
             obj.expire = datenum(ep);
             
@@ -33,6 +34,7 @@ classdef Instrument < handle
             obj.call_or_put = obj.map_cp_num(cp);
             obj.strike = k;
             obj.unit = ut;
+            obj.listed_date = datenum(ldt);
             obj.FindExcel(home_path);
             
         end

@@ -1,6 +1,10 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.2.20211215.beta
+- 1.优化配置效率
+- 2.Instrument加入list_date
+
 ## v1.1.1.20211215.beta
 - 修改作图细节
 
