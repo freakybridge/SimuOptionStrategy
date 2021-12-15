@@ -161,16 +161,16 @@ classdef Instrument < handle
             for i = 1 : length(keys)
                 pnl(:, i) = portfolio(keys{i}).md(:, 13);
             end
-            pnl(:, end + 1) = sum(pnl, 2);
+            pnl = [sum(pnl, 2), pnl];
             pnl = [tm_ax, pnl];
-            pnl = pnl(find(pnl(:, end) ~= 0, 1, 'first') : end, :);
+            pnl = pnl(find(pnl(:, 4) ~= 0, 1, 'first') : end, :);
             
             % Êä³öÍ¼Ê¾
-            legends = cell(length(keys), 1);
+            legends = cell(length(keys) + 1, 1);
+            legends{1} = 'portfolio';
             for i = 1 : length(keys)
-                legends{i} = portfolio(keys{i}).GetFullSymbol();
+                legends{i + 1} = portfolio(keys{i}).GetFullSymbol();
             end
-            legends{end + 1} = 'portfolio';
             
         end
     end

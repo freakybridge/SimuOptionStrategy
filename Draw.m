@@ -13,7 +13,7 @@ pic_window.Box = 'on';
 pic_window.OuterPosition = [0, 10, 550, 400];
 
 date_list = pnl(:, 1);
-plot(pic_window, 1 : length(date_list), pnl(:, [4 : end]));
+plot(pic_window, 1 : length(date_list), pnl(:, 4 : end));
 pic_window.XTick = 1 : length(date_list);
 step = round(length(date_list) / 15);
 loc = 1 : step : length(date_list);
