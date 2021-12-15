@@ -1,6 +1,9 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.3.20211215.beta
+- 加入movelist文件保护式裁剪功能
+
 ## v1.1.2.20211215.beta
 - 1.优化配置效率
 - 2.Instrument加入list_date

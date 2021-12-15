@@ -2,19 +2,15 @@
 function ret = Configuration(path)
 
 % 读取操作目标合约 / 动作列表
-[~, ~, move] = xlsread(path, 'move');
-move(1, :) = [];
-move(:, 1) = cellfun(@(x) {Trans2Str(x)}, move(:, 1));
+move = ReadSheet(path, 'move');
 symbols = unique(move(:, 1));
 
 % 预处理合约信息
-ret = containers.Map;
-[~, ~, info] = xlsread(path, 'instrument');
-info(1, :) = [];
-info(:, 1) = cellfun(@(x) {Trans2Str(x)}, info(:, 1));
+info = ReadSheet(path, 'instrument');
 pool = info(:, 1);
 
 % 定位目标合约信息
+ret = containers.Map;
 for i = 1 : size(symbols, 1)    
     [~, ~, loc] = intersect(symbols{i}, pool);
     if (~isempty(loc))
@@ -41,4 +37,19 @@ if (isa(in_, 'double'))
 else
     ret = in_;
 end
+end
+
+% 裁剪数据
+function ret = ReadSheet(pth, st)
+[~, ~, ret] = xlsread(pth, st);
+ret(1, :) = [];
+for i = size(ret, 1) : -1 : 1
+    if (~isnan(ret{i, end}))
+        break;
+    end
+    ret(i, :) = [];
+end
+ret(:, 1) = cellfun(@(x) {Trans2Str(x)}, ret(:, 1));
+
+
 end
