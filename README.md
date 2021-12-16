@@ -1,8 +1,11 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.5.20211216.beta
+- Performance加入最终收益，最大回撤，盈亏比计算，并输出显示
+
 ## v1.1.4.20211216.beta
-- 1.修改函数Draw->Performance
+- 1.修改函数名Draw->Performance
 - 2.加入盈亏输出
 - 3.其他接口调整
 

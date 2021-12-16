@@ -33,4 +33,44 @@ pnl_ori = pnl(:, 2 : end);
 pnl_ori = pnl_ori(end, loc);
 disp(['Portfolio''s pnl: ', num2str(pnl_po, '%.02f')]);
 disp(['Original position''s pnl: ', num2str(pnl_ori, '%.02f')]);
+
+% 统计
+curve_po = pnl(:, 1);
+pnl_ori = pnl(:, 2 : end);
+[~, loc] = max(sum(pnl_ori ~= 0));
+curve_ori = pnl_ori(:, loc);
+stats_po = Stats(curve_po);
+stats_ori = Stats(curve_ori);
+
+% 输出
+str = ['----------------------------PERFORMANCE SHEET-------------------------------------\n', ...
+    '%12s%-16s%-16s%-16s%-8s\n', ...
+    '%-12s%-16s%-16s%-16s%-8s\n', ...
+    '%-12s%-16s%-16s%-16s%-8s\n', ...
+    '------------------------------------------------------------------------------\n'];
+fprintf(str, ...
+    '', 'PNL', 'MAX LOSS', 'MAX DRAWDOWN', 'PLR', ...
+    'ORIGINAL:', num2str(stats_ori.pnl, '%.02f'), num2str(stats_ori.max_loss, '%.02f'), num2str(stats_ori.max_dd, '%.02f'), num2str(stats_ori.plr, '%.02f'), ...
+    'PORTFOLIO:', num2str(stats_po.pnl, '%.02f'), num2str(stats_po.max_loss, '%.02f'), num2str(stats_po.max_dd, '%.02f'), num2str(stats_po.plr, '%.02f') ...
+    );
+end
+
+
+% 计算盈亏数值
+function ret = Stats(curve)
+% 计算盈亏
+ret = struct;
+ret.pnl = curve(end);
+
+% 计算最大损失
+ret.max_loss = min(curve);
+
+% 计算最大回撤
+[max_eq_h, loc_max_eq] = max(curve);
+[max_eq_l, ~] = min(curve(loc_max_eq : end));
+ret.max_dd = (max_eq_h - max_eq_l) / max_eq_l;
+
+% 计算盈亏比
+ret.plr = max_eq_h / abs(ret.max_loss);
+
 end
