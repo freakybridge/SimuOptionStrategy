@@ -1,6 +1,9 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.7.20211216.beta
+- 修正最大回撤显示错误
+
 ## v1.1.6.20211216.beta
 - BUG修正
 
