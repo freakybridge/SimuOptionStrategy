@@ -155,7 +155,7 @@ classdef Instrument < handle
         end
         
         % 获取组合pnl
-        function [pnl, legends] = GetPnL(portfolio)
+        function [pnl, legends, tm_ax] = GetPnL(portfolio)
             % 统计
             keys = portfolio.keys;
             pnl = zeros(size(portfolio(keys{1}).md, 1), length(keys));
@@ -164,8 +164,9 @@ classdef Instrument < handle
                 pnl(:, i) = portfolio(keys{i}).md(:, 13);
             end
             pnl = [sum(pnl, 2), pnl];
-            pnl = [tm_ax, pnl];
-            pnl = pnl(find(pnl(:, 4) ~= 0, 1, 'first') : end, :);
+            loc = find(pnl(:, 1) ~= 0, 1, 'first') : size(pnl, 1);
+            pnl = pnl(loc, :);
+            tm_ax = tm_ax(loc, :);
             
             % 输出图示
             legends = cell(length(keys) + 1, 1);

@@ -1,6 +1,11 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.4.20211216.beta
+- 1.修改函数Draw->Performance
+- 2.加入盈亏输出
+- 3.其他接口调整
+
 ## v1.1.3.20211215.beta
 - 加入movelist文件保护式裁剪功能
 

@@ -16,4 +16,4 @@ AlignMarketData(portfolio);
 Simulation(portfolio);
 
 % ×÷Í¼
-Draw(portfolio);
+Performance(portfolio);
