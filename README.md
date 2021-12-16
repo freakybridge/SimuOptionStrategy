@@ -1,6 +1,9 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.6.20211216.beta
+- BUG修正
+
 ## v1.1.5.20211216.beta
 - Performance加入最终收益，最大回撤，盈亏比计算，并输出显示
 

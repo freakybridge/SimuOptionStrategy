@@ -26,14 +26,6 @@ axis(pic_window, 'tight');
 grid(pic_window, 'on');
 legend(pic_window, lgds, 'Location', 'best');
 
-% 输出盈亏
-pnl_po = pnl(end, 1);
-pnl_ori = pnl(:, 2 : end);
-[~, loc] = max(sum(pnl_ori ~= 0));
-pnl_ori = pnl_ori(end, loc);
-disp(['Portfolio''s pnl: ', num2str(pnl_po, '%.02f')]);
-disp(['Original position''s pnl: ', num2str(pnl_ori, '%.02f')]);
-
 % 统计
 curve_po = pnl(:, 1);
 pnl_ori = pnl(:, 2 : end);
@@ -43,7 +35,7 @@ stats_po = Stats(curve_po);
 stats_ori = Stats(curve_ori);
 
 % 输出
-str = ['----------------------------PERFORMANCE SHEET-------------------------------------\n', ...
+str = ['---------------------------- PERFORMANCE -------------------------------------\n', ...
     '%12s%-16s%-16s%-16s%-8s\n', ...
     '%-12s%-16s%-16s%-16s%-8s\n', ...
     '%-12s%-16s%-16s%-16s%-8s\n', ...
