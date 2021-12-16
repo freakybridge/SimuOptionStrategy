@@ -47,7 +47,7 @@ classdef Instrument < handle
         % 加入动作清单
         function AddMove(obj, timing, pos)
             dm = datenum(timing);
-            tmp =  [dm, Instrument.GetDate(dm), Instrument.GetTime(dm), pos];
+            tmp =  [dm, BaseClass.Instrument.GetDate(dm), BaseClass.Instrument.GetTime(dm), pos];
             obj.move = [obj.move; tmp];
         end
         

@@ -1,6 +1,6 @@
 function Performance(po)
 % 获取pnl
-[pnl, lgds, tm_ax] = Instrument.GetPnL(po);
+[pnl, lgds, tm_ax] = BaseClass.Instrument.GetPnL(po);
 
 % 准备作图
 pic_window = uiaxes;

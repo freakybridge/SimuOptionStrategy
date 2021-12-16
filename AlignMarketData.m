@@ -1,7 +1,7 @@
 function AlignMarketData(port)
 
 % 获取完整时间轴
-time_axis = Instrument.UnionTimeAxis(port);
+time_axis = BaseClass.Instrument.UnionTimeAxis(port);
 
 % 对齐行情
 keys = port.keys;
