@@ -1,6 +1,9 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.9.20211219.beta
+- 修正Instrument->LoadMarketData bug一处
+
 ## v1.1.8.20211216.beta
 - 1.加入批量自动重命名excel功能
 - 2.必要的子功能分离

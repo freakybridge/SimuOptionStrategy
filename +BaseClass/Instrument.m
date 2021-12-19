@@ -53,7 +53,7 @@ classdef Instrument < handle
         
         % ¶ÁÈ¡ĞĞÇé
         function LoadMarketData(obj)
-            [~, ~, dat] = xlsread(obj.excel_file);
+            [~, ~, dat] = xlsread(obj.excel_file, 'file');
             dat(1, :) = [];
             dat(:, 1 : 2) = [];
             time_axis = datenum(dat(:, 1));
