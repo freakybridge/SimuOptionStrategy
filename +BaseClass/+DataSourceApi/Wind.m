@@ -24,11 +24,15 @@ classdef Wind < BaseClass.DataSourceApi
         % 获取期权分钟数据
         function md = FetchOptionMinData(obj, symb, exc, ts_s, ts_e, inv)
             exc = obj.exchanges(lower(exc));
-            [md, code, fields, times, errorid, reqid] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
+            [md, code, ~, dt, errorid, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
                 datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), sprintf('BarSize=%i',  inv));
             
-%         [w_wsi_data,w_wsi_codes,w_wsi_fields,w_wsi_times,w_wsi_errorid,w_wsi_reqid]=w.wsi('10003769.SH','open,high,low,close,amt,volume,oi','2021-12-24 09:30:00','2021-12-24 15:00:00','BarSize=5')
-            md = 2;
+            if (errorid ~= 0)
+                warning('Fetching option %s market data error, id %i, msg %s, please check.', code{:}, errorid, md{:});
+                md = nan;
+                return;
+            end
+            md = [dt, md];
         end
     end
 end

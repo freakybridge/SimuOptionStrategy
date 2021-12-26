@@ -15,23 +15,32 @@ switch lower(ds)
 end
 
 % 逐一下载保存
+fmt_dt = 'yyyy-mm-dd HH:MM:SS';
 for i = 1 : size(instrus, 1)
-    % 检查是否需要下载
-    % 不存在excel，需要下载
-    % excel数据中，最后一条数据距离到期时间大于15mins，需要下载
-    % 其余情况不下载
+    % 确定下载起点终点
+    % 若无excel，起点为挂牌时间
+    % 若已有数据在挂牌时间后1天以上，起点为挂牌时间
+    % 若已有数据在到期时间15分钟以内，则不下载
+    % 若已有数据在到期时间15分钟以上，则起点为已有数据最后一条
     info = instrus(i, :);
-    this_opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, pth_sv);
-    if (exist(this_opt.GetExcelPath(), 'file') == 2)
-        this_opt.LoadMarketData();
-        if (this_opt.md(end, 1) - datenum(this_opt.GetDateExpire()) >= -15/60/24)
+    opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, pth_sv);
+    if (exist(opt.GetExcelPath(), 'file') == 2)
+        opt.LoadMarketData();
+        if (opt.md(1, 1) - datenum(opt.GetDateListed()) >= 1)
+            loc_start = opt.GetDateListed();
+        elseif (opt.md(end, 1) - datenum(opt.GetDateExpire()) >= -15/60/24)
             continue;
+        else
+            loc_start = datestr(opt.md(end, 1), fmt_dt);
         end
+    else
+        loc_start = opt.GetDateListed();
     end
+    loc_end = opt.GetDateExpire();
     
-    % 下载数据
-    dat = api.FetchOptionMinData(this_opt.symbol, this_opt.exchange, this_opt.GetDateListed(), this_opt.GetDateExpire(), 5);     
-        
+    % 下载数据 / 合并
+    md = api.FetchOptionMinData(opt.symbol, opt.exchange, loc_start, loc_end, 5);     
+    opt.MergeMarketData(md);
         
     % 保存excel
     

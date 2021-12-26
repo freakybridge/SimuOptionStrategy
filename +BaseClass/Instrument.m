@@ -137,6 +137,24 @@ classdef Instrument < handle
         function ret = GetDateExpire(obj)
             ret = datestr(obj.expire);
         end
+        
+        % 合并行情
+        function MergeMarketData(obj, md_new)
+            % 删除重复数据
+            [~, loc_old, ~] = intersect(obj.md(:, 1), md_new(:, 1));
+            if (~isempty(loc_old))
+                obj.md(loc_old, :) = [];
+            end
+            
+            % 合并 / 按时间排序
+            tmp = datevec(md_new(:, 1));
+            date_lst = tmp(:, 1) * 10000 + tmp(:, 2) * 100 + tmp(:, 3);
+            time_lst = tmp(:, 4) * 100 + tmp(:, 5);
+            md_new = [md_new(:, 1), date_lst, time_lst, md_new(:, 2 : end)];
+            obj.md = [obj.md; md_new];            
+        end
+        
+        % 保存excel
     end
     
     methods (Access = private)
