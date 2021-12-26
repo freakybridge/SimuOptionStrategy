@@ -1,6 +1,7 @@
 classdef Instrument < handle
     properties
         symbol = [];
+        exchange = [];
         under = [];
         call_or_put = [];
         strike = [];
@@ -22,8 +23,9 @@ classdef Instrument < handle
     
     methods
         % 初始化
-        function obj = Instrument(symb, ud, ep, cp, k, ut, ldt, home_path)
+        function obj = Instrument(symb, exc, ud, ep, cp, k, ut, ldt, home_path)
             obj.symbol = symb;
+            obj.exchange = exc;
             obj.under = ud;
             obj.expire = datenum(ep);
             
@@ -120,16 +122,30 @@ classdef Instrument < handle
         function ret = GetFullSymbol(obj)
             ret = [obj.symbol, '-',  num2str(obj.dlmonth), '-', obj.map_num_cp(obj.call_or_put), '-', num2str(obj.strike, '%.03f')];
         end
+        
+        % 输出对应excel文件
+        function ret = GetExcelPath(obj)
+            ret = obj.excel_file;
+        end
+        
+        % 获取挂牌时点
+        function ret = GetDateListed(obj)
+            ret = datestr(obj.listed_date);
+        end
+        
+        % 获取到期时点
+        function ret = GetDateExpire(obj)
+            ret = datestr(obj.expire);
+        end
     end
     
     methods (Access = private)
         % 生成excel文件名
         function FindExcel(obj, hm_path)
-            loc = strfind(hm_path, '\');
-            obj.excel_file = [hm_path(1 : loc(end)), ...
-                obj.under, '-5m\', ...                
-                obj.GetFullSymbol(), ...
-                '.xlsx'];
+            if (~strcmpi(hm_path(end), '\'))
+                hm_path = [hm_path, '\'];
+            end            
+            obj.excel_file = sprintf('%s%s-5m\\%s.xlsx', hm_path, obj.under, obj.GetFullSymbol());
         end
     end
     
