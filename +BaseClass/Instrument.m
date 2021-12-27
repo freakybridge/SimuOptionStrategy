@@ -15,6 +15,7 @@ classdef Instrument < handle
         listed_date = [];
         map_cp_num;
         map_num_cp;
+        excel_dir;
         excel_file;
     end
     properties (Dependent)
@@ -55,7 +56,7 @@ classdef Instrument < handle
         
         % 读取行情
         function LoadMarketData(obj)
-            [~, ~, dat] = xlsread(obj.excel_file, 'file');
+            [~, ~, dat] = xlsread(fullfile(obj.excel_dir, obj.excel_file), 'dat');
             dat(1, :) = [];
             dat(:, 1 : 2) = [];
             time_axis = datenum(dat(:, 1));
@@ -69,10 +70,17 @@ classdef Instrument < handle
             % 行情对齐
             [~, loc] = intersect(tm_ax_std(:, 1), obj.md(:, 1));
             md_new = tm_ax_std;
-            md_new(loc, 4 : 9) = obj.md(:, 4 : 9);
+            md_new(loc, 4 : 10) = obj.md(:, 4 : 10);
+            
+            % 消除nan
+            md_new(isnan(md_new)) = 0;            
             
             % 补足行情
+            % 补足前端行情
             loc_start = find(md_new(:, 7) ~= 0, 1, 'first');
+            md_new(1 : loc_start, 7) = md_new(loc_start, 4);
+            
+            % 补足后端行情
             loc_end = find(md_new(:, 1) <= obj.expire, 1, 'last');
             for i = loc_start + 1 : loc_end
                 if (md_new(i, 7) == 0)
@@ -125,7 +133,7 @@ classdef Instrument < handle
         
         % 输出对应excel文件
         function ret = GetExcelPath(obj)
-            ret = obj.excel_file;
+            ret = fullfile(obj.excel_dir, obj.excel_file);
         end
         
         % 获取挂牌时点
@@ -141,9 +149,11 @@ classdef Instrument < handle
         % 合并行情
         function MergeMarketData(obj, md_new)
             % 删除重复数据
-            [~, loc_old, ~] = intersect(obj.md(:, 1), md_new(:, 1));
-            if (~isempty(loc_old))
-                obj.md(loc_old, :) = [];
+            if (~isempty(obj.md))                
+                [~, loc_old, ~] = intersect(obj.md(:, 1), md_new(:, 1));
+                if (~isempty(loc_old))
+                    obj.md(loc_old, :) = [];
+                end
             end
             
             % 合并 / 按时间排序
@@ -151,19 +161,51 @@ classdef Instrument < handle
             date_lst = tmp(:, 1) * 10000 + tmp(:, 2) * 100 + tmp(:, 3);
             time_lst = tmp(:, 4) * 100 + tmp(:, 5);
             md_new = [md_new(:, 1), date_lst, time_lst, md_new(:, 2 : end)];
-            obj.md = [obj.md; md_new];            
+            if (~isempty(obj.md))
+                obj.md = [obj.md; md_new];
+            else
+                obj.md = md_new;
+            end
+            
+            % 修补数据
+            obj.RepairData(obj.md(:, 1));
         end
         
         % 保存excel
+        function OutputMarketData(obj, pth)
+            % 定位目录
+            pth_old = obj.excel_dir;
+            obj.FindExcel(pth);
+            pth_new = obj.excel_dir;
+            obj.excel_dir = pth_old;
+            Utility.CheckDirectory(pth_new);
+            
+            % 输出
+            output = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, obj.md(:, 1));
+            output = [output, num2cell(obj.md(:, 4 : end))];
+            xlswrite(fullfile(pth_new, obj.excel_file), output, 'dat');
+            
+            % 删除无关sheet
+            objExcel = actxserver('Excel.Application');
+            objExcel.Workbooks.Open(fullfile(pth_new, obj.excel_file)); 
+            try
+                % Throws an error if the sheets do not exist.
+                objExcel.ActiveWorkbook.Worksheets.Item('Sheet1').Delete();
+            catch
+            end
+            objExcel.ActiveWorkbook.Save();
+            objExcel.ActiveWorkbook.Close();
+            objExcel.Quit();
+            objExcel.delete();
+        end
     end
     
     methods (Access = private)
         % 生成excel文件名
         function FindExcel(obj, hm_path)
-            if (~strcmpi(hm_path(end), '\'))
-                hm_path = [hm_path, '\'];
-            end            
-            obj.excel_file = sprintf('%s%s-5m\\%s.xlsx', hm_path, obj.under, obj.GetFullSymbol());
+            obj.excel_dir = fullfile(hm_path, [obj.under, '-5m']);
+            obj.excel_file = sprintf('%s.xlsx', obj.GetFullSymbol());
+            Utility.CheckDirectory(obj.excel_dir);
         end
     end
     

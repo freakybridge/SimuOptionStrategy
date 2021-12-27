@@ -1,8 +1,8 @@
 % 批量从数据接口获取行情数据
-function BatchFetchOptionMd(pth_instr, pth_sv, ds)
+function BatchFetchOptionMd(pth_hm, pth_out, ds)
 
 % 读取所有已知合约信息
-instrus = Utility.ReadSheet(pth_instr, 'instrument');
+instrus = Utility.ReadSheet(pth_hm, 'instrument');
 
 % 准备数据源
 switch lower(ds)
@@ -23,7 +23,7 @@ for i = 1 : size(instrus, 1)
     % 若已有数据在到期时间15分钟以内，则不下载
     % 若已有数据在到期时间15分钟以上，则起点为已有数据最后一条
     info = instrus(i, :);
-    opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, pth_sv);
+    opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, pth_hm);
     if (exist(opt.GetExcelPath(), 'file') == 2)
         opt.LoadMarketData();
         if (opt.md(1, 1) - datenum(opt.GetDateListed()) >= 1)
@@ -43,7 +43,8 @@ for i = 1 : size(instrus, 1)
     opt.MergeMarketData(md);
         
     % 保存excel
-    
+    opt.OutputMarketData(pth_out);
+    fprintf('%s data saved, progress %i/%i, please wait ...\n', opt.symbol, i, size(instrus, 1));
     
 end
 
