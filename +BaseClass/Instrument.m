@@ -70,7 +70,7 @@ classdef Instrument < handle
             % 行情对齐
             [~, loc] = intersect(tm_ax_std(:, 1), obj.md(:, 1));
             md_new = tm_ax_std;
-            md_new(loc, 4 : 10) = obj.md(:, 4 : 10);
+            md_new(loc, 2 : 10) = obj.md(:, 2 : 10);
             
             % 消除nan
             md_new(isnan(md_new)) = 0;            
@@ -168,6 +168,7 @@ classdef Instrument < handle
             end
             
             % 修补数据
+            obj.md = sortrows(obj.md, 1);
             obj.RepairData(obj.md(:, 1));
         end
         
@@ -180,9 +181,15 @@ classdef Instrument < handle
             obj.excel_dir = pth_old;
             Utility.CheckDirectory(pth_new);
             
+            % 删除旧文件
+            if (exist(fullfile(pth_new, obj.excel_file), 'file') == 2)
+                delete(fullfile(pth_new, obj.excel_file))
+            end
+            
             % 输出
             output = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, obj.md(:, 1));
             output = [output, num2cell(obj.md(:, 4 : end))];
+            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume', 'oi'}; output];
             xlswrite(fullfile(pth_new, obj.excel_file), output, 'dat');
             
             % 删除无关sheet
@@ -197,6 +204,50 @@ classdef Instrument < handle
             objExcel.ActiveWorkbook.Close();
             objExcel.Quit();
             objExcel.delete();
+        end
+        
+        % 生成新K线
+        function NewBarMarketData(obj, inv)
+            % 生成时间轴
+            timetable = [[930, 1130]; [1300, 1500]];
+            datelst = unique(obj.md(:, 2));
+            [tm_axis, bp] = Utility.GenStandardTimeAxis(timetable, datelst, inv);
+            
+            % 生成新K线
+            md_new = tm_axis;
+            tmp = datevec(tm_axis);
+            md_new(:, 2) = tmp(:, 1) * 10000 + tmp(:, 2) * 100 + tmp(:, 3);
+            md_new(:, 3) = tmp(:, 4) * 100 + tmp(:, 5);
+            for i = 1 : size(md_new, 1)
+                if (i ~= 1)
+                    start_ = md_new(i - 1, 1);
+                else
+                    start_ = bp;
+                end
+                end_ = md_new(i, 1);
+                    
+                tmp = obj.md(obj.md(:, 1) > start_ & obj.md(:, 1) <= end_, :);
+                if (~isempty(tmp))
+                    p_open = tmp(1, 4);
+                    p_high = max(tmp(:, 5));
+                    p_low = min(tmp(:, 6));
+                    p_last = tmp(end, 7);
+                    turnover = sum(tmp(:, 8));
+                    volume = sum(tmp(:, 9));
+                    oi = tmp(end, 10);
+                else
+                    p_open = 0;
+                    p_high = 0;
+                    p_low = 0;
+                    p_last = md_new(i - 1, 7);
+                    turnover = 0;
+                    volume = 0;
+                    oi = md_new(i - 1, 10);
+                end
+                md_new(i, 4 : 10) = [p_open, p_high, p_low, p_last, turnover, volume, oi];
+            end
+            obj.md = md_new;
+            
         end
     end
     

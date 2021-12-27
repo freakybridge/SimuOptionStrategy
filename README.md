@@ -2,7 +2,9 @@
 ## 更新说明
 
 ## v1.1.10.20211224.beta
-- 加入批量下载数据功能
+- 1.加入批量下载数据功能
+- 2.加入SplitXcxData功能
+- 3.加入GenStandardAxis功能
 
 ## v1.1.9.20211219.beta
 - 修正Instrument->LoadMarketData bug一处
