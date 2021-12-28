@@ -1,7 +1,7 @@
 % 分解XCX OPTION DATA
 function SplitXcxData(root_, pth_hm)
 % 预处理
-file_dat_buffer = cell(0, 9);
+file_dat_buffer = zeros(0, 9);
 symb_dat_map = containers.Map;
 
 % 路径配置
@@ -19,6 +19,7 @@ for i = 1 : length(file_raw)
     [~, ~, dat] = xlsread(fullfile(this_file.folder, this_file.name));
     dat(1, :) = [];
     dat = dat(:, [1, 2, 4 : 9, 12]);
+    dat = [cellfun(@(x) str2double(x(3 : end)), dat(:, 1)), datenum(dat(:, 2)), cell2mat(dat(:, 3 : end))];
     file_dat_buffer = [file_dat_buffer; dat];
 end
 
@@ -26,13 +27,14 @@ end
 % 信息按代码存入缓存
 symbols = unique(file_dat_buffer(:, 1));
 for i = 1 : length(symbols)
-    key = symbols{i};
-    fprintf('Extracting option %s data, %i/%i, please wait ...\r', key, i, length(symbols));    
+    key = symbols(i);
+    fprintf('Extracting option %i data, %i/%i, please wait ...\r', key, i, length(symbols));    
     
-    loc = ismember(file_dat_buffer(:, 1), key);
+    loc = file_dat_buffer(:, 1) == key;
     tmp_dat = file_dat_buffer(loc, 2 : end);
-    tmp_dat = [datenum(tmp_dat(:, 1)), cell2mat(tmp_dat(:, 2 : end))];
     tmp_dat = tmp_dat(:, [1 : 5, 7, 6, 8]);
+    
+    key = num2str(key);
     if (symb_dat_map.isKey(key))
         symb_dat_map(key) = [symb_dat_map(key); tmp_dat];
     else
@@ -46,9 +48,9 @@ end
 instrus = Utility.ReadSheet(pth_hm, 'instrument');
 
 % 按合约代码输出
-symbols = symb_dat_map.keys;
+symbols = symb_dat_map.keys();
 for i = 1 : length(symbols)
-    info = instrus(ismember(instrus(:, 1), symbols{i}(3 : end)), :);
+    info = instrus(ismember(instrus(:, 1), symbols{i}), :);
     opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, pth_hm); 
     md = symb_dat_map(symbols{i});
     
