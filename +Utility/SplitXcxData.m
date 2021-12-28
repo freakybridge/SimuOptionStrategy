@@ -77,6 +77,7 @@ ret = [];
 
 for i = 1 : length(files)
     this_file = files(i);
-    ret = [ret; load(fullfile(this_file.folder, this_file.name)).dat];
+    tmp = load(fullfile(this_file.folder, this_file.name));
+    ret = [ret; tmp.dat];
 end
 end
