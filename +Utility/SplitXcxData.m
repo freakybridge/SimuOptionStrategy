@@ -64,7 +64,10 @@ for i = 1 : length(files)
     [~, ~, dat] = xlsread(fullfile(this_file.folder, this_file.name));
     dat(1, :) = [];
     dat = dat(:, [1, 2, 4 : 9, 12]);
-    dat = [cellfun(@(x) str2double(x(3 : end)), dat(:, 1)), datenum(dat(:, 2)), cell2mat(dat(:, 3 : end))];
+    
+    symbols = cellfun(@(x) sscanf(x, 'OP%d'), dat(:, 1));
+    timestamp = datenum(dat(:, 2));
+    dat = [symbols, timestamp, cell2mat(dat(:, 3 : end))];
     save(fullfile(dir_bf, sprintf('%i.mat', i)), 'dat');
     clear dat;
 end
