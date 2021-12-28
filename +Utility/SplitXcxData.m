@@ -1,28 +1,16 @@
 % 分解XCX OPTION DATA
 function SplitXcxData(root_, pth_hm)
 % 预处理
-file_dat_buffer = zeros(0, 9);
 symb_dat_map = containers.Map;
 
 % 路径配置
 dir_raw = fullfile(root_, 'raw');
+dir_buffer = fullfile(root_, 'buffer');
 dir_final = fullfile(root_, 'final');
 
 % 读取所有所有原始文件
-file_raw = dir(dir_raw);
-file_raw = file_raw(~[file_raw.isdir]);
-
-% 读取所有文件
-for i = 1 : length(file_raw)
-    this_file = file_raw(i);
-    fprintf('Scanning file %s, %i/%i, please wait ...\r', this_file.name, i, length(file_raw));
-    [~, ~, dat] = xlsread(fullfile(this_file.folder, this_file.name));
-    dat(1, :) = [];
-    dat = dat(:, [1, 2, 4 : 9, 12]);
-    dat = [cellfun(@(x) str2double(x(3 : end)), dat(:, 1)), datenum(dat(:, 2)), cell2mat(dat(:, 3 : end))];
-    file_dat_buffer = [file_dat_buffer; dat];
-end
-
+LoadExcelRawData(dir_raw, dir_buffer);
+file_dat_buffer = LoadBuffer(dir_buffer);
 
 % 信息按代码存入缓存
 symbols = unique(file_dat_buffer(:, 1));
@@ -61,4 +49,34 @@ for i = 1 : length(symbols)
     fprintf('%s data saved, progress %i/%i, please wait ...\n', opt.symbol, i, length(symbols));
 end
 
+end
+
+function LoadExcelRawData(dir_raw, dir_bf)
+% 读取所有所有原始文件
+files = dir(dir_raw);
+files = files(~[files.isdir]);
+Utility.CheckDirectory(dir_bf);
+
+% 读取所有文件
+for i = 1 : length(files)
+    this_file = files(i);
+    fprintf('Scanning file %s, %i/%i, please wait ...\r', this_file.name, i, length(files));
+    [~, ~, dat] = xlsread(fullfile(this_file.folder, this_file.name));
+    dat(1, :) = [];
+    dat = dat(:, [1, 2, 4 : 9, 12]);
+    dat = [cellfun(@(x) str2double(x(3 : end)), dat(:, 1)), datenum(dat(:, 2)), cell2mat(dat(:, 3 : end))];
+    save(fullfile(dir_bf, sprintf('%i.mat', i)), 'dat');
+    clear dat;
+end
+end
+
+function ret = LoadBuffer(dir_bf)
+files= dir(dir_bf);
+files = files(~[files.isdir]);
+ret = [];
+
+for i = 1 : length(files)
+    this_file = files(i);
+    ret = [ret; load(fullfile(this_file.folder, this_file.name)).dat];
+end
 end
