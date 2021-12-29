@@ -58,7 +58,6 @@ classdef Instrument < handle
         function LoadMarketData(obj)
             [~, ~, dat] = xlsread(fullfile(obj.excel_dir, obj.excel_file), 'dat');
             dat(1, :) = [];
-            dat(:, 1 : 2) = [];
             time_axis = datenum(dat(:, 1));
             time_vec = datevec(time_axis);
             time_axis = [time_axis, time_vec(:, 1) * 10000 + time_vec(:, 2) * 100 + time_vec(:, 3), time_vec(:, 4) * 100 + time_vec(:, 5)];
@@ -70,7 +69,7 @@ classdef Instrument < handle
             % 行情对齐
             [~, loc] = intersect(tm_ax_std(:, 1), obj.md(:, 1));
             md_new = tm_ax_std;
-            md_new(loc, 2 : 10) = obj.md(:, 2 : 10);
+            md_new(loc, 2 : 9) = obj.md(:, 2 : 9);
             
             % 消除nan
             md_new(isnan(md_new)) = 0;            
@@ -189,7 +188,7 @@ classdef Instrument < handle
             % 输出
             output = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, obj.md(:, 1));
             output = [output, num2cell(obj.md(:, 4 : end))];
-            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume', 'oi'}; output];
+            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume'}; output];
             xlswrite(fullfile(pth_new, obj.excel_file), output, 'dat');
             
             % 删除无关sheet

@@ -24,7 +24,7 @@ classdef Wind < BaseClass.DataSourceApi
         % 获取期权分钟数据
         function md = FetchOptionMinData(obj, symb, exc, ts_s, ts_e, inv)
             exc = obj.exchanges(lower(exc));
-            [md, code, ~, dt, errorid, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
+            [md, code, ~, dt, errorid, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume', ...
                 datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), sprintf('BarSize=%i',  inv));
             
             if (errorid ~= 0)
@@ -33,6 +33,13 @@ classdef Wind < BaseClass.DataSourceApi
                 return;
             end
             md = [dt, md];
+        end
+    end
+    
+    methods (Static)        
+        % 获取api流量时限
+        function ret = FetchApiDateLimit()
+            ret = 3 * 365;
         end
     end
 end

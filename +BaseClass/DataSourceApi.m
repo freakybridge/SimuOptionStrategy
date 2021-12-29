@@ -17,6 +17,10 @@ classdef DataSourceApi
         % 获取期权分钟数据
         md = FetchOptionMinData(obj, symb, exc, ts_s, ts_e, inv);
     end
-% [data,errorcode,time,indicators,thscode,errmsg,dataVol,datatype,perf]=THS_HF('10003769.SH','open;high;low;close;amount;volume;openInterest','Fill:Previous,Interval:5','2021-12-24 09:15:00','2021-12-24 15:15:00','format:table')    end
+    
+    methods (Abstract, Static)
+        % 获取api流量时限
+        ret = FetchApiDateLimit();
+    end
 end
 

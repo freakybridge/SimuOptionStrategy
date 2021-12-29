@@ -1,6 +1,13 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.1.11.20211229.beta
+- 1.优化DatabaseApi功能呢
+- 2.优化OutputOptionChain输出
+- 3.优化BatchRenameExcel
+- 4.优化BatchFetchOptionMd
+- 5.加入新数据源
+
 ## v1.1.10.20211224.beta
 - 1.加入批量下载数据功能
 - 2.加入SplitXcxData功能
