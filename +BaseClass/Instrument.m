@@ -69,7 +69,7 @@ classdef Instrument < handle
             % 行情对齐
             [~, loc] = intersect(tm_ax_std(:, 1), obj.md(:, 1));
             md_new = tm_ax_std;
-            md_new(loc, 2 : 9) = obj.md(:, 2 : 9);
+            md_new(loc, 2 : 13) = obj.md(:, 2 : 13);
             
             % 消除nan
             md_new(isnan(md_new)) = 0;            
@@ -188,21 +188,21 @@ classdef Instrument < handle
             % 输出
             output = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, obj.md(:, 1));
             output = [output, num2cell(obj.md(:, 4 : end))];
-            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume'}; output];
+            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume', 'oi', 'strike', 'unit', 'spot'}; output];
             xlswrite(fullfile(pth_new, obj.excel_file), output, 'dat');
             
-            % 删除无关sheet
-            objExcel = actxserver('Excel.Application');
-            objExcel.Workbooks.Open(fullfile(pth_new, obj.excel_file)); 
-            try
-                % Throws an error if the sheets do not exist.
-                objExcel.ActiveWorkbook.Worksheets.Item('Sheet1').Delete();
-            catch
-            end
-            objExcel.ActiveWorkbook.Save();
-            objExcel.ActiveWorkbook.Close();
-            objExcel.Quit();
-            objExcel.delete();
+%             % 删除无关sheet
+%             objExcel = actxserver('Excel.Application');
+%             objExcel.Workbooks.Open(fullfile(pth_new, obj.excel_file)); 
+%             try
+%                 % Throws an error if the sheets do not exist.
+%                 objExcel.ActiveWorkbook.Worksheets.Item('Sheet1').Delete();
+%             catch
+%             end
+%             objExcel.ActiveWorkbook.Save();
+%             objExcel.ActiveWorkbook.Close();
+%             objExcel.Quit();
+%             objExcel.delete();
         end
         
         % 生成新K线
