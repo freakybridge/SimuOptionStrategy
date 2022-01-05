@@ -2,7 +2,9 @@
 ## 更新说明
 
 ## v1.2.0.20220105.beta
-- 优化框架
+- 1.优化框架
+- 2.精简BaseClass.Instrument方法
+- 3.DataManager完成方法 MarketData2Csv / Csv2MarketData
 
 ## v1.1.11.20211229.beta
 - 1.优化DatabaseApi功能呢

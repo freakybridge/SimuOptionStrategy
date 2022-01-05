@@ -15,8 +15,6 @@ classdef Instrument < handle
         listed_date = [];
         map_cp_num;
         map_num_cp;
-        excel_dir;
-        excel_file;
     end
     properties (Dependent)
         dlmonth;
@@ -24,7 +22,7 @@ classdef Instrument < handle
     
     methods
         % 初始化
-        function obj = Instrument(symb, exc, ud, ep, cp, k, ut, ldt, home_path)
+        function obj = Instrument(symb, exc, ud, ep, cp, k, ut, ldt)
             obj.symbol = symb;
             obj.exchange = exc;
             obj.under = ud;
@@ -38,7 +36,6 @@ classdef Instrument < handle
             obj.strike = k;
             obj.unit = ut;
             obj.listed_date = datenum(ldt);
-            obj.FindExcel(home_path);
             
         end
         
@@ -56,12 +53,12 @@ classdef Instrument < handle
         
         % 读取行情
         function LoadMarketData(obj)
-            [~, ~, dat] = xlsread(fullfile(obj.excel_dir, obj.excel_file), 'dat');
-            dat(1, :) = [];
-            time_axis = datenum(dat(:, 1));
-            time_vec = datevec(time_axis);
-            time_axis = [time_axis, time_vec(:, 1) * 10000 + time_vec(:, 2) * 100 + time_vec(:, 3), time_vec(:, 4) * 100 + time_vec(:, 5)];
-            obj.md = [time_axis, cell2mat(dat(:, 2 : end))];
+%             [~, ~, dat] = xlsread(fullfile(obj.excel_dir, obj.excel_file), 'dat');
+%             dat(1, :) = [];
+%             time_axis = datenum(dat(:, 1));
+%             time_vec = datevec(time_axis);
+%             time_axis = [time_axis, time_vec(:, 1) * 10000 + time_vec(:, 2) * 100 + time_vec(:, 3), time_vec(:, 4) * 100 + time_vec(:, 5)];
+%             obj.md = [time_axis, cell2mat(dat(:, 2 : end))];
         end
                 
         % 修补行情
@@ -129,12 +126,7 @@ classdef Instrument < handle
         function ret = GetFullSymbol(obj)
             ret = [obj.symbol, '-',  num2str(obj.dlmonth), '-', obj.map_num_cp(obj.call_or_put), '-', num2str(obj.strike, '%.03f')];
         end
-        
-        % 输出对应excel文件
-        function ret = GetExcelPath(obj)
-            ret = fullfile(obj.excel_dir, obj.excel_file);
-        end
-        
+                
         % 获取挂牌时点
         function ret = GetDateListed(obj)
             ret = datestr(obj.listed_date);
@@ -170,41 +162,7 @@ classdef Instrument < handle
             obj.md = sortrows(obj.md, 1);
             obj.RepairData(obj.md(:, 1));
         end
-        
-        % 保存excel
-        function OutputMarketData(obj, pth)
-            % 定位目录
-            pth_old = obj.excel_dir;
-            obj.FindExcel(pth);
-            pth_new = obj.excel_dir;
-            obj.excel_dir = pth_old;
-            Utility.CheckDirectory(pth_new);
-            
-            % 删除旧文件
-            if (exist(fullfile(pth_new, obj.excel_file), 'file') == 2)
-                delete(fullfile(pth_new, obj.excel_file))
-            end
-            
-            % 输出
-            output = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, obj.md(:, 1));
-            output = [output, num2cell(obj.md(:, 4 : end))];
-            output = [{'datetime', 'open', 'high', 'low', 'last', 'turnover', 'volume', 'oi', 'strike', 'unit', 'spot'}; output];
-            xlswrite(fullfile(pth_new, obj.excel_file), output, 'dat');
-            
-%             % 删除无关sheet
-%             objExcel = actxserver('Excel.Application');
-%             objExcel.Workbooks.Open(fullfile(pth_new, obj.excel_file)); 
-%             try
-%                 % Throws an error if the sheets do not exist.
-%                 objExcel.ActiveWorkbook.Worksheets.Item('Sheet1').Delete();
-%             catch
-%             end
-%             objExcel.ActiveWorkbook.Save();
-%             objExcel.ActiveWorkbook.Close();
-%             objExcel.Quit();
-%             objExcel.delete();
-        end
-        
+                
         % 生成新K线
         function NewBarMarketData(obj, inv)
             % 生成时间轴
@@ -250,15 +208,7 @@ classdef Instrument < handle
         end
     end
     
-    methods (Access = private)
-        % 生成excel文件名
-        function FindExcel(obj, hm_path)
-            obj.excel_dir = fullfile(hm_path, [obj.under, '-5m']);
-            obj.excel_file = sprintf('%s.xlsx', obj.GetFullSymbol());
-            Utility.CheckDirectory(obj.excel_dir);
-        end
-    end
-    
+        
     methods (Hidden, Static)
         function ret = GetDate(input)
             ret = str2double(datestr(input, 'yyyymmdd'));

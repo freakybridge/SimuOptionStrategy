@@ -14,10 +14,13 @@ classdef DataManger
     
     methods (Static)
         ret = TransferTaobaoExcel(dir_hm, dir_tb, dir_sav);        
-        ret = Excel2Database();
-        ret = Database2Excel();
-        ret = DataSource2Excel();
-        ret = DataSource2Database();
+        
+        ret = Database2MarketData();
+        ret = DataSource2MarketData();
+        md = Csv2MarketData(dir_in, opt);
+        
+        ret = MarketData2Csv(dir_out, opt, md);
+        ret = MarketData2Database(md, user, password);
     end
 end
 

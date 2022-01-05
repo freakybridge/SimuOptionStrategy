@@ -31,21 +31,16 @@ for i = 1 : length(files)
     this = files(i);
     symb = sscanf(this.name, '%i.xlsx');
     info = instrus(symbols == symb, :);
-    opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8}, dir_sav);
+    opt = BaseClass.Instrument(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8});
     fprintf('Transfer %s market data, %i/%i,, please wait ...\r', info{1}, i, length(files));
     
     % 读取excel / 清除nan
-    [~, ~, dat] = xlsread(fullfile(this.folder, this.name));
-    for j = size(dat, 1) : -1 : 1
-        if (isnan(dat{j, end}))
-            dat(j, :) = [];
-        else
-            break;
-        end
-    end
+    [dat, ~, raw] = xlsread(fullfile(this.folder, this.name));
+    raw = raw(1 : 1 + size(dat, 1), :);
+    dat = raw(2 : end, :);
+    header = raw(1, :);
     
     % 整理行情
-    header = dat(1, :);
     md = [FetchField(dat, header, '交易时间'), ...
         FetchField(dat, header, '开盘价'), ...
         FetchField(dat, header, '最高价'), ...
@@ -54,13 +49,13 @@ for i = 1 : length(files)
         FetchField(dat, header, '成交额'), ...
         FetchField(dat, header, '成交量'), ...
         FetchField(dat, header, '持仓量'), ...
-        FetchField(dat, header, '行权价'), ...
+        FetchField(dat, header, '行权价') / 1000, ...
         FetchField(dat, header, '合约单位'), ...
         FetchField(dat, header, '标的收盘价')];
     opt.MergeMarketData(md);
     
-    % 保存excel
-    opt.OutputMarketData(dir_sav);    
+    % 保存CSV
+    Apps.DataManger.MarketData2Csv(dir_sav, opt, opt.md);
 end
 ret = true;
 
@@ -72,12 +67,12 @@ function ret = FetchField(dat, header, field)
 loc = ismember(header, field);
 if (sum(loc))
     if (strcmpi(field, '交易时间'))
-        ret = dat(2 : end, loc);
+        ret = dat(:, loc);
         ret = datenum(ret);
     else
-        ret = cell2mat(dat(2 : end, loc));
+        ret = cell2mat(dat(:, loc));
     end
 else
-    ret = zeros(size(dat, 1) - 1, 1);
+    ret = zeros(size(dat, 1), 1);
 end
 end
