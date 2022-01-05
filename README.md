@@ -1,6 +1,9 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.2.0.20220105.beta
+- 优化框架
+
 ## v1.1.11.20211229.beta
 - 1.优化DatabaseApi功能呢
 - 2.优化OutputOptionChain输出
