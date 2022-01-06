@@ -17,8 +17,6 @@ classdef DatabaseApi < handle
             obj.password = pwd;
             obj.driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
             obj.url = obj.ConfirmUrl();
-            
-            obj.On();
         end
         
         % ´ò¿ª
@@ -43,6 +41,27 @@ classdef DatabaseApi < handle
                 error(cThis.Conn.Message);
             end
         end
+        
+        function Connect()
+        end
+        
+        function ret = CheckDatabase()
+        end
+        function ret = CreateDatabase()
+        end
+        function ret = CheckTable()
+        end
+        function ret = CreateTable()
+        end
+        function ret = ExecUpdateSQL()
+        end
+        function ret = ExecDeleteSQL()
+        end
+        function ret = SaveOption()
+        end
+        function ret = LoadOption()
+        end
+        
     end
     
     

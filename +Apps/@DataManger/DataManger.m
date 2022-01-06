@@ -20,7 +20,7 @@ classdef DataManger
         md = Csv2MarketData(dir_in, opt);
         
         ret = MarketData2Csv(dir_out, opt, md);
-        ret = MarketData2Database(md, user, password);
+        ret = MarketData2Database(opt, db_);
     end
 end
 
