@@ -14,3 +14,14 @@ db = BaseClass.DatabaseApi('sa', 'bridgeinmfc');
 dm.MarketData2Database(opt, db);
 
 
+
+
+ttt = EnumType.Exchange.CFFEX;
+aaa = EnumType.Exchange.ToString(ttt);
+ttt = EnumType.Interval.min1;
+aaa = EnumType.Interval.ToString(ttt);
+
+
+ttt = EnumType.Product.Option;
+aaa = EnumType.Product.ToString(ttt);
+
