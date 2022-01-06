@@ -1,4 +1,4 @@
-classdef Instrument < handle
+classdef Option < handle
     properties
         symbol = [];
         exchange = [];
@@ -22,7 +22,7 @@ classdef Instrument < handle
     
     methods
         % 初始化
-        function obj = Instrument(symb, exc, ud, ep, cp, k, ut, ldt)
+        function obj = Option(symb, exc, ud, ep, cp, k, ut, ldt)
             obj.symbol = symb;
             obj.exchange = exc;
             obj.under = ud;
@@ -51,16 +51,6 @@ classdef Instrument < handle
             obj.move = [obj.move; tmp];
         end
         
-        % 读取行情
-        function LoadMarketData(obj)
-%             [~, ~, dat] = xlsread(fullfile(obj.excel_dir, obj.excel_file), 'dat');
-%             dat(1, :) = [];
-%             time_axis = datenum(dat(:, 1));
-%             time_vec = datevec(time_axis);
-%             time_axis = [time_axis, time_vec(:, 1) * 10000 + time_vec(:, 2) * 100 + time_vec(:, 3), time_vec(:, 4) * 100 + time_vec(:, 5)];
-%             obj.md = [time_axis, cell2mat(dat(:, 2 : end))];
-        end
-                
         % 修补行情
         function RepairData(obj, tm_ax_std)
             % 行情对齐
