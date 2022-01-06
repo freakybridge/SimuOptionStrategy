@@ -1,7 +1,8 @@
 clear;
 clc;
 dm = Apps.DataManger();
-dm.TransferTaobaoExcel('D:\OneDrive\hisdata', 'C:\Users\dell\Desktop\taobao', 'C:\Users\dell\Desktop\taobao\final');
+% dm.TransferTaobaoExcel('D:\OneDrive\hisdata', 'C:\Users\dell\Desktop\taobao', 'C:\Users\dell\Desktop\taobao\final');
+dm.TransferTaobaoExcel('E:\OneDrive\hisdata', 'C:\Users\freakybridge\Desktop\taobao', 'C:\Users\freakybridge\Desktop\taobao\final');
 
 
 instrus = Utility.ReadSheet('D:\OneDrive\hisdata', 'instrument');
@@ -18,6 +19,9 @@ dm.MarketData2Database(opt, db);
 
 ttt = EnumType.Exchange.CFFEX;
 aaa = EnumType.Exchange.ToString(ttt);
+bbb = EnumType.Exchange.ToEnum("SZ");
+EnumType.Exchange("SZ")
+
 ttt = EnumType.Interval.min1;
 aaa = EnumType.Interval.ToString(ttt);
 

@@ -31,7 +31,7 @@ for i = 1 : length(files)
     this = files(i);
     symb = sscanf(this.name, '%i.xlsx');
     info = instrus(symbols == symb, :);
-    opt = BaseClass.Asset.Option(info{1}, info{2}, info{3}, info{4}, info{5}, info{6}, info{7}, info{8});
+    opt = BaseClass.Asset.Option("5M", info{1},  info{2},  info{3},  info{7}, [[930, 1130]; [1300, 1500]], info{4}, info{5}, info{6}, info{8}, info{9});
     fprintf('Transfer %s market data, %i/%i,, please wait ...\r', info{1}, i, length(files));
     
     % ¶ÁÈ¡excel / Çå³ýnan
