@@ -15,12 +15,15 @@ classdef DataManger
     methods (Static)
         ret = TransferTaobaoExcel(dir_hm, dir_tb, dir_sav);        
         
-        ret = Database2Md();
-        ret = DataSource2Md();
-        md = Csv2Md(dir_in, opt);
+        function Database2Md(driver, ast)
+            BaseClass.Database.Database.SelectDatabase(driver, 'sa', 'bridgeisbest').LoadMarketData(ast);
+        end
+        function Md2Database(ast, db
+        DataSource2Md();
+        Csv2Md(dir_in, ast);
         
-        ret = Md2Csv(dir_out, opt, md);
-        ret = Md2Database(opt, db_);
+        ret = Md2Csv(dir_out, ast);
+        ret = Md2Database(ast, db_);
     end
 end
 

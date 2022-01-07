@@ -1,9 +1,9 @@
 % 读取行情csv
-function md = Csv2Md(dir_in, opt)
+function md = Csv2Md(dir_in, ast)
 % 预处理
 % 检查输入目录 / 生成输出文件名
-dir_in = fullfile(dir_in, sprintf('%s-5m', opt.under));
-filename = fullfile(dir_in, [opt.GetFullSymbol(), '.csv']);
+dir_in = fullfile(dir_in, sprintf('%s-5m', ast.under));
+filename = fullfile(dir_in, [ast.GetFullSymbol(), '.csv']);
 
 % 检查文件
 if (~exist(filename, 'file'))
@@ -15,6 +15,5 @@ end
 % 读取数据
 [~, ~, dat] = xlsread(filename);
 dat(1, :) = [];
-md = [datenum(dat(:, 1)), cell2mat(dat(:, 2 : end))];
-
+ast.md = [datenum(dat(:, 1)), cell2mat(dat(:, 2 : end))];
 end
