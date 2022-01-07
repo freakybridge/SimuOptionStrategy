@@ -1,5 +1,5 @@
 % 读取行情csv
-function md = Csv2MarketData(dir_in, opt)
+function md = Csv2Md(dir_in, opt)
 % 预处理
 % 检查输入目录 / 生成输出文件名
 dir_in = fullfile(dir_in, sprintf('%s-5m', opt.under));

@@ -1,5 +1,5 @@
 % 行情写入csv
-function ret = MarketData2Csv(dir_out, opt, md)
+function ret = Md2Csv(dir_out, opt, md)
 % 预处理
 % 生成输出目录
 dir_out = fullfile(dir_out, sprintf('%s-5m', opt.under));

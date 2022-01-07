@@ -1,5 +1,5 @@
 % ∫œ‘º»Îø‚
-function ret = MarketData2Database(opt, db_)
+function ret = Md2Database(opt, db_)
 
 ret = db_.SaveOptionMin(opt);
 end

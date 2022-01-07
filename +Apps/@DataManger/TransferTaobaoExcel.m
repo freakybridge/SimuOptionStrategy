@@ -55,7 +55,7 @@ for i = 1 : length(files)
     opt.MergeMarketData(md);
     
     % ±£¥ÊCSV
-    Apps.DataManger.MarketData2Csv(dir_sav, opt, opt.md);
+    Apps.DataManger.Md2Csv(dir_sav, opt, opt.md);
 end
 ret = true;
 
