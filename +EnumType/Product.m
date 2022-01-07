@@ -1,8 +1,8 @@
 classdef Product < EnumType.BaseEnum
     enumeration
-        Index;
         Etf;
         Future;
+        Index;
         Option;
         Stock;
     end        
@@ -13,12 +13,12 @@ classdef Product < EnumType.BaseEnum
         end
         function ret = ToEnum(in_)
             switch upper(in_)
-                case {"INDEX"}
-                    ret = EnumType.Product.Index;
                 case {"ETF"}
                     ret = EnumType.Product.Etf;
                 case {"FUTURE"}
                     ret = EnumType.Product.Future;
+                case {"INDEX"}
+                    ret = EnumType.Product.Index;
                 case {"OPTION"}
                     ret = EnumType.Product.Option;
                 case {"STOCK"}

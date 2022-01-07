@@ -92,26 +92,29 @@ classdef DatabaseApi < handle
     end
     methods (Access = public)
         % 保存期权分钟行情
-        function ret = SaveOptionMin(obj)
-            %             	// 鑾峰緱conn / 妫?鏌ヨ〃
-            % 	string db    = DatabaseName(_req);
-            % 	Switch& conn = SelectConn(db);
-            % 	string table = TableName(_req);
-            % 	if (!CheckTable(db, table))
-            % 		CreateTable(conn, db, table, buffer);
-            % 
-            % 
-            % 	// 鎻掑叆
-            % 	for (auto curr = buffer.begin(); curr != buffer.end();)
-            % 	{
-            % 		auto start = curr;
-            % 		auto end = distance(buffer.end(), curr) < 4096 ? buffer.end() : curr + 4096;
-            % 		if (!ExecUpdateSQL(conn, table, OptionDailyMd(start, end)))
-            % 			return false;
-            % 		else
-            % 			curr = end;
-            % 	}
-            % 	return true;
+        function ret = SaveOptionMin(obj, opt)
+            % 获取数据库 / 端口 / 表名 / 检查
+            db = GetDbName(obj, opt);
+            conn = SelectConn(obj, db);
+            tb = GetTableName(obj, opt);
+            if (~CheckTable(obj, db, tb))
+                ret = CreateTable(obj, conn, db, tb, opt);
+            end
+            
+            % 生成sql
+             sql = string();   
+             for i = 1 : size(opt.md, 1)
+                 this = opt.md(i, :);
+                 head = sprintf("IF EXISTS (SELECT * FROM [%s] WHERE [DATETIME] = '%s') UPDATE [%s] SET [OPEN] = %f, [HIGH] = %f, [LOW] = %f, [LAST] = %f, [TURNOVER] = %f, [VOLUME] = %f, [OI] = %f, [STRIKE] = %f, [UNIT] = %f, [SPOT] = %f", ...
+                     tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), tb, this(2), this(3), this(4), this(5), this(6), this(7), this(8), this(9), this(10), this(11));
+                 tail = sprintf(" ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f, %f, %i, %f)", ...
+                     tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(2), this(3), this(4), this(5), this(6), this(7), this(8), this(9), this(10), this(11));
+                 sql = sql + head + tail;
+             end
+             
+             % 入库
+             exec(conn, sql);
+             ret = true;            
         end
         
         % 读取期权分钟行情
@@ -121,19 +124,16 @@ classdef DatabaseApi < handle
     
     
     % 内部方法
-    methods (Access = private, Hidden, Static)
+    methods (Access = private, Hidden)
         % 确定url
-        function ret = ConfirmUrl()
+        function ret = ConfirmUrl(obj)
             [~, result] = dos('ipconfig');
             [~, loc(1)] = regexp(result, 'IPv4 地址 . . . . . . . . . . . . : ');
             loc(2) = regexp(result, '子网掩码  . . . . . . . . . . . . : ');
             ip = result(loc(1) + 1 : loc(2) - 1);
             ip(isspace(ip)) = [];
-            ret = ['jdbc:sqlserver://', ip, ':1433;;databaseName='];
+            ret = sprintf("jdbc:sqlserver://%s:1433;;databaseName=", ip);
         end
-    end
-    methods (Access = private)        
-        
         
         % 关闭
         function obj = Off(obj)
@@ -148,32 +148,9 @@ classdef DatabaseApi < handle
         
         
         
-        % 连接数据库
-        function Connect(obj, db_name)
-            %  connect
-            conn = database(db_name, obj.user, obj.password, obj.driver, [obj.url, db_name]);
-            if isopen(conn)
-                disp(['Database ', db_name, ' log on success. ']);
-            else
-                disp(['Database ', db_name, ' log on failure. ']);
-                error(con.Message);
-            end
-            obj.conns(db_name) = conn;
-            
-            % tables buffer
-            sql = 'SELECT NAME FROM SYSOBJECTS WHERE XTYPE=''U'' ORDER BY NAME';
-            obj.tables(db_name) = table2cell(fetch(conn, sql));
-        end
+        % 
         
-        % 检查数据库是否
-        function ret = CheckDatabase()
-        end
-        function ret = CreateDatabase()
-        end
-        function ret = CheckTable()
-        end
-        function ret = CreateTable()
-        end
+        
         function ret = ExecUpdateSQL()
         end
         function ret = ExecDeleteSQL()
@@ -183,9 +160,110 @@ classdef DatabaseApi < handle
         function ret = LoadOption()
         end
         
-        function ret = DbName()
+        
+        % 获取库名 / 获取
+        function ret = GetDbName(~, ast)
+            % 预处理
+            inv = EnumType.Interval.ToString(ast.interval);
+            product = EnumType.Product.ToString(ast.product);
+            variety = ast.variety;
+            exchange = EnumType.Exchange.ToString(ast.exchange);
+            
+            % 分类命名
+            switch ast.product
+                case EnumType.Product.Etf
+                    ret = sprintf("%s-%s", inv, product);
+                    
+                case EnumType.Product.Future
+                    ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
+                    
+                case EnumType.Product.Index
+                    ret = sprintf("%s-%s", inv, product);
+                    
+                case EnumType.Product.Option
+                    ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
+                    
+                otherwise
+                    error("Unexpected product for name database, please check !");
+            end
+            ret = upper(ret);
         end
-        function ret = TableName()
+        function ret = GetTableName(~, ast)
+            % 预处理
+            symbol = ast.symbol;
+            exchange = EnumType.Exchange.ToString(ast.exchange);
+            
+            % 分类命名
+            switch ast.product
+                case EnumType.Product.Etf
+                    ret = sprintf("%s_%s", symbol, exchange);
+                    
+                case EnumType.Product.Future
+                    ret = symbol;
+                    
+                case EnumType.Product.Index
+                    ret = sprintf("%s_%s", symbol, exchange);
+                    
+                case EnumType.Product.Option
+                    ret = symbol;
+                    
+                otherwise
+                    error("Unexpected product for name table, please check !");
+            end
+            ret = upper(ret);
         end
+        
+        % 连接数据库 / 获取端口 / 检查数据库 / 创建数据库
+        function Connect(obj, db_)
+            %  connect
+            conn = database(db_, obj.user, obj.password, obj.driver, obj.url + db_);
+            if isopen(conn)
+                fprintf("Database ""%s"" log on success.\r", db_);
+            else
+                fprintf("Database ""%s"" log on failure.\r", db_);
+                error(conn.Message);
+            end
+            obj.conns(db_) = conn;
+            
+            % tables buffer
+            sql = 'SELECT NAME FROM SYSOBJECTS WHERE XTYPE=''U'' ORDER BY NAME';
+            obj.tables(db_) = table2cell(fetch(conn, sql));
+        end
+        function conn = SelectConn(obj, db_)
+            if (~CheckDatabase(obj, db_))
+                CreateDatabase(obj, SelectConn(obj, obj.db_default), db_);
+            end
+            conn = obj.conns.at(db_);
+        end
+        function ret = CheckDatabase(obj, db_)
+            if (obj.conns.isKey(db_))
+                ret = true;
+            else
+                ret = false;
+            end
+        end
+        function ret = CreateDatabase(obj, conn, db_)
+            sql = sprintf("CREATE DATABASE ""%s""", db_);
+            res = exec(conn, sql);
+            if (~isempty(res.Cursor))
+                Connect(obj, db_);
+                ret = true;
+            else
+                ret = false;
+                error("Create database %s error, msg: %, please check!", db_, res.Message);
+            end
+        end
+        
+        % 检查表 / 创建表        
+        function ret = CheckTable(obj, db_, tb_)
+            if (obj.tables.isKey(db_) && ismember(tb_,  obj.tables.at(db_)))
+                ret = true;
+            else
+                ret = false;
+            end
+        end
+        ret = CreateTable(obj, conn, db_, tb_, ast);
+        
+
     end
 end
