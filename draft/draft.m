@@ -1,8 +1,8 @@
 clear;
 clc;
 dm = Apps.DataManger();
-dm.TransferTaobaoExcel('D:\OneDrive\hisdata', 'C:\Users\dell\Desktop\taobao', 'C:\Users\dell\Desktop\taobao\final');
-% dm.TransferTaobaoExcel('E:\OneDrive\hisdata', 'C:\Users\freakybridge\Desktop\taobao', 'C:\Users\freakybridge\Desktop\taobao\final');
+% dm.TransferTaobaoExcel('D:\OneDrive\hisdata', 'C:\Users\dell\Desktop\taobao', 'C:\Users\dell\Desktop\taobao\final');
+dm.TransferTaobaoExcel('E:\OneDrive\hisdata', 'C:\Users\freakybridge\Desktop\taobao', 'C:\Users\freakybridge\Desktop\taobao\final');
 
 
 % check Csv2Md / Md2Database
