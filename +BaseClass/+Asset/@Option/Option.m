@@ -1,3 +1,6 @@
+% Option基类
+% v1.2.0.20220105.beta
+%       首次添加
 classdef Option < BaseClass.Asset.Asset
     properties
         under;

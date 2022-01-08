@@ -1,4 +1,6 @@
 % 转换淘宝excel
+% v1.2.0.20220105.beta
+%       首次添加
 function ret = TransferTaobaoExcel(dir_hm, dir_tb, dir_sav)
 % 读取已有合约信息
 ret = false;

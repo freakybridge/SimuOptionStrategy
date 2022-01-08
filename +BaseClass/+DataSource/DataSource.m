@@ -1,4 +1,7 @@
-classdef DataSourceApi
+% 数据源基类
+% v1.2.0.20220105.beta
+%       首次添加
+classdef DataSource
     %DATASOURCEAPI 此处显示有关此类的摘要
     %   此处显示详细说明
     properties (Abstract)
@@ -6,7 +9,7 @@ classdef DataSourceApi
     end
         
     methods
-        function obj = DataSourceApi()
+        function obj = DataSource()
             %DATASOURCEAPI 构造此类的实例
             %   此处显示详细说明
         end
@@ -21,6 +24,21 @@ classdef DataSourceApi
     methods (Abstract, Static)
         % 获取api流量时限
         ret = FetchApiDateLimit();
+    end
+    
+    methods (Static)
+        % 反射器
+        function obj = Selector(api, user, pwd)
+            switch EnumType.DataSourceSupported.ToEnum(api)
+                case EnumType.DataSourceSupported.iFinD
+                    obj = BaseClass.DataSource.iFinD(user, pwd);
+                case EnumType.DataSourceSupported.Wind
+                    obj = BaseClass.DataSource.Wind();
+                    
+                otherwise
+                    error("Unsupported datasource api, please check.");
+            end
+        end
     end
 end
 

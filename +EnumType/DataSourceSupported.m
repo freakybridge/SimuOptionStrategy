@@ -1,3 +1,5 @@
+% v1.2.0.20220105.beta
+%       Ê×´ÎÌí¼Ó
 classdef DataSourceSupported < EnumType.BaseEnum
     enumeration
         iFinD;

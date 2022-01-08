@@ -1,7 +1,8 @@
+% Asset基类
+% v1.2.0.20220105.beta
+%       首次添加
 classdef Asset < handle & matlab.mixin.Heterogeneous
-    % ASSET 此处显示有关此类的摘要
-    %   此处显示详细说明
-    
+
     properties
         interval;
         product;

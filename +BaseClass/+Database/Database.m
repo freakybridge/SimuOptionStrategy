@@ -1,4 +1,6 @@
-% 数据库端口
+% 数据库基类
+% v1.2.0.20220105.beta
+%       首次添加
 classdef Database < handle    
     properties (Access = protected)
         user;
@@ -71,15 +73,15 @@ classdef Database < handle
     end
     
     methods (Static)
-        function obj = SelectDatabase(driver, user, pwd)
+        % 反射器
+        function obj = Selector(driver, user, pwd)
             switch EnumType.DatabaseSupported.ToEnum(driver)
                 case EnumType.DatabaseSupported.Mss
                     obj = BaseClass.Database.MSS(user, pwd);
                     
                 otherwise
                     error("Unsupported database driver, please check.");
-            end
-            
+            end            
         end
     end
 end

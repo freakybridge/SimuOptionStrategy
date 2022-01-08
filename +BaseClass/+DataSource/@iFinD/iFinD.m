@@ -1,6 +1,7 @@
-classdef iFinD < BaseClass.DataSourceApi
-    % iFinD 此处显示有关此类的摘要
-    %   此处显示详细说明
+% 数据源端口 iFinDApi
+% v1.2.0.20220105.beta
+%       首次添加
+classdef iFinD < BaseClass.DataSource.DataSource
     properties (Access = private)
         user;
         password;
@@ -15,7 +16,7 @@ classdef iFinD < BaseClass.DataSourceApi
         function obj = iFinD(ur, pwd)
             % iFinD 构造此类的实例
             %   此处显示详细说明
-            obj = obj@BaseClass.DataSourceApi();
+            obj = obj@BaseClass.DataSource.DataSource();
             obj.user = ur;
             obj.password = pwd;
             THS_iFinDLogin(ur, pwd);

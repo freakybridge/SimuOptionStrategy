@@ -1,6 +1,7 @@
-classdef Wind < BaseClass.DataSourceApi
-    %WIND 此处显示有关此类的摘要
-    %   此处显示详细说明
+% 数据源端口 WindApi
+% v1.2.0.20220105.beta
+%       首次添加
+classdef Wind < BaseClass.DataSource.DataSource
     properties (Access = private)
         api;
     end
@@ -13,7 +14,7 @@ classdef Wind < BaseClass.DataSourceApi
         function obj = Wind()
             %WIND 构造此类的实例
             %   此处显示详细说明
-            obj = obj@BaseClass.DataSourceApi();
+            obj = obj@BaseClass.DataSource.DataSource();
             obj.api = windmatlab;
             obj.exchanges = containers.Map;
             obj.exchanges('sse') = 'SH';
