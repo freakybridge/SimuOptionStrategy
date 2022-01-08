@@ -1,14 +1,14 @@
 % 行情写入csv
 % v1.2.0.20220105.beta
 %       首次添加
-function ret = SaveMd2Csv(~, dir_out, ast)
+function ret = SaveMd2Csv(~, ast, dir_csv)
 % 预处理
 % 生成输出目录
-dir_out = fullfile(dir_out, sprintf('%s-5m', ast.under));
-Utility.CheckDirectory(dir_out);
+dir_csv = fullfile(dir_csv, sprintf('%s-5m', ast.under));
+Utility.CheckDirectory(dir_csv);
 
 % 生成输出文件名
-filename = fullfile(dir_out, [ast.GetFullSymbol(), '.csv']);
+filename = fullfile(dir_csv, [ast.GetFullSymbol(), '.csv']);
 
 % 写入表头 / 写入数据
 id = fopen(filename, 'w');
