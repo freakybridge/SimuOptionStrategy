@@ -57,7 +57,7 @@ for i = 1 : length(files)
     opt.MergeMarketData(md);
     
     % ±£¥ÊCSV
-    obj.SaveMd2Csv(dir_sav, opt);
+    obj.SaveMd2Csv(opt, dir_sav);
 end
 ret = true;
 
