@@ -1,3 +1,6 @@
+% Microsoft Sql Server类
+% v1.2.0.20220105.beta
+%       首次添加
 classdef MSS < BaseClass.Database.Database
     % MSS 此处显示有关此类的摘要
     % Microsoft Sql Server
@@ -172,7 +175,17 @@ classdef MSS < BaseClass.Database.Database
         
         % 读取期权分钟行情
         function LoadOptionMinMd(obj, opt)
-            opt.md = nan;
+            % 预处理
+            db = GetDbName(obj, opt);
+            tb = GetTableName(obj, opt);
+            conn = SelectConn(obj, db);
+            
+            % 读取
+            sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
+            setdbprefs('DataReturnFormat', 'numeric');
+            md = fetch(conn, sql);
+            md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
+            opt.MergeMarketData(md);
         end
         
     end
