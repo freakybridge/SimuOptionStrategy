@@ -24,7 +24,7 @@ classdef DataManger
         
         ret = TransferTaobaoExcel(obj, dir_hm, dir_tb, dir_sav);        
         
-        LoadMdViaCsv(obj, ast);
+        LoadMdViaCsv(obj,  dir_in, ast);
         LoadMdViaDatabase(obj, ast);
         LoadMdViaDataSource(obj, ast);
         
