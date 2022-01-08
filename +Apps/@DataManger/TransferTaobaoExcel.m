@@ -1,7 +1,7 @@
 % 转换淘宝excel
 % v1.2.0.20220105.beta
 %       首次添加
-function ret = TransferTaobaoExcel(dir_hm, dir_tb, dir_sav)
+function ret = TransferTaobaoExcel(obj, dir_hm, dir_tb, dir_sav)
 % 读取已有合约信息
 ret = false;
 instrus = Utility.ReadSheet(dir_hm, 'instrument');
@@ -57,7 +57,7 @@ for i = 1 : length(files)
     opt.MergeMarketData(md);
     
     % 保存CSV
-    Apps.DataManger.Md2Csv(dir_sav, opt);
+    obj.SaveMd2Csv(dir_sav, opt);
 end
 ret = true;
 

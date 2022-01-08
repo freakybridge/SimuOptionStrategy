@@ -20,19 +20,17 @@ classdef DataManger
         
     end
     
-    methods (Static)
-        ret = TransferTaobaoExcel(dir_hm, dir_tb, dir_sav);        
+    methods 
         
-        function Database2Md(ast)
-            obj.db.LoadMarketData(ast);
-        end
-        function ret = Md2Database(ast)
-            ret = obj.db.SaveMarketData(ast);
-        end
+        ret = TransferTaobaoExcel(obj, dir_hm, dir_tb, dir_sav);        
         
-        DataSource2Md();
-        Csv2Md(dir_in, ast);        
-        ret = Md2Csv(dir_out, ast);
+        LoadMdViaCsv(obj, ast);
+        LoadMdViaDatabase(obj, ast);
+        LoadMdViaDataSource(obj, ast);
+        
+        SaveMd2Database(obj, ast);
+        SaveMd2Csv(obj, dir_in, ast);
+        
     end
 end
 

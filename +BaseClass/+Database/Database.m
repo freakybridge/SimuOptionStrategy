@@ -48,8 +48,7 @@ classdef Database < handle
                             obj.LoadOptionMinMd(ast);
                         otherwise
                             error("Unsupported ""interval"" for market data loading, please check.");
-                    end                            
-                            
+                    end      
                     
                 otherwise
                     error("Unsupported ""product"" for market data saving, please check.");
