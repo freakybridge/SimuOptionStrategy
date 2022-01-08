@@ -38,12 +38,12 @@ classdef Database < handle
         end
         
         % 读取行情
-        function md = LoadMarketData(obj, ast)
+        function LoadMarketData(obj, ast)
             switch ast.product
                 case EnumType.Product.Option
                     switch ast.interval
-                        case {EnumType.Product.min1, EnumType.Product.min5}
-                            md = obj.LoadMarketData(ast);
+                        case {EnumType.Interval.min1, EnumType.Interval.min5}
+                            obj.LoadOptionMinMd(ast);
                         otherwise
                             error("Unsupported ""interval"" for market data loading, please check.");
                     end                            
@@ -67,7 +67,7 @@ classdef Database < handle
         ret = SaveOptionMinMd(obj, opt);
         
         % 读取期权分钟行情
-        md = LoadOptionMinMd(obj, opt);      
+        LoadOptionMinMd(obj, opt);      
     end
     
     methods (Static)

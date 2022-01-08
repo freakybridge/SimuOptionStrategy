@@ -171,8 +171,8 @@ classdef MSS < BaseClass.Database.Database
         end
         
         % 读取期权分钟行情
-        function md = LoadOptionMinMd(obj, opt)
-            md = nan;
+        function LoadOptionMinMd(obj, opt)
+            opt.md = nan;
         end
         
     end
