@@ -14,7 +14,7 @@ classdef DataManger
                 obj.db = BaseClass.Database.Database.Selector(db_driver, 'sa', 'bridgeisbest');
             end
             if (~isnan(ds_api))
-                obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, '00256770', '30377546');
+                obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, 'merqh001', '146457');
             end
         end
         

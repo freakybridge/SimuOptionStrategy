@@ -18,7 +18,7 @@ classdef DataSource
     
     methods (Abstract)
         % 获取期权分钟数据
-        md = FetchOptionMinData(obj, symb, exc, ts_s, ts_e, inv);
+        md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
     end
     
     methods (Abstract, Static)

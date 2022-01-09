@@ -22,28 +22,34 @@ classdef iFinD < BaseClass.DataSource.DataSource
             THS_iFinDLogin(ur, pwd);
             
             obj.exchanges = containers.Map;
-            obj.exchanges('sse') = 'SH';
-            obj.exchanges('szse') = 'SZ';            
+            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SSE)) = 'SH';
+            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';         
             disp('DataSource iFinD Ready.');
         end
         
         % 获取期权分钟数据
-        function md = FetchOptionMinData(obj, symb, exc, ts_s, ts_e, inv)
-            exc = obj.exchanges(lower(exc));
+        function md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv)         
+            % 确定是否数据超限
+            if (datenum(opt.GetDateListed()) < now - obj.FetchApiDateLimit())
+                md = [];
+                return;
+            end
             
-             [md, errorid, dt, ~,~, ~, ~, ~] = THS_HF([symb, '.', exc],'open;high;low;close;amount;volume',...
-                 sprintf('Fill:Previous,Interval:%i',  inv), ...
-                 datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), ...
-                 datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), ...
-                 'format:matrix');
-                        
+            % 下载
+            exc = obj.exchanges(EnumType.Exchange.ToString(opt.exchange));
+            [md, errorid, dt, ~,~, ~, ~, ~] = THS_HF([opt.symbol, '.', exc],'open;high;low;close;amount;volume;openInterest',...
+                sprintf('Fill:Previous,Interval:%i',  inv), ...
+                datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), ...
+                datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), ...
+                'format:matrix');
+            
             if (errorid ~= 0)
                 warning('Fetching option %s market data error, id %i, please check.', symb, errorid);
-                md = nan;
+                md = [];
                 return;
             end
             md = [datenum(dt), md];
-
+            
         end
     end
     
