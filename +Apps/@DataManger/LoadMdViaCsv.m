@@ -9,7 +9,7 @@ filename = fullfile(dir_csv, [ast.GetFullSymbol(), '.csv']);
 
 % 检查文件 / 读取
 if (~exist(filename, 'file'))
-    warning('Please check csv file "%s", can''t find it', filename);
+    warning('Please check csv file "%s", can''t find it.', filename);
 else
     [~, ~, dat] = xlsread(filename);
     dat(1, :) = [];

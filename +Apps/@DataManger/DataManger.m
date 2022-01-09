@@ -7,7 +7,7 @@ classdef DataManger
         ds;
     end    
 
-    
+    % 公开方法
     methods
         function obj = DataManger(db_driver, ds_api)
             if (~isnan(db_driver))
@@ -18,19 +18,20 @@ classdef DataManger
             end
         end
         
-    end
-    
-    methods 
-        
-        ret = TransferTaobaoExcel(obj, dir_hm, dir_tb, dir_sav);        
-        
-        LoadMd(obj, ast, dir_csv);
+        LoadMd(obj, ast, dir_csv, dirt_tb);
         LoadMdViaCsv(obj,  ast, dir_csv);
         LoadMdViaDatabase(obj, ast);
         LoadMdViaDataSource(obj, ast);
+        LoadMdViaTaobaoExcel(obj, ast, dirt_tb);
         
         SaveMd2Database(obj, ast);
         SaveMd2Csv(obj, ast, dir_csv);
+                
+    end
+    
+    % 私有方法
+    methods (Access = private)
+        ret = IsDataComplete(obj, ast);       
         
     end
 end

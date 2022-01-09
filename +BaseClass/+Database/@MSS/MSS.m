@@ -181,13 +181,16 @@ classdef MSS < BaseClass.Database.Database
             conn = SelectConn(obj, db);
             
             % ¶ÁÈ¡
-            sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
-            setdbprefs('DataReturnFormat', 'numeric');
-            md = fetch(conn, sql);
-            md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
-            opt.MergeMarketData(md);
-        end
-        
+            try
+                sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
+                setdbprefs('DataReturnFormat', 'numeric');
+                md = fetch(conn, sql);
+                md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
+                opt.MergeMarketData(md);
+            catch
+                opt.md = [];
+            end
+        end        
     end
     
     
