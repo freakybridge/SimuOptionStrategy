@@ -147,24 +147,24 @@ classdef MSS < BaseClass.Database.Database
         
     
     methods (Hidden)
-        % 保存期权分钟行情
-        function ret = SaveOptionMinMd(obj, opt)
+        % 保存分钟行情
+        function ret = SaveBar(obj, ast)
             % 获取数据库 / 端口 / 表名 / 检查
-            db = GetDbName(obj, opt);
+            db = GetDbName(obj, ast);
             conn = SelectConn(obj, db);
-            tb = GetTableName(obj, opt);
+            tb = GetTableName(obj, ast);
             if (~CheckTable(obj, db, tb))
-                ret = CreateTable(obj, conn, db, tb, opt);
+                ret = CreateTable(obj, conn, db, tb, ast);
             end
             
             % 生成sql
             sql = string();
-            for i = 1 : size(opt.md, 1)
-                this = opt.md(i, :);
-                head = sprintf("IF EXISTS (SELECT * FROM [%s] WHERE [DATETIME] = '%s') UPDATE [%s] SET [OPEN] = %f, [HIGH] = %f, [LOW] = %f, [LAST] = %f, [TURNOVER] = %f, [VOLUME] = %f, [OI] = %f, [STRIKE] = %f, [UNIT] = %f, [SPOT] = %f", ...
-                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), tb, this(2), this(3), this(4), this(5), this(6), this(7), this(8), this(9), this(10), this(11));
-                tail = sprintf(" ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f, %f, %i, %f)", ...
-                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(2), this(3), this(4), this(5), this(6), this(7), this(8), this(9), this(10), this(11));
+            for i = 1 : size(ast.md, 1)
+                this = ast.md(i, :);
+                head = sprintf("IF EXISTS (SELECT * FROM [%s] WHERE [DATETIME] = '%s') UPDATE [%s] SET [OPEN] = %f, [HIGH] = %f, [LOW] = %f, [LAST] = %f, [TURNOVER] = %f, [VOLUME] = %f, [OI] = %f", ...
+                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), tb, this(4), this(5), this(6), this(7), this(8), this(9), this(10));
+                tail = sprintf(" ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f)", ...
+                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4), this(5), this(6), this(7), this(8), this(9), this(10));
                 sql = sql + head + tail;
             end
             
@@ -174,21 +174,21 @@ classdef MSS < BaseClass.Database.Database
         end
         
         % 读取期权分钟行情
-        function LoadOptionMinMd(obj, opt)
+        function LoadBar(obj, ast)
             % 预处理
-            db = GetDbName(obj, opt);
-            tb = GetTableName(obj, opt);
+            db = GetDbName(obj, ast);
+            tb = GetTableName(obj, ast);
             conn = SelectConn(obj, db);
             
             % 读取
             try
-                sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [STRIKE], [UNIT], [SPOT] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
+                sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
                 setdbprefs('DataReturnFormat', 'numeric');
                 md = fetch(conn, sql);
                 md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
-                opt.MergeMarketData(md);
+                ast.MergeMarketData(md);
             catch
-                opt.md = [];
+                ast.md = [];
             end
         end        
     end

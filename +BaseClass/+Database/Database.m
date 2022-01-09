@@ -27,8 +27,8 @@ classdef Database < handle
             switch ast.product
                 case EnumType.Product.Option
                     switch ast.interval
-                        case {EnumType.Interval.min1, EnumType.Interval.min5}
-                            ret = SaveOptionMinMd(obj, ast);
+                        case {EnumType.Interval.min1, EnumType.Interval.min5, EnumType.Interval.day}
+                            ret = SaveBar(obj, ast);
                         otherwise
                             error("Unsupported ""interval"" for market data saving, please check.");
                     end                            
@@ -44,8 +44,8 @@ classdef Database < handle
             switch ast.product
                 case EnumType.Product.Option
                     switch ast.interval
-                        case {EnumType.Interval.min1, EnumType.Interval.min5}
-                            obj.LoadOptionMinMd(ast);
+                        case {EnumType.Interval.min1, EnumType.Interval.min5, EnumType.Interval.day}
+                            obj.LoadBar(ast);
                         otherwise
                             error("Unsupported ""interval"" for market data loading, please check.");
                     end      
@@ -64,11 +64,11 @@ classdef Database < handle
         instru = LoadOptionChain(obj, opt);
     end
     methods (Abstract, Hidden)
-        % 保存期权分钟行情
-        ret = SaveOptionMinMd(obj, opt);
+        % 保存K线行情
+        ret = SaveBar(obj, opt);
         
-        % 读取期权分钟行情
-        LoadOptionMinMd(obj, opt);      
+        % 读取K线行情
+        LoadBar(obj, opt);      
     end
     
     methods (Static)
