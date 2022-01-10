@@ -4,30 +4,31 @@
 classdef Asset < handle & matlab.mixin.Heterogeneous
 
     properties
-        interval;
-        product;
         symbol;
         exchange;
         variety;
-        unit;
-        timetable;
+        size;
+        interval;
         md;
         move;
+    end
+    properties (Abstract, Constant)
+        product;
+        tradetimetable;
+        tick_size;
     end
     
     %% 公共方法
     methods
         % 构造函数
-        function obj = Asset(i, p, sy, exc, v, ut, tb)
+        function obj = Asset(symb, exc, var, sz, inv)
             % ASSET 构造此类的实例
-            %   此处显示详细说明
-            obj.interval = EnumType.Interval.ToEnum(i);
-            obj.product = EnumType.Product.ToEnum(p);
-            obj.symbol = sy;
+            % 此处显示详细说明
+            obj.symbol = symb;
             obj.exchange = EnumType.Exchange.ToEnum(exc);
-            obj.variety = v;
-            obj.unit = ut;
-            obj.timetable = tb;
+            obj.variety = var;
+            obj.size = sz;
+            obj.interval = EnumType.Interval.ToEnum(inv);
             obj.md = [];
             obj.move = [];
         end

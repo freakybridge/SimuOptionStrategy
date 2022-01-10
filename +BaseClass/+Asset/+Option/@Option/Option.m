@@ -2,12 +2,14 @@
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Option < BaseClass.Asset.Asset
+    properties (Constant)
+        product = EnumType.Product.Option;
+    end
+    
     properties
-        under;
         call_or_put;
         strike;
     end
-    
     properties (Hidden)
         expire;
         listed;
@@ -16,12 +18,19 @@ classdef Option < BaseClass.Asset.Asset
         dlmonth;
     end
     
+    properties (Abstract, Constant)
+        ud_product;
+        ud_symbol;
+        ud_exchange;
+        strike_type;
+        settle_mode;
+    end    
+    
     methods
         % 初始化
-        function obj = Option(i, symb, exc, v, ut, tb, ud, cop, k, ldt, edt)
-            obj = obj@BaseClass.Asset.Asset(i, 'option', symb, exc, v, ut, tb);
+        function obj = Option(symb, exc, var, sz, inv, cop, k, edt, ldt)
+            obj = obj@BaseClass.Asset.Asset(symb, exc, var, sz, inv);
             
-            obj.under = ud;         
             obj.call_or_put = EnumType.CallOrPut.ToEnum(cop);
             obj.strike = k;
             obj.listed = datenum(ldt);
