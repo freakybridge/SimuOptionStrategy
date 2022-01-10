@@ -24,34 +24,26 @@ classdef MSS < BaseClass.Database.Database
             conn = obj.SelectConn(db);
             
             % 表准备
-            tb = obj.GetTableNameInstru(EnumType.Product.Option, var, exc);
+            tb = obj.GetTableName(EnumType.Product.Option, var, EnumType.Exchange.ToEnum(exc));
             if (~obj.CheckTable(db, tb))
-                obj.CreateTable(conn, db, tb, 111);
+                obj.CreateTable(conn, db, tb, instrus);
             end
             
-            
-            
-% 
-% 	// 鑾峰緱conn
-% 	string db = *_db_instru;
-% 	Switch& conn = SelectConn(db);
-% 
-% 	// 妫?鏌ヨ〃
-% 	string table = TableName(_in);
-% 	if (!CheckTable(db, table))
-% 		CreateTable(conn, db, table, _in);
-% 
-% 	// 鎻掑叆
-% 	for (auto curr = _in.begin(); curr != _in.end();)
-% 	{
-% 		auto start = curr;
-% 		auto end   = distance(_in.end(), curr) < 4096 ? _in.end() : curr + 4096;
-% 		if (!ExecUpdateSQL(conn, table, Contracts(start, end)))
-% 			return false;
-% 		else
-% 			curr   = end;
-% 	}
-% 	return true;
+            % 生成sql
+            sql = string();
+            for i = 1 : size(instrus, 1)
+                this = instrus(i, :);
+                head = sprintf("IF EXISTS (SELECT * FROM [%s] WHERE [SYMBOL] = '%s') UPDATE [%s] SET [SYMBOL] = %s, [SEC_NAME] = %s, [EXCHANGE] = %s, [VARIETY] = %s, [UD_SYMBOL] = %s, [UD_PRODUCT] = %s, [UD_EXCHANGE] = %s, [CALL_OR_PUT] = %s, [STRIKE_TYPE] = %s, [STRIKE] = %f, [SIZE] = %f, [START_TRADE_DATE] = %s, [END_TRADE_DATE] = %s, [SETTLE_MODE] = %s, [LAST_UPDATE_DATE] = %s ", ...
+                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), tb, this(4), this(5), this(6), this(7), this(8), this(9), this(10));
+                tail = sprintf(" ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f)", ...
+                    tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4), this(5), this(6), this(7), this(8), this(9), this(10));
+                sql = sql + head + tail;
+            end
+            SYMBOL	SEC_NAME	EXCHANGE	VARIETY	UD_SYMBOL	UD_PRODUCT	UD_EXCHANGE	CALL_OR_PUT	STRIKE_TYPE	STRIKE	SIZE	TICK_SIZE	START_TRADE_DATE	END_TRADE_DATE	SETTLE_MODE	LAST_UPDATE_DATE
+
+            % 入库
+            exec(conn, sql);
+            ret = true;
         end
         
         % 获取期权链
@@ -128,7 +120,7 @@ classdef MSS < BaseClass.Database.Database
             % 获取数据库 / 端口 / 表名 / 检查
             db = GetDbName(obj, ast);
             conn = SelectConn(obj, db);
-            tb = GetTableNameMd(obj, ast);
+            tb = GetTableName(obj, ast);
             if (~CheckTable(obj, db, tb))
                 ret = CreateTable(obj, conn, db, tb, ast);
             end
@@ -153,7 +145,7 @@ classdef MSS < BaseClass.Database.Database
         function LoadBar(obj, ast)
             % 预处理
             db = GetDbName(obj, ast);
-            tb = GetTableNameMd(obj, ast);
+            tb = GetTableName(obj, ast);
             conn = SelectConn(obj, db);
             
             % 读取
@@ -208,7 +200,7 @@ classdef MSS < BaseClass.Database.Database
         end
         
         
-        % 获取库名 / 获取行情表名 / 获取合约表名
+        % 获取库名 / 获取表名
         function ret = GetDbName(~, ast)
             % 预处理
             inv = EnumType.Interval.ToString(ast.interval);
@@ -235,32 +227,44 @@ classdef MSS < BaseClass.Database.Database
             end
             ret = upper(ret);
         end
-        function ret = GetTableNameMd(~, ast)
-            % 预处理
-            symbol = ast.symbol;
-            exchange = EnumType.Exchange.ToString(ast.exchange);
-            
-            % 分类命名
-            switch ast.product
-                case EnumType.Product.Etf
-                    ret = sprintf("%s_%s", symbol, exchange);
-                    
-                case EnumType.Product.Future
-                    ret = symbol;
-                    
-                case EnumType.Product.Index
-                    ret = sprintf("%s_%s", symbol, exchange);
-                    
-                case EnumType.Product.Option
-                    ret = symbol;
-                    
-                otherwise
-                    error("Unexpected product for name table, please check !");
+        function ret = GetTableName(~, varargin)
+            % 多态处理
+            if (nargin() == 2 && ismember('BaseClass.Asset.Asset', superclasses(varargin{1})))
+                % 行情表名
+                % 预处理
+                ast = varargin{1};
+                symbol = ast.symbol;
+                exchange = EnumType.Exchange.ToString(ast.exchange);
+                
+                % 分类命名
+                switch ast.product
+                    case EnumType.Product.Etf
+                        ret = sprintf("%s_%s", symbol, exchange);
+                        
+                    case EnumType.Product.Future
+                        ret = symbol;
+                        
+                    case EnumType.Product.Index
+                        ret = sprintf("%s_%s", symbol, exchange);
+                        
+                    case EnumType.Product.Option
+                        ret = symbol;
+                        
+                    otherwise
+                        error("Unexpected product for name table, please check !");
+                end
+                ret = upper(ret);
+                
+            elseif (nargin() == 4 && isa(varargin{1}, 'EnumType.Product') && isa(varargin{2}, 'string') && isa(varargin{3}, 'EnumType.Exchange'))
+                % 合约表名
+                pdt = varargin{1};
+                var = varargin{2};
+                exc = varargin{3};
+                ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
+          
+            else
+                error("Unexpected input arguments, please check!");
             end
-            ret = upper(ret);
-        end
-        function ret = GetTableNameInstru(~, pdt, var, exc)
-            ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
         end
         
         % 连接数据库 / 获取端口 / 检查数据库 / 创建数据库

@@ -5,21 +5,14 @@ function ret = CreateTable(obj, conn, db, tb,  varargin)
 
 % 多态处理
 if (nargin() == 5)
-    if isa
-    
-else
-    error("Unexpected argument input number, please check !");
-end
-switch nargin()
-            
-    case 4
-        % 建立instrument
+    if (isa(varargin{1}, 'table') && db == obj.db_instru)
+        % 建立合约表
+        ret = CreateTableInstru(conn, db, tb);
         
         
-        
-    case 5
+    elseif (ismember('BaseClass.Asset.Asset', superclasses(varargin{1})))
         % 按照资产建立行情表
-        ast = varargin{3};        
+        ast = varargin{1};
         switch ast.product
             case EnumType.Product.Etf
                 error("Unexpected ""product"" for create table, please check.");
@@ -51,8 +44,12 @@ switch nargin()
                 error("Unexpected ""product"" for create table, please check.");
         end
         
-    otherwise
-        error("Unexpected argument input number, please check !");
+    else
+        error("Unexpected argument input, please check !");
+    end
+    
+else
+    error("Unexpected argument input number, please check !");
 end
 end
 
@@ -94,8 +91,37 @@ end
 ResultDisp(ret, db_, tb_, res.Message);
 end
 
+% 建表合约表
+function ret = CreateTableInstru(conn, db, tb)
+sql = sprintf("CREATE TABLE [%s](" ...
+    + "[SYMBOL] [varchar](128) NOT NULL PRIMARY KEY, " ...
+    + "[SEC_NAME] [varchar](128) NULL, " ...
+    + "[EXCHANGE] [varchar](128) NULL, " ...
+    + "[VARIETY] [varchar](128) NULL, " ...
+    + "[UD_SYMBOL] [varchar](128) NULL, " ...
+    + "[UD_PRODUCT] [varchar](128) NULL, " ...
+    + "[UD_EXCHANGE] [varchar](128) NULL, " ...
+    + "[CALL_OR_PUT] [varchar](128) NULL, " ...
+    + "[STRIKE_TYPE] [varchar](128) NULL, " ...
+    + "[STRIKE] [numeric](18, 4) NULL, " ...
+    + "[SIZE] [numeric](18, 4) NULL, " ...
+    + "[TICK_SIZE] [numeric](18, 4) NULL, " ...
+    + "[START_TRADE_DATE] [datetime] NULL, " ...
+    + "[END_TRADE_DATE] [datetime] NULL, " ...
+    + "[SETTLE_MODE] [varchar](128) NULL, " ...
+    + "[LAST_UPDATE_DATE] [datetime] NULL" ...    
+    + ")ON [PRIMARY];" ...
+    + "CREATE INDEX [%s] ON [%s] ([SYMBOL] ASC);" ...
+    , tb, TableIndex(db, tb), tb);
+res = exec(conn, sql);
 
-
+if (~isempty(res.Cursor))
+    ret = true;
+else
+    ret = false;
+end
+ResultDisp(ret, db, tb, res.Message);
+end
 
 
 
