@@ -21,7 +21,7 @@ dir_csv = 'C:\Users\dell\Desktop\taobao\final';
 instrus = Utility.ReadSheet('D:\OneDrive\hisdata', 'instrument');
 for i = 1 : size(instrus, 1)
     info = instrus(i, :);
-    opt = BaseClass.Asset.Option.Instance.SSE_510050(info{1}, info{2}, info{4}, info{9}, '5m', info{5}, info{6}, info{8}, info{9});
+    opt = BaseClass.Asset.Option.Instance.SSE_510050(info{1}, info{2}, info{4}, info{9}, '5m', 'abc ', info{5}, info{6}, info{8}, info{9});
     fprintf("Loading %s market data, %i/%i, please wait ...\r", info{1}, i, size(instrus, 1));
     
     dm.LoadMdViaCsv(opt, dir_csv);

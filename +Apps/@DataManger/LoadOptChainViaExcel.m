@@ -1,18 +1,22 @@
-% 从csv读取期权列表
+% 从excel读取期权列表
 % v1.2.0.20220105.beta
 %       首次添加
-function instrus = LoadOptChainViaExcel(obj, variety, exchange, dir_excel)
+function instrus = LoadOptChainViaExcel(~, variety, exchange, dir_excel)
 
 % 预处理
 file = fullfile(dir_excel, 'instruments-option.xlsx');
 if (~exist(file, 'file'))
     error("Can't find ""%s"", please check.", file);
 end
-exchange = EnumType.Exchange.ToEnum(exchange);
-sheet = sprintf("%s-%s", variety, EnumType.Exchange.ToString(exchange));
+try
+    exchange = EnumType.Exchange.ToEnum(exchange);
+    sheet = sprintf("%s-%s", variety, EnumType.Exchange.ToString(exchange));
+    [~, ~, instrus] = xlsread(file, sheet);
+catch
+    error("Excel %s reading error, please check.", file);
+end
 
-% 读取
-[~, ~, dat1] = xlsread(file, sheet);
-[~, ~, dat2] = xlsread(file, '510300-SSE');
+% 整理
+instrus = cell2table(instrus(2 : end, :), 'VariableNames', instrus(1, :));
 
 end

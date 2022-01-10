@@ -10,8 +10,8 @@ classdef ETF < BaseClass.Asset.Option.Option
     end
     
     methods
-        function obj = ETF(symb, exc, var, sz, inv, snm, cop, k, edt, ldt)
-            obj = obj@BaseClass.Asset.Option.Option(symb, exc, var, sz, inv, snm, cop, k, edt, ldt);
+        function obj = ETF(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
+            obj = obj@BaseClass.Asset.Option.Option(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
         end
     end    
 end

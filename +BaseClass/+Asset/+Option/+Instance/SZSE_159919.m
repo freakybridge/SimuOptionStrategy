@@ -16,8 +16,8 @@ classdef SZSE_159919 < BaseClass.Asset.Option.ETF
     end    
     
     methods
-        function obj = SZSE_159919(symb, exc, var, sz, inv, snm, cop, k, edt, ldt)
-            obj = obj@BaseClass.Asset.Option.ETF(symb, exc, var, sz, inv, snm, cop, k, edt, ldt);
+        function obj = SZSE_159919(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
+            obj = obj@BaseClass.Asset.Option.ETF(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
         end
     end
 end
