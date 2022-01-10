@@ -27,12 +27,9 @@ classdef DataManger
         SaveMd2Database(obj, ast);
         SaveMd2Csv(obj, ast, dir_csv);
                 
+        ret = IsDataComplete(obj, ast);      
+                
     end
     
-    % Ë½ÓÐ·½·¨
-    methods (Access = private)
-        ret = IsDataComplete(obj, ast);       
-        
-    end
 end
 
