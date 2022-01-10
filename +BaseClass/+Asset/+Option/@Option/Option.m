@@ -28,8 +28,8 @@ classdef Option < BaseClass.Asset.Asset
     
     methods
         % ³õÊ¼»¯
-        function obj = Option(symb, exc, var, sz, inv, cop, k, edt, ldt)
-            obj = obj@BaseClass.Asset.Asset(symb, exc, var, sz, inv);
+        function obj = Option(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
+            obj = obj@BaseClass.Asset.Asset(symb, exc, var, sz, inv, snm);
             
             obj.call_or_put = EnumType.CallOrPut.ToEnum(cop);
             obj.strike = k;

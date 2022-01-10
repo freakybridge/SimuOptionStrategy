@@ -6,20 +6,20 @@ function LoadMd(obj, ast, dir_csv, dir_tb)
 obj.LoadMdViaDatabase(ast);
 
 % 读取csv
-if (obj.IsDataComplete(ast))
+if (obj.IsMdComplete(ast))
     return;
 end
 obj.LoadMdViaCsv(ast, dir_csv);
 
 % 读取淘宝excel
-if (obj.IsDataComplete(ast))
+if (obj.IsMdComplete(ast))
     obj.SaveMd2Database(ast);
     return;
 end
 obj.LoadMdViaTaobaoExcel(ast, dir_tb);
 
 % 更新
-if (~obj.IsDataComplete(ast))
+if (~obj.IsMdComplete(ast))
     obj.LoadMdViaDataSource(ast);
 end
 obj.SaveMd2Database(ast);

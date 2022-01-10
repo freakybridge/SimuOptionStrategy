@@ -1,7 +1,7 @@
 % DataManager / IsDataFinish 判定是否数据充足
 % v1.2.0.20220105.beta
 %       首次添加
-function ret = IsDataComplete(~, ast)
+function ret = IsMdComplete(~, ast)
 
 % 无行情数据，判定不充足
 if (isempty(ast.md))

@@ -4,7 +4,7 @@
 function ret = SaveMd2Csv(~, ast, dir_csv)
 % 预处理
 % 生成输出目录
-dir_csv = fullfile(dir_csv, sprintf('%s-5m', ast.under));
+dir_csv = fullfile(dir_csv, sprintf('%s-5m', ast.ud_symbol));
 Utility.CheckDirectory(dir_csv);
 
 % 生成输出文件名

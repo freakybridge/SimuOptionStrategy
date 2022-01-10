@@ -11,6 +11,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
         interval;
         md;
         move;
+        sec_name;
     end
     properties (Abstract, Constant)
         product;
@@ -21,7 +22,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
     %% 公共方法
     methods
         % 构造函数
-        function obj = Asset(symb, exc, var, sz, inv)
+        function obj = Asset(symb, exc, var, sz, inv, snm)
             % ASSET 构造此类的实例
             % 此处显示详细说明
             obj.symbol = symb;
@@ -29,6 +30,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             obj.variety = var;
             obj.size = sz;
             obj.interval = EnumType.Interval.ToEnum(inv);
+            obj.sec_name = snm;
             obj.md = [];
             obj.move = [];
         end

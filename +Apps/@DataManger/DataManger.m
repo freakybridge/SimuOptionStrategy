@@ -17,18 +17,26 @@ classdef DataManger
                 obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, ds_ur, ds_pwd);
             end
         end
-        
+    end
+    
+    methods
         LoadMd(obj, ast, dir_csv, dirt_tb);
         LoadMdViaCsv(obj,  ast, dir_csv);
         LoadMdViaDatabase(obj, ast);
         LoadMdViaDataSource(obj, ast);
-        LoadMdViaTaobaoExcel(obj, ast, dirt_tb);
+        LoadMdViaTaobaoExcel(obj, ast, dirt_tb);        
         
         SaveMd2Database(obj, ast);
         SaveMd2Csv(obj, ast, dir_csv);
                 
-        ret = IsDataComplete(obj, ast);      
+        ret = IsMdComplete(obj, ast);       
                 
+        instrus = LoadOptChain(obj, variety, exchange, dir_excel);
+        instrus = LoadOptChainViaExcel(obj, variety, exchange, dir_excel);
+        instrus = LoadOptChainViaDb(obj, variety, exchange, dir_excel);
+        instrus = LoadOptChainViaDs(obj, variety, exchange, dir_excel);
+        SaveOptChain2Db(obj, instrus);
+        SaveOptChain2Excel(obj, instrus, dir_excel);
     end
     
 end
