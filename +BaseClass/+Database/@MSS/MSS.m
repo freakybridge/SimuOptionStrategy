@@ -11,20 +11,23 @@ classdef MSS < BaseClass.Database.Database
             obj.driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
             obj.url = obj.ConfirmUrl();
             obj.Connect(obj.db_default);   
-            obj.SelectConn(obj.db_instru);
         end
         
         % 保存期权链
         function ret = SaveOptionChain(obj, var, exc, instrus)
-            % 预处理
+            % 数据库准备
             if (isempty(instrus))
                 ret = false;
                 return;
             end
             db = obj.db_instru;
             conn = obj.SelectConn(db);
-            tb = obj.GetTableNameInstru(EnumType.Product.Option, var, exc);
             
+            % 表准备
+            tb = obj.GetTableNameInstru(EnumType.Product.Option, var, exc);
+            if (~obj.CheckTable(db, tb))
+                obj.CreateTable(conn, db, tb, 111);
+            end
             
             
             
@@ -170,7 +173,7 @@ classdef MSS < BaseClass.Database.Database
     % 内部方法
     methods (Access = private, Hidden)
         % 确定url
-        function ret = ConfirmUrl(obj)
+        function ret = ConfirmUrl(~)
             [~, result] = dos('ipconfig');
             [~, loc(1)] = regexp(result, 'IPv4 地址 . . . . . . . . . . . . : ');
             loc(2) = regexp(result, '子网掩码  . . . . . . . . . . . . : ');
@@ -309,7 +312,7 @@ classdef MSS < BaseClass.Database.Database
                 ret = false;
             end
         end
-        ret = CreateTable(obj, conn, db_, tb_, ast);
+        ret = CreateTable(obj, conn, db, tb,  varargin);
         
 
     end

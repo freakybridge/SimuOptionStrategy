@@ -1,7 +1,7 @@
 % DataManager
 % v1.2.0.20220105.beta
 %      1.修改构造函数，加入参数“数据库驱动” “数据源api"
-classdef DataManger
+classdef DataManager
     properties
         db;
         ds;
@@ -9,7 +9,7 @@ classdef DataManger
 
     % 公开方法
     methods
-        function obj = DataManger(db_driver, db_ur, db_pwd, ds_api, ds_ur, ds_pwd)
+        function obj = DataManager(db_driver, db_ur, db_pwd, ds_api, ds_ur, ds_pwd)
             if (~isnan(db_driver))
                 obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
             end

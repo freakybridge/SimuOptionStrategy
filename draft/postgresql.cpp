@@ -1,4 +1,4 @@
-�?#include "pch.h"
+﻿#include "pch.h"
 #include "framework.h"
 #include "../include/postgresql.h"
 
@@ -196,7 +196,24 @@ void PostgreSql::Disconnect(const string* _db)
 		_conns->erase(*_db);
 	}
 }
-
+Switch& PostgreSql::SelectConn(const string& _db)
+{
+	Lock lck(*_mtx_conn);
+	if (!_conns->count(_db))
+		CreateDatabase(SelectConn(), _db);
+	return (*_conns).at(_db);
+}
+Switch& PostgreSql::SelectConn()
+{
+	while (true)
+	{
+		Lock lck(*_mtx_conn);
+		for (auto& i : *_conns)
+			if (!i.second.first)
+				return i.second;
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+}
 set<string> PostgreSql::FetchDatabases()
 {
 	set<string> ret;
@@ -217,7 +234,7 @@ set<string> PostgreSql::FetchTables(const string& _db)
 
 bool PostgreSql::SaveFutureChain(const Contracts& _in)
 {
-	// 预处�?
+	// 预处理
 	if (_in.size() == 0)
 		return false;
 	for (auto& i : _in)
@@ -231,7 +248,7 @@ bool PostgreSql::SaveFutureChain(const Contracts& _in)
 	string db = *_db_instru;
 	Switch& conn = SelectConn(db);
 
-	// �?查表
+	// 检查表
 	string table = TableName(_in);
 	if (!CheckTable(db, table))
 		CreateTable(conn, db, table, _in);
@@ -250,7 +267,7 @@ bool PostgreSql::SaveFutureChain(const Contracts& _in)
 }
 bool PostgreSql::SaveOptionChain(const Contracts& _in)
 {
-	// 预处�?
+	// 预处理
 	if (_in.size() == 0)
 		return false;
 	for (auto& i : _in)
@@ -264,7 +281,7 @@ bool PostgreSql::SaveOptionChain(const Contracts& _in)
 	string db = *_db_instru;
 	Switch& conn = SelectConn(db);
 
-	// �?查表
+	// 检查表
 	string table = TableName(_in);
 	if (!CheckTable(db, table))
 		CreateTable(conn, db, table, _in);
@@ -283,7 +300,7 @@ bool PostgreSql::SaveOptionChain(const Contracts& _in)
 }
 bool PostgreSql::SaveTick(const ReqHis* _req, const Ticks& _in)
 {
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db    = DatabaseName(_req);
 	Switch& conn = SelectConn(db);
 	string table = TableName(_req);
@@ -305,7 +322,7 @@ bool PostgreSql::SaveTick(const ReqHis* _req, const Ticks& _in)
 }
 bool PostgreSql::SaveCalendar(const Calendar& _in)
 {
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db    = "CALENDAR";
 	Switch& conn = SelectConn(db);
 	string table = "CALENDAR";
@@ -326,7 +343,7 @@ bool PostgreSql::SaveCalendar(const Calendar& _in)
 }
 bool PostgreSql::SaveMinute(const ReqHis* _req, const Bars& _dat)
 {
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db    = DatabaseName(_req);
 	Switch& conn = SelectConn(db);
 	string table = TableName(_req);
@@ -354,7 +371,7 @@ bool PostgreSql::SaveEtf(const ReqHis* _req, const Bars& _dat)
 		buffer.push_back((EtfData*)i);
 
 
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db    = DatabaseName(_req);
 	Switch& conn = SelectConn(db);
 	string table = TableName(_req);
@@ -382,7 +399,7 @@ bool PostgreSql::SaveFuture(const ReqHis* _req, const Bars& _dat)
 		buffer.push_back((FutureData*)i);
 
 
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db = DatabaseName(_req);
 	Switch& conn = SelectConn(db);
 	string table = TableName(_req);
@@ -418,7 +435,7 @@ bool PostgreSql::SaveOption(const ReqHis* _req, const Bars& _dat)
 		buffer.push_back((::utility::object::OptionData*)i);
 
 
-	// 获得conn / �?查表
+	// 获得conn / 检查表
 	string db    = DatabaseName(_req);
 	Switch& conn = SelectConn(db);
 	string table = TableName(_req);
@@ -856,14 +873,14 @@ vector<View> PostgreSql::FetchAllIntervalProduct()
 
 int PostgreSql::DeleteBar(const ReqHis* _req)
 {
-	// 预处�?
+	// 预处理
 	auto view    = GetBarOverview(const_cast<ReqHis*>(_req));
 	int ret      = view.at(0).GetCounts();
 	string db    = DatabaseName(_req);
 	string tb    = TableName(_req);
 	Switch& conn = SelectConn(db);
 
-	// 删除�?
+	// 删除表
 	ExecDeleteSQL(conn, TableName(_req));
 
 	// 删除缓存
@@ -873,14 +890,14 @@ int PostgreSql::DeleteBar(const ReqHis* _req)
 }
 int PostgreSql::DeleteTick(const ReqHis* _req)
 {
-	// 预处�?
+	// 预处理
 	auto view    = GetBarOverview(const_cast<ReqHis*>(_req));
 	int ret      = view.at(0).GetCounts();
 	string db    = DatabaseName(_req);
 	string tb    = TableName(_req);
 	Switch& conn = SelectConn(db);
 
-	// 删除�?
+	// 删除表
 	ExecDeleteSQL(conn, TableName(_req));
 
 	// 删除缓存
@@ -890,7 +907,7 @@ int PostgreSql::DeleteTick(const ReqHis* _req)
 }
 vector<View> PostgreSql::GetBarOverview(ReqHis* _req)
 {
-	// 获取�?有可用数据库
+	// 获取所有可用数据库
 	vector<View> ret;
 	if (!_req)
 	{
@@ -915,7 +932,7 @@ vector<View> PostgreSql::GetBarOverview(ReqHis* _req)
 }
 void PostgreSql::SingleOverview(const string& db, vector<View>* _ret)
 {
-	// 预处�?
+	// 预处理
 	auto     strs     = ::utility::Split(db, "-");
 	Product  product  = trans_pg_string_product[strs.at(1)];
 	string   variety;
@@ -970,6 +987,7 @@ void PostgreSql::SingleOverview(const string& db, vector<View>* _ret)
 
 		case utility::constant::Product::Interest:
 		{
+			contract->product = product;
 			*contract->symbol = tb;
 			break;
 		}
@@ -999,7 +1017,7 @@ bool PostgreSql::PurgeDatabase(string _pwd)
 		return false;
 	}
 
-	// 获取�?有数据库
+	// 获取所有数据库
 	Switch& conn  = SelectConn(*_db_default);
 	PGresult* res = Execute(conn, "SELECT datname FROM pg_database;");
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
@@ -1037,7 +1055,7 @@ bool PostgreSql::PurgeDatabase(string _pwd)
 }
 bool PostgreSql::PreUpdateCheck(const Contract& _contract)
 {
-	// 预处�?
+	// 预处理
 	Switch& conn = SelectConn(*_db_default);
 	bool ret = true;
 
@@ -1050,7 +1068,7 @@ bool PostgreSql::PreUpdateCheck(const Contract& _contract)
 			WriteLog("Checking [" + *_contract.symbol + "] database & table ...", ::trader::Log::Level::Info, true, false);
 
 
-		// 数据库检�? TICK + BAR
+		// 数据库检查 TICK + BAR
 		ReqHis req(&_contract, TimeStamp(), TimeStamp(), i == 0 ? Interval::Tick : Interval::Minute);
 		db = DatabaseName(&req);
 
@@ -1061,7 +1079,7 @@ bool PostgreSql::PreUpdateCheck(const Contract& _contract)
 			continue;
 		}
 
-		// �?查表是否建立
+		// 检查表是否建立
 		Connect(db);
 		Switch& conn = SelectConn(db);
 		string table = TableName(&req);
@@ -1083,10 +1101,398 @@ bool PostgreSql::PreUpdateCheck(const Contract& _contract)
 }
 
 
+bool PostgreSql::CheckDatabase(const string& _db)
+{
+	Lock lck(*_mtx_conn);
+	if (_conns->count(_db))
+		return true;
+	return false;
+	//char sql[512];
+	//sprintf_s(sql, sizeof(sql), "SELECT u.datname FROM pg_catalog.pg_database u WHERE u.datname = '%s';", _db.c_str());
+
+	//bool ret;
+	//PGresult* res = Execute(_conn, sql);
+	//if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) != 0)
+	//	ret = true;
+	//else
+	//	ret = false;
+	//PQclear(res);
+	//return ret;
+}
+bool PostgreSql::CheckTable(const string& _db, const string& _tb)
+{
+	Lock lck(*_mtx_table);
+	if (_tables->count(_db) && (*_tables)[_db].count(_tb))
+		return true;
+	return false;
+
+	//char sql[512];
+	//sprintf_s(sql, sizeof(sql), "SELECT COUNT(*) FROM pg_class WHERE relname = '%s';", _tb.c_str());
+
+	//bool ret;
+	//PGresult* res = Execute(_conn, sql);
+	//if (PQresultStatus(res) == PGRES_TUPLES_OK && atof((PQgetvalue(res, 0, 0))) != 0)
+	//{
+	//	(*_tables)[_db].insert(_tb);
+	//	ret = true;
+	//}
+	//else
+	//	ret = false;
+	//return ret;
+}
 
 
+bool PostgreSql::CreateDatabase(Switch& _conn, const string& _db)
+{
+	// 建库
+	char sql[512];
+	sprintf_s(sql, sizeof(sql), "CREATE DATABASE \"%s\";", _db.c_str());
+	if (!ExecCreateSQL(_conn, "Create database error.", sql))
+		return false;
+	//sprintf_s(sql, sizeof(sql), "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;");
+	//if (!ExecCreateSQL(_conn, "Create TimescaleDb extension error.", sql))
+	//	return false;
+	WriteLog("Created [" + _db + "].");
+	Connect(_db);
+	CreateTableOverview(SelectConn(_db), _db);
+	return true;
+}
+bool PostgreSql::CreateTableOverview(Switch& _conn, const string& _db)
+{
+	if (_db == *_db_default || _db == *_db_instru)
+		return false;
+
+	string _tb = *_tb_oview;
+	char sql[512];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"tablename text NOT NULL,"
+		"start_timestamp TIMESTAMP(3) WITHOUT TIME ZONE, "
+		"end_timestamp TIMESTAMP(3) WITHOUT TIME ZONE, "
+		"counts int, "
+		"PRIMARY KEY(tablename));"
+		"CREATE INDEX %s ON \"%s\" (tablename ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+	);
+
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+	}
+	return true;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const Bars& _bars)
+{
+	char sql[512];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime_action TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"open float8, "
+		"high float8, "
+		"low float8, "
+		"last float8, "
+		"volume float8, "
+		"oi float8, "
+		"turnover float8, "
+		"PRIMARY KEY(datetime_action));"
+		"CREATE INDEX %s ON \"%s\" (datetime_action ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(), 
+		_tb.c_str()
+		);
+	
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	CreateTriggerOverview(_conn, _db, _tb);
+	return true;
 
 
+	// sprintf_s(sql, sizeof(sql), "SELECT create_hypertable('%s', 'datetime_action', 1, create_default_indexes=>FALSE);", _name.c_str());
+	//if (!ExecCreateSQL("table_bar", "Create bar hypertable error.", sql))
+	//	return;
+
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const EtfDailyMd& _bars)
+{
+	char sql[512];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime_action TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"nav float8, "
+		"nav_adj float8, "
+		"open float8, "
+		"high float8, "
+		"low float8, "
+		"last float8, "
+		"volume float8, "
+		"oi float8, "
+		"turnover float8, "
+		"PRIMARY KEY(datetime_action));"
+		"CREATE INDEX %s ON \"%s\" (datetime_action ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+	);
+
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	CreateTriggerOverview(_conn, _db, _tb);
+	return true;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const FutureDailyMd& _bars)
+{
+	char sql[512];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime_action TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"open float8, "
+		"high float8, "
+		"low float8, "
+		"last float8, "
+		"volume float8, "
+		"oi float8, "
+		"turnover float8, "
+		"settle float8, "
+		"presettle float8, "
+		"st_stock int, "
+		"rem_nday smallint, "
+		"PRIMARY KEY(datetime_action));"
+		"CREATE INDEX %s ON \"%s\" (datetime_action ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+	);
+
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	CreateTriggerOverview(_conn, _db, _tb);
+	return true;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const OptionDailyMd& _bars)
+{
+	char sql[512];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime_action TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"open float8, "
+		"high float8, "
+		"low float8, "
+		"last float8, "
+		"volume float8, "
+		"oi float8, "
+		"turnover float8, "
+		"settle float8, "
+		"presettle float8, "
+		"rem_nday smallint, "
+		"rem_tday smallint, "
+		"PRIMARY KEY(datetime_action));"
+		"CREATE INDEX %s ON \"%s\" (datetime_action ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+	);
+
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	CreateTriggerOverview(_conn, _db, _tb);
+	return true;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const Ticks& _ticks)
+{
+	char sql[2048];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime_action TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"open float8, "
+		"high float8, "
+		"low float8, "
+		"last float8, "
+		"volume float8, "
+		"oi float8, "
+		"turnover float8, "
+		"b1p float8, b2p float8, b3p float8, b4p float8, b5p float8, "
+		"b1v float8, b2v float8, b3v float8, b4v float8, b5v float8, "
+		"a1p float8, a2p float8, a3p float8, a4p float8, a5p float8, "
+		"a1v float8, a2v float8, a3v float8, a4v float8, a5v float8, "
+		"high_lmt float8, "
+		"low_lmt float8, "
+		"ave_price float8, "
+		"preclose float8, "
+		"presettle float8, "
+		"preoi float8, "
+		"PRIMARY KEY(datetime_action)); "
+		"CREATE INDEX %s ON \"%s\" (datetime_action ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+		);
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	CreateTriggerOverview(_conn, _db, _tb);
+	return true;
+
+
+	// sprintf_s(sql, sizeof(sql), "SELECT create_hypertable('%s', 'datetime_action', 1, create_default_indexes=>FALSE);", _name.c_str());
+	//if (!ExecCreateSQL("table_bar", "Create tick hypertable error.", sql))
+	//	return;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const Calendar& _calendar)
+{
+	char sql[2048];
+	sprintf_s(sql, sizeof(sql),
+		"CREATE TABLE \"%s\" ("
+		"datetime TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,"
+		"isTrading bool, "
+		"isWorking bool, "
+		"Weekday int, "
+		"datenum int, "
+		"PRIMARY KEY(datetime)); "
+		"CREATE INDEX %s ON \"%s\" (datetime ASC);",
+		_tb.c_str(),
+		TableIndex(_tb).c_str(),
+		_tb.c_str()
+	);
+	if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+		return false;
+	else
+	{
+		WriteLog("Created [" + _tb + "]@[" + _db + "].");
+		Lock lck(*_mtx_table);
+		(*_tables)[_db].insert(_tb);
+
+	}
+	return true;
+}
+bool PostgreSql::CreateTable(Switch& _conn, const string& _db, const string& _tb, const Contracts& _infos)
+{
+	Product product = _infos.at(0)->product;
+	switch (product)
+	{
+	case Product::Future:
+	{
+		"symbol = excluded.symbol, "
+			"exchange = excluded.exchange, "
+			"start_trade_date = excluded.start_trade_date, "
+			"end_trade_date = excluded.end_trade_date, "
+			"dlmonth = excluded.dlmonth, "
+			"margin_ratio = excluded.margin_ratio, "
+			"size = excluded.size, "
+			"price_tick = excluded.price_tick;";
+		char sql[2048];
+		sprintf_s(sql, sizeof(sql),
+			"CREATE TABLE \"%s\" ("
+			"symbol text NOT NULL,"
+			"exchange text, "
+			"start_trade_date TIMESTAMP(3) WITHOUT TIME ZONE,"
+			"end_trade_date TIMESTAMP(3) WITHOUT TIME ZONE,"
+			"dlmonth int, "
+			"margin_ratio float8, "
+			"size float8, "
+			"price_tick float8, "
+			"PRIMARY KEY(symbol)); "
+			"CREATE INDEX %s ON \"%s\" (symbol ASC);",
+			_tb.c_str(),
+			TableIndex(_tb).c_str(),
+			_tb.c_str()
+		);
+		if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+			return false;
+		else
+		{
+			WriteLog("Created [" + _tb + "]@[" + _db + "].");
+			Lock lck(*_mtx_table);
+			(*_tables)[_db].insert(_tb);
+
+		}
+		return true;
+	}
+
+	case Product::Option:
+	{	
+		char sql[2048];
+		sprintf_s(sql, sizeof(sql),
+			"CREATE TABLE \"%s\" ("
+			"symbol text NOT NULL,"
+			"exchange text, "
+			"vareity text, "
+			"ud_symbol text, "
+			"ud_product text, "
+			"ud_exchange text, "
+			"call_or_put text, "
+			"strike_type text, "
+			"strike float8, "
+			"size float8, "
+			"price_tick float8, "
+			"dlmonth int, "
+			"start_trade_date TIMESTAMP(3) WITHOUT TIME ZONE,"
+			"end_trade_date TIMESTAMP(3) WITHOUT TIME ZONE,"
+			"settle_mode text, "
+			"PRIMARY KEY(symbol)); "
+			"CREATE INDEX %s ON \"%s\" (symbol ASC);",
+			_tb.c_str(),
+			TableIndex(_tb).c_str(),
+			_tb.c_str()
+		);
+		if (!ExecCreateSQL(_conn, "[" + _tb + "]@[" + _db + "] create error.", sql))
+			return false;
+		else
+		{
+			WriteLog("Created [" + _tb + "]@[" + _db + "].");
+			Lock lck(*_mtx_table);
+			(*_tables)[_db].insert(_tb);
+
+		}
+		return true;
+	}
+
+	default:
+		WriteError("Unsupported contract type: " + ::utility::constant::Enum2String(product) + ", please check !", "", "");
+		return false;
+	}
+
+
+}
 bool PostgreSql::CreateTriggerOverview(Switch& _conn, const string& _db, const string& _tb)
 {
 	string table = _tb;
@@ -1123,6 +1529,125 @@ bool PostgreSql::CreateTriggerOverview(Switch& _conn, const string& _db, const s
 }
 
 
+string PostgreSql::DatabaseName(const ReqHis* _req) const
+{
+	string ret;
+	Interval interval = _req->GetInterval();
+	Product product   = _req->GetProduct();
+	string  symbol    = _req->GetSymbol();
+	Exchange exchange = _req->GetExchange();
+
+	switch (product)
+	{
+	case Product::Etf:
+		ret = ::utility::constant::Enum2String(interval) + "-" + ::utility::constant::Enum2String(product);
+		break;
+
+	case Product::Fund:
+		ret = ::utility::constant::Enum2String(interval) + "-" + ::utility::constant::Enum2String(product);
+		break;
+
+	case Product::Future:
+		ret = ::utility::constant::Enum2String(interval) + "-" + _trader->GetFullSymbol(product, ::utility::RegSymbolLetter(symbol), exchange);
+		break;
+
+	case Product::Index:
+		ret = ::utility::constant::Enum2String(interval) + "-" + ::utility::constant::Enum2String(product);
+		break;
+
+	case Product::Interest:
+		ret = ::utility::constant::Enum2String(interval) + "-" + ::utility::constant::Enum2String(product);
+		break;
+
+	case Product::Option:
+		ret = ::utility::constant::Enum2String(interval) + "-" + _trader->GetFullSymbol(product, _req->GetVariety(), exchange);
+		break;
+
+	default:
+		return "";
+	}
+	return ::utility::CvtStrCase(ret, "upper");
+}
+string PostgreSql::TableName(const ReqHis* _req) const
+{
+	string ret;
+	Interval interval = _req->GetInterval();
+	Product product   = _req->GetProduct();
+	string  symbol    = _req->GetSymbol();
+	Exchange exchange = _req->GetExchange();
+
+	switch (product)
+	{
+	case Product::Etf:
+		ret = symbol + "_" + ::utility::constant::Enum2String(exchange);
+		break;
+
+	case Product::Fund:
+		ret = symbol + "_" + ::utility::constant::Enum2String(exchange);
+		break;
+
+	case Product::Future:
+		ret = symbol;
+		break;
+
+	case Product::Index:
+		ret = symbol + "_" + ::utility::constant::Enum2String(exchange);
+		break;
+
+	case Product::Interest:
+		ret = symbol;
+		break;
+
+	case Product::Option:
+		ret = symbol;
+		break;
+
+	default:
+		return "";
+	}
+	return ret;
+
+}
+string PostgreSql::TableName(const Contracts& _infos, const ReqHis* _req) const
+{
+	string ret, variety;
+	const ::utility::object::ContractData* contract;
+	if (!_req)
+		contract = _infos.at(0);
+
+	else
+		contract = _req->GetContract();
+	variety = *contract->variety;
+	ret = ::utility::constant::Enum2String(contract->product) + "_" + variety + "_" + ::utility::constant::Enum2String(contract->exchange);
+	return ::utility::CvtStrCase(ret, "upper");
+}
+string PostgreSql::TableIndex(const string& _fsymb) const
+{
+	string ret = ::utility::CvtStrCase(_fsymb);
+	for (auto& i : ret)
+		if (i == '-')
+			i = '_';
+	return "id_" + ret;
+}
+
+
+bool PostgreSql::ExecCreateSQL(Switch& _conn, string&& _user_hint, const char* _sql)
+{		
+	PGresult* res = Execute(_conn, _sql);
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	{
+		WriteError(std::move(_user_hint), "", PQerrorMessage(_conn.second));
+		PQclear(res);
+		res = Execute(_conn, "ROLLBACK;");
+		PQclear(res);
+		return false;
+	}
+	else
+	{
+		PQclear(res);
+		return true;
+	}
+}
 bool PostgreSql::ExecUpdateSQL(Switch& _conn, const string& _tb, const Bars&& _data)
 {
 	string head, tail, sql;

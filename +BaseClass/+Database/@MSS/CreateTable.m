@@ -1,38 +1,59 @@
-% 根据给定资产建表
-function ret = CreateTable(~, conn, db_, tb_, ast)
+% Microsoft Sql Server / CreateTable
+% v1.2.0.20220105.beta
+%       首次添加
+function ret = CreateTable(obj, conn, db, tb,  varargin)
 
-% 分情况建表
-switch ast.product
-    case EnumType.Product.Etf
-        error("Unexpected ""product"" for create table, please check.");
+% 多态处理
+if (nargin() == 5)
+    if isa
+    
+else
+    error("Unexpected argument input number, please check !");
+end
+switch nargin()
+            
+    case 4
+        % 建立instrument
         
         
-    case EnumType.Product.Future
-        error("Unexpected ""product"" for create table, please check.");
         
-        
-    case EnumType.Product.Index
-        error("Unexpected ""product"" for create table, please check.");
-        
-        
-    case EnumType.Product.Option
-        switch ast.interval
-            case {EnumType.Interval.min1, EnumType.Interval.min5}
-                ret = CreateTableBar(conn, db_, tb_);
+    case 5
+        % 按照资产建立行情表
+        ast = varargin{3};        
+        switch ast.product
+            case EnumType.Product.Etf
+                error("Unexpected ""product"" for create table, please check.");
+                
+                
+            case EnumType.Product.Future
+                error("Unexpected ""product"" for create table, please check.");
+                
+                
+            case EnumType.Product.Index
+                error("Unexpected ""product"" for create table, please check.");
+                
+                
+            case EnumType.Product.Option
+                switch ast.interval
+                    case {EnumType.Interval.min1, EnumType.Interval.min5}
+                        ret = CreateTableBar(conn, db, tb);
+                        
+                    otherwise
+                        error("Unexpected ""interval"" for create table, please check.");
+                end
+                
+                
+            case EnumType.Product.Stock
+                error("Unexpected ""product"" for create table, please check.");
+                
                 
             otherwise
-                error("Unexpected ""interval"" for create table, please check.");
+                error("Unexpected ""product"" for create table, please check.");
         end
         
-        
-    case EnumType.Product.Stock
-        error("Unexpected ""product"" for create table, please check.");
-        
-        
     otherwise
-        error("Unexpected ""product"" for create table, please check.");
+        error("Unexpected argument input number, please check !");
 end
-
 end
 
 % 表索引
