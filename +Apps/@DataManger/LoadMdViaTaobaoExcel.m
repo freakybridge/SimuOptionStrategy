@@ -79,6 +79,7 @@ end
 % 清除重复时间戳
 function md = ClearRepeatDatetime(md)
 % 确定时间戳唯一性
+md = sortrows(md, 1);
 loc = [-1; diff(md(:, 1))];
 dt_repeat = unique(md(loc == 0, 1));
 if (isempty(dt_repeat))
