@@ -26,8 +26,8 @@ classdef DataManger
         LoadMdViaDataSource(obj, ast);
         LoadMdViaTaobaoExcel(obj, ast, dirt_tb);        
         
-        SaveMd2Database(obj, ast);
-        SaveMd2Csv(obj, ast, dir_csv);
+        ret = SaveMd2Database(obj, ast);
+        ret = SaveMd2Csv(obj, ast, dir_csv);
                 
         ret = IsMdComplete(obj, ast);       
                 
@@ -35,8 +35,8 @@ classdef DataManger
         instrus = LoadOptChainViaExcel(obj, var, exc, dir_);
         instrus = LoadOptChainViaDb(obj, var, exc, dir_);
         instrus = LoadOptChainViaDs(obj, var, exc, dir_);
-        SaveOptChain2Db(obj, var, exc, instrus);
-        SaveOptChain2Excel(obj, var, exc, instrus, dir_);
+        ret = SaveOptChain2Db(obj, var, exc, instrus);
+        ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
     end
     
 end

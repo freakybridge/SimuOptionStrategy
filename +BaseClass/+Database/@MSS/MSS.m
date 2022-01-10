@@ -10,72 +10,45 @@ classdef MSS < BaseClass.Database.Database
             obj = obj@BaseClass.Database.Database(user, pwd, 'master');
             obj.driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
             obj.url = obj.ConfirmUrl();
-            obj.Connect(obj.db_default);            
+            obj.Connect(obj.db_default);   
+            obj.SelectConn(obj.db_instru);
         end
         
         % 保存期权链
-        function ret = SaveOptionChain(obj, instru)
-            ret = 1;
-%             % 下载option chain，此部分无修改
-%             sql_string = ['SELECT * FROM ', db_nm, '.[dbo].[CodeList] ORDER BY wind_code'];
-%             setdbprefs('DataReturnFormat', 'CellArray');
-%             api = BaseClass.DatabaseApi(db_nm, user, pwd);
-%             chain = table2cell(fetch(api.conn, sql_string));
-%             chain(:, end) = [];
-%             api.Off();
-%             
-%             % 数字化所有日期
-%             switch lower(db_nm)
-%                 case {'option_510050_sh', ...
-%                         'option_510300_sh', ...
-%                         'option_159919_sz', ...
-%                         'option_io_cfe'}
-%                     chain(:, 1) = chain(:, 15);
-%                     chain(:, [9, 15]) = [];
-%                 otherwise
-%             end
-%             col = [9, 10, 11, 12];
-%             for i = 1 : length(col)
-%                 chain(:, col(i)) = num2cell(str2double(cellstr(datestr(chain(:, col(i)), 'yyyymmdd'))));
-%             end
-%             
-%             % struct化
-%             fields = lower({ ...
-%                 'wind_code', ...
-%                 'sec_name', ...
-%                 'option_mark_code', ...
-%                 'option_type', ...
-%                 'call_or_put', ...
-%                 'exercise_mode', ...
-%                 'exercise_price', ...
-%                 'contract_unit_ini', ...
-%                 'listed_date', ...
-%                 'expire_date', ...
-%                 'exercise_date', ...
-%                 'settle_date', ...
-%                 'settle_mode', ...
-%                 'db', ...
-%                 });
-%             chain = cell2struct(chain, fields, 2);
-%             
-%             % 写入字段 limit_month
-%             temp = num2cell(floor([chain.expire_date] / 100));
-%             [chain.limit_month] = temp{:};
-%             
-%             % 数字化期权类型字段
-%             loc_call = strcmpi({chain.call_or_put}, '认购');
-%             loc_put = strcmpi({chain.call_or_put}, '认沽');
-%             [chain(loc_call).call_or_put] = deal(1);
-%             [chain(loc_put).call_or_put] = deal(-1);
-%             
-%             % 删除无意义字段(db) / 修改字段(wind_code, sec_name, option_mark_code)
-%             chain = rmfield(chain, 'db');
-%             [chain.code] = chain.wind_code;
-%             chain = rmfield(chain, 'wind_code');
-%             [chain.comment] = chain.sec_name;
-%             chain = rmfield(chain, 'sec_name');
-%             [chain.underlying] = chain.option_mark_code;
-%             instru = rmfield(chain, 'option_mark_code');
+        function ret = SaveOptionChain(obj, var, exc, instrus)
+            % 预处理
+            if (isempty(instrus))
+                ret = false;
+                return;
+            end
+            db = obj.db_instru;
+            conn = obj.SelectConn(db);
+            tb = obj.GetTableNameInstru(EnumType.Product.Option, var, exc);
+            
+            
+            
+            
+% 
+% 	// 鑾峰緱conn
+% 	string db = *_db_instru;
+% 	Switch& conn = SelectConn(db);
+% 
+% 	// 妫?鏌ヨ〃
+% 	string table = TableName(_in);
+% 	if (!CheckTable(db, table))
+% 		CreateTable(conn, db, table, _in);
+% 
+% 	// 鎻掑叆
+% 	for (auto curr = _in.begin(); curr != _in.end();)
+% 	{
+% 		auto start = curr;
+% 		auto end   = distance(_in.end(), curr) < 4096 ? _in.end() : curr + 4096;
+% 		if (!ExecUpdateSQL(conn, table, Contracts(start, end)))
+% 			return false;
+% 		else
+% 			curr   = end;
+% 	}
+% 	return true;
         end
         
         % 获取期权链
@@ -152,7 +125,7 @@ classdef MSS < BaseClass.Database.Database
             % 获取数据库 / 端口 / 表名 / 检查
             db = GetDbName(obj, ast);
             conn = SelectConn(obj, db);
-            tb = GetTableName(obj, ast);
+            tb = GetTableNameMd(obj, ast);
             if (~CheckTable(obj, db, tb))
                 ret = CreateTable(obj, conn, db, tb, ast);
             end
@@ -177,7 +150,7 @@ classdef MSS < BaseClass.Database.Database
         function LoadBar(obj, ast)
             % 预处理
             db = GetDbName(obj, ast);
-            tb = GetTableName(obj, ast);
+            tb = GetTableNameMd(obj, ast);
             conn = SelectConn(obj, db);
             
             % 读取
@@ -232,7 +205,7 @@ classdef MSS < BaseClass.Database.Database
         end
         
         
-        % 获取库名 / 获取
+        % 获取库名 / 获取行情表名 / 获取合约表名
         function ret = GetDbName(~, ast)
             % 预处理
             inv = EnumType.Interval.ToString(ast.interval);
@@ -259,7 +232,7 @@ classdef MSS < BaseClass.Database.Database
             end
             ret = upper(ret);
         end
-        function ret = GetTableName(~, ast)
+        function ret = GetTableNameMd(~, ast)
             % 预处理
             symbol = ast.symbol;
             exchange = EnumType.Exchange.ToString(ast.exchange);
@@ -282,6 +255,9 @@ classdef MSS < BaseClass.Database.Database
                     error("Unexpected product for name table, please check !");
             end
             ret = upper(ret);
+        end
+        function ret = GetTableNameInstru(~, pdt, var, exc)
+            ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
         end
         
         % 连接数据库 / 获取端口 / 检查数据库 / 创建数据库

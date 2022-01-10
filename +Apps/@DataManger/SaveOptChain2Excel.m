@@ -1,7 +1,7 @@
 % 从期权列表写入Excel
 % v1.2.0.20220105.beta
 %       首次添加
-function SaveOptChain2Excel(~, var, exc, instrus, dir_)
+function ret = SaveOptChain2Excel(~, var, exc, instrus, dir_)
 
 % 预处理
 file = fullfile(dir_, 'instruments-option.xlsx');
@@ -11,4 +11,5 @@ sheet = sprintf("%s-%s", var, EnumType.Exchange.ToString(exc));
 
 % 写入
 xlswrite(file, instrus, sheet);
+ret = true;
 end

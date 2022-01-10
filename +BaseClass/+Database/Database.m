@@ -10,6 +10,7 @@ classdef Database < handle
         conns;
         tables;
         db_default;
+        db_instru;
     end
         
     methods
@@ -18,6 +19,7 @@ classdef Database < handle
             obj.user = user;
             obj.password = pwd;
             obj.db_default = db_dft;
+            obj.db_instru = "INSTRUMENTS";
             obj.conns = containers.Map();
             obj.tables = containers.Map();
         end
@@ -58,7 +60,7 @@ classdef Database < handle
     
     methods (Abstract)
         % 保存期权链
-        ret = SaveOptionChain(obj, instru);
+        ret = SaveOptionChain(obj, var, exc, instrus);
         
         % 获取期权链
         instru = LoadOptionChain(obj, opt);

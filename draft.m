@@ -35,4 +35,4 @@ end
 
 
 tmp = dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
-dm.SaveOptChain2Excel("510050", "SSE", tmp, "C:\Users\dell\Desktop");
+dm.SaveOptChain2Db("510050", "SSE", tmp);
