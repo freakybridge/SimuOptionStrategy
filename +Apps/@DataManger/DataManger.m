@@ -9,12 +9,12 @@ classdef DataManger
 
     % 公开方法
     methods
-        function obj = DataManger(db_driver, ds_api)
+        function obj = DataManger(db_driver, db_ur, db_pwd, ds_api, ds_ur, ds_pwd)
             if (~isnan(db_driver))
-                obj.db = BaseClass.Database.Database.Selector(db_driver, 'sa', 'bridgeisbest');
+                obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
             end
             if (~isnan(ds_api))
-                obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, 'merqh001', '146457');
+                obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, ds_ur, ds_pwd);
             end
         end
         
