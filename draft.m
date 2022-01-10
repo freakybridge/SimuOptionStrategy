@@ -34,4 +34,5 @@ for i = 1 : size(instrus, 1)
 end
 
 
-dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
+tmp = dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
+dm.SaveOptChain2Excel("510050", "SSE", tmp, "C:\Users\dell\Desktop");

@@ -31,12 +31,12 @@ classdef DataManger
                 
         ret = IsMdComplete(obj, ast);       
                 
-        instrus = LoadOptChain(obj, variety, exchange, dir_excel);
-        instrus = LoadOptChainViaExcel(obj, variety, exchange, dir_excel);
-        instrus = LoadOptChainViaDb(obj, variety, exchange, dir_excel);
-        instrus = LoadOptChainViaDs(obj, variety, exchange, dir_excel);
-        SaveOptChain2Db(obj, instrus);
-        SaveOptChain2Excel(obj, instrus, dir_excel);
+        instrus = LoadOptChain(obj, var, exc, dir_);
+        instrus = LoadOptChainViaExcel(obj, var, exc, dir_);
+        instrus = LoadOptChainViaDb(obj, var, exc, dir_);
+        instrus = LoadOptChainViaDs(obj, var, exc, dir_);
+        SaveOptChain2Db(obj, var, exc, instrus);
+        SaveOptChain2Excel(obj, var, exc, instrus, dir_);
     end
     
 end
