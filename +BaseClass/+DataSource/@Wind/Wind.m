@@ -91,10 +91,6 @@ classdef Wind < BaseClass.DataSource.DataSource
             elseif (errid)
                 error("DataSource Wind fetching option chain failure, please check. ERRORID:%i", errid);
             end
-            
-            % 若为ETF期权则进行调整
-            if (ismember('BaseClass.Asset.Option.ETF', superclasses(sample_opt)))
-            end
         end
     end
     
