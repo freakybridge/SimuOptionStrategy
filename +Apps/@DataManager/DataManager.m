@@ -27,16 +27,18 @@ classdef DataManager
         LoadMdViaTaobaoExcel(obj, ast, dirt_tb);        
         
         ret = SaveMd2Database(obj, ast);
-        ret = SaveMd2Csv(obj, ast, dir_csv);
-                
+        ret = SaveMd2Csv(obj, ast, dir_csv);                
         ret = IsMdComplete(obj, ast);       
                 
         instrus = LoadOptChain(obj, var, exc, dir_);
         instrus = LoadOptChainViaDb(obj, var, exc);
-        instrus = LoadOptChainViaDs(obj, var, exc);
+        instrus = LoadOptChainViaDs(obj, var, exc, instru);
         instrus = LoadOptChainViaExcel(obj, var, exc, dir_);
+        
         ret = SaveOptChain2Db(obj, var, exc, instrus);
         ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
+        ret = IsInstruNeedUpdate(obj, instrus);
+        
     end
     
 end

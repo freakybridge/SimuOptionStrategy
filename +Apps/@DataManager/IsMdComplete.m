@@ -1,4 +1,4 @@
-% DataManager / IsDataFinish 判定是否数据充足
+% DataManager / IsMdComplete 判定是否数据充足
 % v1.2.0.20220105.beta
 %       首次添加
 function ret = IsMdComplete(~, ast)

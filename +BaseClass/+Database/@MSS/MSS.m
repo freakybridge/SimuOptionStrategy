@@ -98,7 +98,7 @@ classdef MSS < BaseClass.Database.Database
                 
             catch
                 warning("Fetching option chain ""%s"" failure, please check ...\r", tb);                
-                value = nan;
+                value = [];
             end
             instru = value;
                 

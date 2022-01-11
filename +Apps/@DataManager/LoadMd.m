@@ -1,4 +1,4 @@
-% DataManager / LoadMd
+% DataManager / LoadMd 多种方式获取行情
 % v1.2.0.20220105.beta
 %      1.首次加入
 function LoadMd(obj, ast, dir_csv, dir_tb)

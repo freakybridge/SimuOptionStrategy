@@ -35,11 +35,12 @@ for i = 1 : size(instrus, 1)
 end
 
 
-tmp = dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
-dm.SaveOptChain2Db("510050", "SSE", tmp);
-tmp = dm.LoadOptChainViaDb("510050", "SSE");
-tmp2 = dm.LoadOptChainViaDb("510300", "SSE");
-
-
-tmp = dm.LoadOptChainViaExcel("510300", "SSE", "D:\OneDrive\hisdata");
-dm.SaveOptChain2Db("510300", "SSE", tmp);
+% tmp = dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
+% dm.SaveOptChain2Db("510050", "SSE", tmp);
+% tmp = dm.LoadOptChainViaDb("510050", "SSE");
+% tmp2 = dm.LoadOptChainViaDb("510300", "SSE");
+% 
+% 
+% tmp = dm.LoadOptChainViaExcel("510300", "SSE", "D:\OneDrive\hisdata");
+% dm.SaveOptChain2Db("510300", "SSE", tmp);
+tmp = dm.LoadOptChain("510050", "SSE", "D:\OneDrive\hisdata");
