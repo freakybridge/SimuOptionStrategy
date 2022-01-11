@@ -63,7 +63,7 @@ classdef Database < handle
         ret = SaveOptionChain(obj, var, exc, instrus);
         
         % 获取期权链
-        instru = LoadOptionChain(obj, opt);
+        instru = LoadOptionChain(obj, var, exc);
     end
     methods (Abstract, Hidden)
         % 保存K线行情
