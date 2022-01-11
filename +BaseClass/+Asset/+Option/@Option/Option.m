@@ -24,6 +24,7 @@ classdef Option < BaseClass.Asset.Asset
         ud_exchange;
         strike_type;
         settle_mode;
+        date_ini;
     end    
     
     methods
@@ -48,6 +49,11 @@ classdef Option < BaseClass.Asset.Asset
 %             ret = [obj.symbol, '-',  num2str(obj.dlmonth), '-', lower(cop{1}(1)), '-', num2str(obj.strike, '%.03f')];
 %         end
                 
+        % 获取品种起点时点
+        function ret = GetDateInit(obj)
+            ret = datestr(obj.date_ini);
+        end
+
         % 获取挂牌时点
         function ret = GetDateListed(obj)
             ret = datestr(obj.listed);
@@ -56,8 +62,28 @@ classdef Option < BaseClass.Asset.Asset
         % 获取到期时点
         function ret = GetDateExpire(obj)
             ret = datestr(obj.expire);
+        end        
+    end
+    
+    
+    methods (Static)        
+        % 反射器
+        function obj = Selector(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
+            mark = upper(sprintf("%s-%s", var, exc));
+            switch mark
+                case "159919-SZSE"
+                    obj = BaseClass.Asset.Option.Instance.SSE_159919(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    
+                case "510050-SSE"
+                    obj = BaseClass.Asset.Option.Instance.SSE_510050(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    
+                case "510300-SSE"
+                    obj = BaseClass.Asset.Option.Instance.SSE_510300(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    
+                otherwise
+                    error("Unsupported option class, please check.");
+            end
         end
-        
     end
     
 end

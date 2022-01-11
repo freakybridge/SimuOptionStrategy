@@ -23,7 +23,7 @@ classdef Wind < BaseClass.DataSource.DataSource
         end
         
         % 获取期权分钟数据
-        function md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv)     
+        function md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv)
             % 确定是否数据超限
             if (datenum(opt.GetDateListed()) < now - obj.FetchApiDateLimit())
                 md = [];
@@ -41,6 +41,20 @@ classdef Wind < BaseClass.DataSource.DataSource
                 return;
             end
             md = [dt, md];
+        end
+        
+        % 获取期权合约列表
+        function instrus = FetchOptionChain(obj, var, exc_ud, exc_opt, instru_local, date_s, date_e)
+            exc_ud = obj.exchanges(EnumType.Exchange.ToString(exc_ud));
+            exc_opt = lower(EnumType.Exchange.ToString(exc_opt));
+            str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
+                date_s, date_e, exc_opt, var, exc_ud);
+            [instrus, ~, fields, ~, errid, ~] = obj.api.wset('optioncontractbasicinfo', str);
+% startdate=2022-01-11;enddate=2022-01-11;exchange=sse;windcode=510050.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date
+% startdate=2021-01-11;enddate=2022-01-11;exchange=sse;windcode=510300.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date
+right_str = 'startdate=2022-01-11;enddate=2022-01-11;exchange=sse;windcode=510050.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date';
+obj.api.wset('optioncontractbasicinfo', right_str)
+
         end
     end
     

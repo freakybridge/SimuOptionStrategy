@@ -12,6 +12,7 @@ classdef SSE_510300 < BaseClass.Asset.Option.ETF
             ];
         strike_type = EnumType.OptionStrikeType.European;
         settle_mode = EnumType.OptionSettleMode.Physical;
+        date_ini = '2019-12-23';
     end    
     
     methods

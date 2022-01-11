@@ -19,6 +19,9 @@ classdef DataSource
     methods (Abstract)
         % 获取期权分钟数据
         md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
+        
+        % 获取期权合约列表
+        instrus = FetchOptionChain(obj, var, exc_ud, exc_opt, instru_local, date_s, date_e);
     end
     
     methods (Abstract, Static)
