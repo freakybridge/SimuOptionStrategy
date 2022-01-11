@@ -44,17 +44,57 @@ classdef Wind < BaseClass.DataSource.DataSource
         end
         
         % 获取期权合约列表
-        function instrus = FetchOptionChain(obj, var, exc_ud, exc_opt, instru_local, date_s, date_e)
-            exc_ud = obj.exchanges(EnumType.Exchange.ToString(exc_ud));
-            exc_opt = lower(EnumType.Exchange.ToString(exc_opt));
+        function instrus = FetchOptionChain(obj, sample_opt, instru_local, date_s, date_e)
+            exc_ud = obj.exchanges(EnumType.Exchange.ToString(sample_opt.ud_exchange));
+            exc_opt = lower(EnumType.Exchange.ToString(sample_opt.exchange));
             str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
-                date_s, date_e, exc_opt, var, exc_ud);
-            [instrus, ~, fields, ~, errid, ~] = obj.api.wset('optioncontractbasicinfo', str);
-% startdate=2022-01-11;enddate=2022-01-11;exchange=sse;windcode=510050.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date
-% startdate=2021-01-11;enddate=2022-01-11;exchange=sse;windcode=510300.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date
-right_str = 'startdate=2022-01-11;enddate=2022-01-11;exchange=sse;windcode=510050.SH;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date';
-obj.api.wset('optioncontractbasicinfo', right_str)
+                date_s, date_e, exc_opt, sample_opt.variety, exc_ud);
+            [instrus, ~, ~, ~, errid, ~] = obj.api.wset('optioncontractbasicinfo', str);
 
+            % 处理可能异常
+            if isa(instrus, 'cell')
+                % 存在新合约，合并本地合约
+                % 补全信息
+                exc = repmat({upper(char(EnumType.Exchange.ToString(sample_opt.exchange)))}, size(instrus, 1), 1);
+                var = repmat({char(sample_opt.variety)}, size(instrus, 1), 1);
+                ud_symb = repmat({char(sample_opt.ud_symbol)}, size(instrus, 1), 1);
+                ud_product = repmat({upper(char(EnumType.Product.ToString(sample_opt.ud_product)))}, size(instrus, 1), 1);
+                ud_exc = repmat({upper(char(EnumType.Exchange.ToString(sample_opt.ud_exchange)))}, size(instrus, 1), 1);
+                instrus(strcmpi(instrus(:, 3), '认购'), 3) = deal({'Call'});
+                instrus(strcmpi(instrus(:, 3), '认沽'), 3) = deal({'Put'});
+                striketype = char(EnumType.OptionStrikeType.ToString(sample_opt.strike_type));
+                striketype = [striketype(1), lower(striketype(2 : end))];
+                striketype = repmat({striketype}, size(instrus, 1), 1);
+                ticksz = repmat({sample_opt.tick_size}, size(instrus, 1), 1);
+                dlmonth = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), instrus(:, 7)));
+                trade_start = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 6), sample_opt.tradetimetable(1)));
+                trade_end = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 7), sample_opt.tradetimetable(end)));
+                sttmode = char(EnumType.OptionStrikeType.ToString(sample_opt.settle_mode));
+                sttmode = [sttmode(1), lower(sttmode(2 : end))];
+                sttmode = repmat({sttmode}, size(instrus, 1), 1);
+                upd_time = repmat({datestr(now(), 'yyyy-mm-dd HH:MM')}, size(instrus, 1), 1);
+                
+                instrus = [instrus(:, 1 : 2), exc, var, ud_symb, ud_product, ud_exc, instrus(:, 3), striketype, instrus(:, 4 : 5), ticksz, dlmonth, trade_start, trade_end, sttmode, upd_time];
+                instrus = cell2table(instrus, 'VariableNames', instru_local.Properties.VariableNames);
+                
+                % 合并
+                [~, loc] = intersect(instru_local(:, 1), instrus(:, 1));
+                instru_local(loc, :) = [];
+                instrus = [instru_local; instrus];
+                instrus = sortrows(instrus, 1);
+                
+                
+            elseif isnan(instrus) && ~isempty(instru_local)
+                % 无新合约，返回
+                instrus = instru_local;
+                return;
+            elseif (errid)
+                error("DataSource Wind fetching option chain failure, please check. ERRORID:%i", errid);
+            end
+            
+            % 若为ETF期权则进行调整
+            if (ismember('BaseClass.Asset.Option.ETF', superclasses(sample_opt)))
+            end
         end
     end
     

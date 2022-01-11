@@ -13,9 +13,10 @@
 
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'wind', 'merqh001', '146457');
-dir_tb = 'C:\Users\dell\Desktop\taobao';
-dir_csv = 'C:\Users\dell\Desktop\taobao\final';
+dm = Apps.DataManager('mss', 'sa', 'bridgeisbest', 'wind', 'merqh001', '146457');
+dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
+dir_csv = 'C:\Users\freakybridge\Desktop\taobao\final';
+dir_rt = "E:\OneDrive\hisdata";
 
 
 instrus = Utility.ReadSheet('D:\OneDrive\hisdata', 'instrument');
@@ -35,12 +36,12 @@ for i = 1 : size(instrus, 1)
 end
 
 
-% tmp = dm.LoadOptChainViaExcel("510050", "SSE", "D:\OneDrive\hisdata");
+% tmp = dm.LoadOptChainViaExcel("510050", "SSE", dir_rt);
 % dm.SaveOptChain2Db("510050", "SSE", tmp);
 % tmp = dm.LoadOptChainViaDb("510050", "SSE");
 % tmp2 = dm.LoadOptChainViaDb("510300", "SSE");
 % 
 % 
-% tmp = dm.LoadOptChainViaExcel("510300", "SSE", "D:\OneDrive\hisdata");
+% tmp = dm.LoadOptChainViaExcel("510300", "SSE", dir_rt);
 % dm.SaveOptChain2Db("510300", "SSE", tmp);
 tmp = dm.LoadOptChain("510050", "SSE", "D:\OneDrive\hisdata");

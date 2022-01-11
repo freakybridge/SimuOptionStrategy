@@ -16,5 +16,5 @@ date_e = datestr(now(), 'yyyy-mm-dd');
 
 % обть
 exc = EnumType.Exchange.ToEnum(exc);
-instrus = obj.ds.FetchOptionChain(var, exc, sample.exchange, instru_local, date_s, date_e);
+instrus = obj.ds.FetchOptionChain(sample, instru_local, date_s, date_e);
 end
