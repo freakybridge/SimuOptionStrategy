@@ -7,7 +7,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
         symbol;
         exchange;
         variety;
-        size;
+        unit;
         interval;
         md;
         move;
@@ -28,7 +28,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             obj.symbol = symb;
             obj.exchange = EnumType.Exchange.ToEnum(exc);
             obj.variety = var;
-            obj.size = sz;
+            obj.unit = sz;
             obj.interval = EnumType.Interval.ToEnum(inv);
             obj.sec_name = snm;
             obj.md = [];
@@ -211,12 +211,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
     end
     
     
-    
-    %% 接口
-    methods (Abstract)
-        ret = GetFullSymbol(obj);
-    end
-    
+        
     %% 内置方法
     methods (Hidden, Static)
         % 获取日期 / 时间

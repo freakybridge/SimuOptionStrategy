@@ -4,8 +4,8 @@
 function LoadMdViaCsv(~, ast, dir_csv)
 % 预处理
 % 检查输入目录 / 生成输出文件名
-dir_csv = fullfile(dir_csv, sprintf('%s-5m', ast.ud_symbol));
-filename = fullfile(dir_csv, [ast.GetFullSymbol(), '.csv']);
+dir_csv = fullfile(dir_csv, BaseClass.Database.Database.GetDbName(ast));
+filename = fullfile(dir_csv, [BaseClass.Database.Database.GetTableName(ast), '.csv']);
 
 % 检查文件 / 读取
 if (~exist(filename, 'file'))

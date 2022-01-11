@@ -4,11 +4,11 @@
 function ret = SaveMd2Csv(~, ast, dir_csv)
 % 预处理
 % 生成输出目录
-dir_csv = fullfile(dir_csv, sprintf('%s-5m', ast.ud_symbol));
+dir_csv = fullfile(dir_csv, BaseClass.Database.Database.GetDbName(ast));
 Utility.CheckDirectory(dir_csv);
 
 % 生成输出文件名
-filename = fullfile(dir_csv, [ast.GetFullSymbol(), '.csv']);
+filename = fullfile(dir_csv, [BaseClass.Database.Database.GetTableName(ast), '.csv']);
 
 % 写入表头 / 写入数据
 id = fopen(filename, 'w');

@@ -84,5 +84,73 @@ classdef Database < handle
                     error("Unsupported database driver, please check.");
             end            
         end
+        
+        % 获取库名 / 获取表名
+        function ret = GetDbName(ast)
+            % 预处理
+            inv = EnumType.Interval.ToString(ast.interval);
+            product = EnumType.Product.ToString(ast.product);
+            variety = ast.variety;
+            exchange = EnumType.Exchange.ToString(ast.exchange);
+            
+            % 分类命名
+            switch ast.product
+                case EnumType.Product.Etf
+                    ret = sprintf("%s-%s", inv, product);
+                    
+                case EnumType.Product.Future
+                    ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
+                    
+                case EnumType.Product.Index
+                    ret = sprintf("%s-%s", inv, product);
+                    
+                case EnumType.Product.Option
+                    ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
+                    
+                otherwise
+                    error("Unexpected product for name database, please check !");
+            end
+            ret = upper(ret);
+        end
+        function ret = GetTableName(varargin)
+            % 多态处理
+            if (nargin() == 1 && ismember('BaseClass.Asset.Asset', superclasses(varargin{1})))
+                % 行情表名
+                % 预处理
+                ast = varargin{1};
+                symbol = ast.symbol;
+                exchange = EnumType.Exchange.ToString(ast.exchange);
+                
+                % 分类命名
+                switch ast.product
+                    case EnumType.Product.Etf
+                        ret = sprintf("%s_%s", symbol, exchange);
+                        
+                    case EnumType.Product.Future
+                        ret = symbol;
+                        
+                    case EnumType.Product.Index
+                        ret = sprintf("%s_%s", symbol, exchange);
+                        
+                    case EnumType.Product.Option
+                        ret = symbol;
+                        
+                    otherwise
+                        error("Unexpected product for name table, please check !");
+                end
+                ret = upper(ret);
+                
+            elseif (nargin() == 3 && isa(varargin{1}, 'EnumType.Product') && isa(varargin{2}, 'string') && isa(varargin{3}, 'EnumType.Exchange'))
+                % 合约表名
+                pdt = varargin{1};
+                var = varargin{2};
+                exc = varargin{3};
+                ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
+                
+            else
+                error("Unexpected input arguments, please check!");
+            end
+        end
+        
     end
 end
