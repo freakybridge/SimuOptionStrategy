@@ -13,7 +13,7 @@
 
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'wind', 'merqh001', '146457');
+dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'ifind', 'merqh001', '146457');
 dir_tb = 'C:\Users\dell\Desktop\taobao';
 dir_csv = 'C:\Users\dell\Desktop\taobao\final';
 dir_rt = "D:\OneDrive\hisdata";

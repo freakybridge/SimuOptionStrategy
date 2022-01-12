@@ -22,6 +22,8 @@ if (obj.IsInstruNeedUpdate(instrus))
     end
 
 else
+    obj.SaveOptChain2Db(var, exc, instrus);
     return;
 end
+
 end
