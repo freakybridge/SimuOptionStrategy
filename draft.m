@@ -45,3 +45,4 @@ end
 % tmp = dm.LoadOptChainViaExcel("510300", "SSE", dir_rt);
 % dm.SaveOptChain2Db("510300", "SSE", tmp);
 tmp = dm.LoadOptChain("510050", "SSE", dir_rt);
+tmp = dm.LoadOptChain("510300", "SSE", dir_rt);

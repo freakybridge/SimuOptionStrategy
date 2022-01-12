@@ -58,25 +58,29 @@ classdef Wind < BaseClass.DataSource.DataSource
             % 处理可能异常
             if isa(instrus, 'cell')
                 % 存在新合约，合并本地合约
-                % 补全信息
-                exc = repmat({upper(char(EnumType.Exchange.ToString(opt_s.exchange)))}, size(instrus, 1), 1);
-                var = repmat({char(opt_s.variety)}, size(instrus, 1), 1);
-                ud_symb = repmat({char(opt_s.ud_symbol)}, size(instrus, 1), 1);
-                ud_product = repmat({upper(char(EnumType.Product.ToString(opt_s.ud_product)))}, size(instrus, 1), 1);
-                ud_exc = repmat({upper(char(EnumType.Exchange.ToString(opt_s.ud_exchange)))}, size(instrus, 1), 1);
+                % 修正新信息
                 instrus(strcmpi(instrus(:, 3), '认购'), 3) = deal({'Call'});
                 instrus(strcmpi(instrus(:, 3), '认沽'), 3) = deal({'Put'});
-                striketype = repmat({Utility.InitCapital(EnumType.OptionStrikeType.ToString(opt_s.strike_type))}, size(instrus, 1), 1);
-                ticksz = repmat({opt_s.tick_size}, size(instrus, 1), 1);
-                dlmonth = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), instrus(:, 7)));
-                trade_start = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 6), opt_s.tradetimetable(1)));
-                trade_end = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 7), opt_s.tradetimetable(end)));
-                sttmode = repmat({Utility.InitCapital(EnumType.OptionSettleMode.ToString(opt_s.settle_mode))}, size(instrus, 1), 1);
-                upd_time = repmat({datestr(now(), 'yyyy-mm-dd HH:MM')}, size(instrus, 1), 1);
+                instrus(:, 6) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 6), opt_s.tradetimetable(1)));
+                instrus(:, 7) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 7), opt_s.tradetimetable(end)));
+                instrus(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), instrus(:, 7)));
                 
-                instrus = [instrus(:, 1 : 2), exc, var, ud_symb, ud_product, ud_exc, instrus(:, 3), striketype, instrus(:, 4 : 5), ticksz, dlmonth, trade_start, trade_end, sttmode, upd_time];
+                % 补全信息
+                exc = upper(char(EnumType.Exchange.ToString(opt_s.exchange)));
+                var = char(opt_s.variety);
+                ud_symb = char(opt_s.ud_symbol);
+                ud_product = upper(char(EnumType.Product.ToString(opt_s.ud_product)));
+                ud_exc = upper(char(EnumType.Exchange.ToString(opt_s.ud_exchange)));
+                striketype = Utility.InitCapital(EnumType.OptionStrikeType.ToString(opt_s.strike_type));
+                ticksz = opt_s.tick_size;
+                sttmode = Utility.InitCapital(EnumType.OptionSettleMode.ToString(opt_s.settle_mode));
+                upd_time = datestr(now(), 'yyyy-mm-dd HH:MM');
+                info = {exc, var, ud_symb, ud_product, ud_exc,  striketype, ticksz, sttmode, upd_time};
+                info = repmat(info, size(instrus, 1), 1);
+                
+                instrus = [instrus(:, 1 : 2), info(:, 1 : 5), instrus(:, 3), info(:, 6), instrus(:, 4 : 5), info(:, 7), instrus(:, [8, 6, 7]), info(:, 8 : 9)];
                 instrus = cell2table(instrus, 'VariableNames', {'SYMBOL','SEC_NAME','EXCHANGE','VARIETY','UD_SYMBOL','UD_PRODUCT','UD_EXCHANGE','CALL_OR_PUT','STRIKE_TYPE','STRIKE','SIZE','TICK_SIZE','DLMONTH','START_TRADE_DATE','END_TRADE_DATE','SETTLE_MODE','LAST_UPDATE_DATE'});
-                
+
                 % 合并
                 if (~isempty(instru_local))
                     [~, loc] = intersect(instru_local(:, 1), instrus(:, 1));
