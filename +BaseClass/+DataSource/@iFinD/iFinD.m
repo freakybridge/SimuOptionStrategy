@@ -73,8 +73,14 @@ classdef iFinD < BaseClass.DataSource.DataSource
             for i = datenum(date_s) : 15 : datenum(date_e)
                 str = sprintf('%s;%s', datestr(i, 'yyyy-mm-dd'), param);
                 [data, errorcode, errmsg, ~, ~, ~]=THS_DP('block', str,'thscode:Y','format:array');
-                
+                if (errorcode)
+                    error("Fetching option chain error, please check. Code:%d, MSG: %s", errorcode, errmsg{:});
+                end
+                symbols = union(symbols, data);                
             end
+            
+            [data,errorcode,indicators,thscode,errmsg,dataVol,datatype,perf]=THS_BD('10003533.SH,10003534.SH',...
+                'ths_option_short_name_option;ths_contract_type_option;ths_strike_price_option;ths_contract_multiplier_option;ths_listed_date_option;ths_maturity_date_option;', ';;2022-01-12;;;;','format:array');
             exc_ud = obj.exchanges(EnumType.Exchange.ToString(opt_s.ud_exchange));
             exc_opt = lower(EnumType.Exchange.ToString(opt_s.exchange));
             str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
