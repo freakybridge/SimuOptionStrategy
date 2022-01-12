@@ -22,7 +22,7 @@ for i = 1 : size(instrus, 1)
         info.START_TRADE_DATE{:}, ...
         info.END_TRADE_DATE{:});
     
-    if (now() >= datenum(opt.GetDateExpire())        
+    if (now() >= datenum(opt.GetDateExpire()))       
         fprintf("Loading %s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, i, size(instrus, 1));
         dm.LoadMd(opt, dir_csv, dir_tb);
     end
