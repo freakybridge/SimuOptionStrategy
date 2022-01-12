@@ -12,11 +12,11 @@ classdef OptionStrikeType < EnumType.BaseEnum
         function ret = ToEnum(in_)
             switch lower(in_)
                 case {"amercican"}
-                    ret = EnumType.StrikeType.American;
+                    ret = EnumType.OptionStrikeType.American;
                 case {"asian"}
-                    ret = EnumType.StrikeType.Asian;
+                    ret = EnumType.OptionStrikeType.Asian;
                 case {"european"}
-                    ret = EnumType.StrikeType.European;
+                    ret = EnumType.OptionStrikeType.European;
                 otherwise
                     error("Unsupported option ""StrikeType"", please check.");
             end

@@ -11,9 +11,9 @@ classdef OptionSettleMode < EnumType.BaseEnum
         function ret = ToEnum(in_)
             switch lower(in_)
                 case {"cash"}
-                    ret = EnumType.SettleMode.Cash;
+                    ret = EnumType.OptionSettleMode.Cash;
                 case {"physical"}
-                    ret = EnumType.SettleMode.Physical;
+                    ret = EnumType.OptionSettleMode.Physical;
                 otherwise
                     error("Unsupported option ""SettleMode"", please check.");
             end

@@ -16,8 +16,8 @@ end
 % 从数据源获取
 if (obj.IsInstruNeedUpdate(instrus))
     instrus = obj.LoadOptChainViaDs(var, exc, instrus);
-    if (obj.IsInstruNeedUpdate(instrus))
-        obj.SaveOptionChain2Db(var, exc, instrus);
+    if (~obj.IsInstruNeedUpdate(instrus))
+        obj.SaveOptChain2Db(var, exc, instrus);
         obj.SaveOptChain2Excel(var, exc, instrus, dir_);
     end
 

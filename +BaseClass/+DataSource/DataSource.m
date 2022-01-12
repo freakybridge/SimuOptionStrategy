@@ -21,7 +21,7 @@ classdef DataSource
         md = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
         
         % 获取期权合约列表
-        instrus = FetchOptionChain(obj, sample_opt, instru_local, date_s, date_e);
+        instrus = FetchOptionChain(obj, opt_s, instru_local);
     end
     
     methods (Abstract, Static)
@@ -42,6 +42,23 @@ classdef DataSource
                     error("Unsupported datasource api, please check.");
             end
         end
+    end
+    
+    
+    % 内部方法
+    methods (Access = protected)
+        % 获取合约表更新起点终点
+        function [date_s, date_e] = GetChainUpdateSE(~, asset_s, instru_local)
+            if (isempty(instru_local))
+                date_s = asset_s.GetDateInit();
+            else
+                date_s = unique(instru_local.LAST_UPDATE_DATE);
+                date_s = date_s{:};
+            end
+            date_s = datestr(date_s, 'yyyy-mm-dd');
+            date_e = datestr(now(), 'yyyy-mm-dd');
+        end
+        
     end
 end
 
