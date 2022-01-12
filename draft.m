@@ -13,13 +13,13 @@
 
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'ifind', 'merqh001', '146457');
-dir_tb = 'C:\Users\dell\Desktop\taobao';
-dir_csv = 'C:\Users\dell\Desktop\taobao\final';
-dir_rt = "D:\OneDrive\hisdata";
+dm = Apps.DataManager('mss', 'sa', 'bridgeisbest', 'ifind', 'merqh001', '146457');
+dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
+dir_csv = 'C:\Users\freakybridge\Desktop\taobao\final';
+dir_rt = "E:\OneDrive\hisdata";
 
 
-instrus = Utility.ReadSheet(dir_rt, 'instrument');
+instrus = dm.LoadOptChain("510050", "SSE", dir_rt);
 for i = 1 : size(instrus, 1)
     info = instrus(i, :);
     opt = BaseClass.Asset.Option.Instance.SSE_510050(info{1}, info{2}, info{4}, info{9}, '5m', 'abc ', info{5}, info{6}, info{8}, info{9});

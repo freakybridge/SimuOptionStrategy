@@ -7,7 +7,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
         password;
         api;
     end
-    properties (Hidden)        
+    properties (Hidden)
         exchanges;
     end
     
@@ -23,7 +23,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             
             obj.exchanges = containers.Map;
             obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SSE)) = 'SH';
-            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';         
+            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';
             disp('DataSource iFinD Ready.');
         end
         
@@ -51,7 +51,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             md = [datenum(dt), md];
             
         end
-                
+        
         % 获取期权合约列表
         function instrus = FetchOptionChain(obj, opt_s, instru_local)
             % 获取下载起点终点
@@ -76,25 +76,32 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 if (errorcode)
                     error("Fetching option chain error, please check. Code:%d, MSG: %s", errorcode, errmsg{:});
                 end
-                symbols = union(symbols, data);                
+                symbols = union(symbols, data);
             end
+            symbols = cellfun(@(x) {[x, ',']}, symbols');
+            symbols = [symbols{:}];
+            symbols(end) = [];
             
-            [data,errorcode,indicators,thscode,errmsg,dataVol,datatype,perf]=THS_BD('10003533.SH,10003534.SH',...
-                'ths_option_short_name_option;ths_contract_type_option;ths_strike_price_option;ths_contract_multiplier_option;ths_listed_date_option;ths_maturity_date_option;', ';;2022-01-12;;;;','format:array');
-            exc_ud = obj.exchanges(EnumType.Exchange.ToString(opt_s.ud_exchange));
-            exc_opt = lower(EnumType.Exchange.ToString(opt_s.exchange));
-            str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
-                date_s, date_e, exc_opt, opt_s.variety, exc_ud);
-            [instrus, ~, ~, ~, errid, ~] = obj.api.wset('optioncontractbasicinfo', str);
-
-            % 处理可能异常
-            if isa(instrus, 'cell')
-                % 存在新合约，合并本地合约
+            % 提取数据
+            [data, errorcode, ~,thscode, errmsg, ~, ~, ~] = THS_BD(symbols,'ths_option_short_name_option;ths_contract_type_option;ths_strike_price_option;ths_contract_multiplier_option;ths_listed_date_option;ths_maturity_date_option', ...
+                sprintf(';;%s;;;', datestr(now(), 'yyyy-mm-dd')),'format:array');
+            if (errorcode)
+                error("Fetching option chain via iFinD occur error, code:%d, msg:%s.", errorcode, errmsg{:});
+            end
+            instrus = [thscode, data];
+            
+            % 整理数据
+            if (~isempty(instrus))
                 % 修正新信息
-                instrus(strcmpi(instrus(:, 3), '认购'), 3) = deal({'Call'});
-                instrus(strcmpi(instrus(:, 3), '认沽'), 3) = deal({'Put'});
-                instrus(:, 6) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 6), opt_s.tradetimetable(1)));
-                instrus(:, 7) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(instrus(:, 7), opt_s.tradetimetable(end)));
+                for i = 1 : size(instrus, 1)
+                    tmp = instrus{i, 1};
+                    loc = strfind(tmp, '.');
+                    instrus{i, 1} = tmp(1 : loc - 1);
+                end
+                instrus(strcmpi(instrus(:, 3), '看涨期权'), 3) = deal({'Call'});
+                instrus(strcmpi(instrus(:, 3), '看跌期权'), 3) = deal({'Put'});
+                instrus(:, 6) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(1)), 'yyyy-mm-dd HH:MM')}, instrus(:, 6));
+                instrus(:, 7) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(end)), 'yyyy-mm-dd HH:MM')}, instrus(:, 7));
                 instrus(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), instrus(:, 7)));
                 
                 % 补全信息
@@ -112,26 +119,19 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 
                 instrus = [instrus(:, 1 : 2), info(:, 1 : 5), instrus(:, 3), info(:, 6), instrus(:, 4 : 5), info(:, 7), instrus(:, [8, 6, 7]), info(:, 8 : 9)];
                 instrus = cell2table(instrus, 'VariableNames', {'SYMBOL','SEC_NAME','EXCHANGE','VARIETY','UD_SYMBOL','UD_PRODUCT','UD_EXCHANGE','CALL_OR_PUT','STRIKE_TYPE','STRIKE','SIZE','TICK_SIZE','DLMONTH','START_TRADE_DATE','END_TRADE_DATE','SETTLE_MODE','LAST_UPDATE_DATE'});
-
-                % 合并
-                if (~isempty(instru_local))
-                    [~, loc] = intersect(instru_local(:, 1), instrus(:, 1));
-                    instru_local(loc, :) = [];
-                    instrus = [instru_local; instrus];
-                end
-                instrus = sortrows(instrus, 1);
-                
-            elseif isnan(instrus) && ~isempty(instru_local)
-                % 无新合约，返回
-                instrus = instru_local;
-                return;
-            elseif (errid)
-                error("DataSource Wind fetching option chain failure, please check. ERRORID:%i", errid);
             end
+            
+            % 合并
+            if (~isempty(instru_local))
+                [~, loc] = intersect(instru_local(:, 1), instrus(:, 1));
+                instru_local(loc, :) = [];
+                instrus = [instru_local; instrus];
+            end
+            instrus = sortrows(instrus, 1);
         end
     end
     
-    methods (Static)        
+    methods (Static)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
             ret = 1 * 365;
