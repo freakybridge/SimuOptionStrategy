@@ -2,13 +2,13 @@ clear;
 clc;
 dm = Apps.DataManager('mss', 'sa', 'bridgeisbest', 'wind', 'merqh001', '146457');
 dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
-dir_csv = 'C:\Users\freakybridge\Desktop\taobao\final';
+dir_csv = "E:\OneDrive\hisdata";
 dir_rt = "E:\OneDrive\hisdata";
 
 
-variety = '510050';
+variety = '510300';
 exchange = 'sse';
-instrus = dm.LoadOptChain("510050", "SSE", dir_rt);
+instrus = dm.LoadOptChain(variety, exchange, dir_rt);
 for i = 1 : size(instrus, 1)
     info = instrus(i, :);    
     opt = BaseClass.Asset.Option.Option.Selector( ...

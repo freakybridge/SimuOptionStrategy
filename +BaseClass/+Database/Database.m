@@ -140,7 +140,7 @@ classdef Database < handle
                 end
                 ret = upper(ret);
                 
-            elseif (nargin() == 3 && isa(varargin{1}, 'EnumType.Product') && isa(varargin{2}, 'string') && isa(varargin{3}, 'EnumType.Exchange'))
+            elseif (nargin() == 3 && isa(varargin{1}, 'EnumType.Product') && (isa(varargin{2}, 'string') || isa(varargin{2}, 'char')) && isa(varargin{3}, 'EnumType.Exchange'))
                 % 合约表名
                 pdt = varargin{1};
                 var = varargin{2};
