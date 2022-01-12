@@ -6,7 +6,7 @@ dir_csv = "E:\OneDrive\hisdata";
 dir_rt = "E:\OneDrive\hisdata";
 
 
-variety = '510300';
+variety = '510050';
 exchange = 'sse';
 instrus = dm.LoadOptChain(variety, exchange, dir_rt);
 for i = 1 : size(instrus, 1)
@@ -21,8 +21,11 @@ for i = 1 : size(instrus, 1)
         info.STRIKE, ...
         info.START_TRADE_DATE{:}, ...
         info.END_TRADE_DATE{:});
+    
+    if (now() >= datenum(opt.GetDateExpire())        
+        fprintf("Loading %s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, i, size(instrus, 1));
+        dm.LoadMd(opt, dir_csv, dir_tb);
+    end
 
-    fprintf("Loading %s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, i, size(instrus, 1));
-    dm.LoadMd(opt, dir_csv, dir_tb);
 end
 
