@@ -3,6 +3,7 @@
 %       1.加入Source名称
 %       2.FetchXXX输出加入获取状态
 %       3.Error显示统一化
+%       4.加入成员类型约束
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Wind < BaseClass.DataSource.DataSource

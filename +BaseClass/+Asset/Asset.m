@@ -1,22 +1,24 @@
 % Asset基类
+% v1.3.0.20220113.beta
+%       加入成员类型约束
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Asset < handle & matlab.mixin.Heterogeneous
 
     properties
-        symbol;
-        exchange;
-        variety;
-        unit;
-        interval;
-        md;
-        move;
-        sec_name;
+        symbol@char;
+        exchange@EnumType.Exchange;
+        variety@char;
+        unit@double;
+        interval@EnumType.Interval;
+        md@double;
+        move@double;
+        sec_name@char;
     end
     properties (Abstract, Constant)
-        product;
-        tradetimetable;
-        tick_size;
+        product@EnumType.Product;
+        tradetimetable@double;
+        tick_size@double;
     end
     
     %% 公共方法

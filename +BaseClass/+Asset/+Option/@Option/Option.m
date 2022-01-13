@@ -1,30 +1,32 @@
 % Option基类
+% v1.3.0.20220113.beta
+%       加入成员类型约束
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Option < BaseClass.Asset.Asset
     properties (Constant)
-        product = EnumType.Product.Option;
+        product@EnumType.Product = EnumType.Product.Option;
     end
     
     properties
-        call_or_put;
-        strike;
+        call_or_put@EnumType.CallOrPut;
+        strike@double;
     end
     properties (Hidden)
-        expire;
-        listed;
+        expire@double;
+        listed@double;
     end
     properties (Dependent)
-        dlmonth;
+        dlmonth@double;
     end
     
     properties (Abstract, Constant)
-        ud_product;
-        ud_symbol;
-        ud_exchange;
-        strike_type;
-        settle_mode;
-        date_ini;
+        ud_product@EnumType.Product;
+        ud_symbol@char;
+        ud_exchange@EnumType.Exchange;
+        strike_type@EnumType.OptionStrikeType;
+        settle_mode@EnumType.OptionSettleMode;
+        date_ini@char;
     end    
     
     methods

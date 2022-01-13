@@ -1,4 +1,6 @@
 % Microsoft Sql Server类
+% v1.3.0.20220113.beta
+%       加入成员类型约束
 % v1.2.0.20220105.beta
 %       首次添加
 classdef MSS < BaseClass.Database.Database
