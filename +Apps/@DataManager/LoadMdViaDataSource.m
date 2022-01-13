@@ -6,7 +6,7 @@ function LoadMdViaDataSource(obj, ast)
 % 下载
 switch ast.product
     case EnumType.Product.Option
-        md = LoadOption(obj.ds, ast);            
+        md = LoadOption(obj, ast);            
         
     otherwise
         error("Unsupported ""product"" for DataSource loading. ");
@@ -20,7 +20,7 @@ end
 
 
 % 载入期权数据
-function md = LoadOption(ds, ast)
+function md = LoadOption(obj, ast)
 
 % 设定起点终点
 % 若本地数据为空，则起点为挂牌时间
@@ -38,16 +38,28 @@ end
 loc_end = ast.GetDateExpire();
     
 
-% 根据周期下载
-switch ast.interval
-    case EnumType.Interval.min1
-        md = ds.FetchOptionMinData(ast, loc_start, loc_end, 1);
-        
-    case EnumType.Interval.min5
-        md = ds.FetchOptionMinData(ast, loc_start, loc_end, 5);
-        
-    otherwise
-        error("Unsupported ""interval"" for DataSource loading. ");
+% 获取数据
+import EnumType.Interval;
+while (true)
+    % 读取数据
+    switch ast.interval
+        case Interval.min1
+            [is_err, md] = obj.ds.FetchOptionMinData(ast, loc_start, loc_end, 1);
+            
+        case Interval.min5
+            [is_err, md] = obj.ds.FetchOptionMinData(ast, loc_start, loc_end, 5);
+            
+        otherwise
+            error("Unsupported ""interval"" for DataSource loading. ");
+    end
+    
+    if (is_err)
+        obj.SetDsFailure();
+        obj.ds = obj.AutoSwitchDataSource();
+        continue;
+    else
+        return;
+    end
 end
 
 end

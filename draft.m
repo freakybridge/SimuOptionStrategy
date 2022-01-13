@@ -34,6 +34,3 @@ for i = 1 : size(instrus, 1)
 
 end
 
-
-
-ttt = DataManager('mss', 'sa', 'bridgeisbest');

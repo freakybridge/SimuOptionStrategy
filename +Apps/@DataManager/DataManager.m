@@ -10,6 +10,7 @@ classdef DataManager < handle
     end    
     properties (Access = private)
         ds_pool@struct;
+        ds_pointer@double;
     end
 
     % 公开方法
@@ -69,14 +70,19 @@ classdef DataManager < handle
         function ret = AutoSwitchDataSource(obj)
             loc = find(isnan([obj.ds_pool.status]), 1, 'first');
             if (loc)
+                obj.ds_pointer = loc;
                 this = obj.ds_pool(loc);
                 this.status = 0;
                 ret = BaseClass.DataSource.DataSource.Selector(this.source, this.user, this.password);
                 obj.ds_pool(loc) = this;
             else
                 error("All dataSource failure, please check.");
-            end               
-            
+            end   
+        end
+        
+        % 设置数据源故障
+        function SetDsFailure(obj)
+            obj.ds_pool(obj.ds_pointer).status = -1;
         end
     end
     
