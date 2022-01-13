@@ -9,7 +9,7 @@ if (isempty(instrus))
     return;
 end
 
-% 若据上次更新已有7天，必须更新
+% 若据上次更新已有1天，则必须更新
 last_ud_dt = max(datenum(instrus.LAST_UPDATE_DATE));
 if (now - last_ud_dt >= 1)
     ret = true;

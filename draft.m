@@ -1,9 +1,9 @@
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeisbest', 'wind', 'merqh001', '146457');
-dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
-dir_csv = "E:\OneDrive\hisdata";
-dir_rt = "E:\OneDrive\hisdata";
+dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'wind', 'merqh001', '146457');
+dir_tb = 'D:\desktop\taobao';
+dir_csv = "D:\OneDrive\hisdata";
+dir_rt = "D:\OneDrive\hisdata";
 
 
 variety = '510050';

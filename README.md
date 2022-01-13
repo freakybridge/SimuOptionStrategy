@@ -1,6 +1,12 @@
 # SimuOptionStrategy
 ## 更新说明
 
+## v1.3.0.20220113.beta
+- 1.整理"App\Simulation"项目
+- 2.加入"App\Update"项目
+- 3.加入"App\DataManger"自动选择备用数据源
+- 3.加入"BaseClass\DataSource\GetErrorInfo"方法
+
 ## v1.2.0.20220105.beta
 - 1.优化框架
 - 2.精简BaseClass.Instrument方法
