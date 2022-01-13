@@ -6,16 +6,23 @@ classdef DataManager
         db;
         ds;
     end    
+    properties (Access = private)
+        ds_pool;
+    end
 
     % 公开方法
     methods
-        function obj = DataManager(db_driver, db_ur, db_pwd, ds_api, ds_ur, ds_pwd)
+        function obj = DataManager(db_driver, db_ur, db_pwd)
             if (~isnan(db_driver))
                 obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
             end
-            if (~isnan(ds_api))
-                obj.ds = BaseClass.DataSource.DataSource.Selector(ds_api, ds_ur, ds_pwd);
-            end
+            
+            obj.ds_pool = obj.AddDs('wind', nan, nan);
+            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'merqh001', '146457');
+            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh051', '266742');
+            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh052', '193976');
+            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh055', '913742');
+            obj.ds_pool(end + 1) = obj.AddDs('ifind', '00256770', '30377546');
         end
     end
     
@@ -38,7 +45,19 @@ classdef DataManager
         ret = SaveOptChain2Db(obj, var, exc, instrus);
         ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
         ret = IsInstruNeedUpdate(obj, instrus);
+    end
+    
+    methods (Access = private)
+        % 添加数据源
+        function ret = AddDs(obj, nm, usr, pwd)
+            ret = struct;
+            ret.source = nm;
+            ret.user = usr;
+            ret.password = pwd;
+            ret.status = nan; % nan未初始化，0正常工作，-1致命错误            
+        end
         
+        ds = AutoSwitchDataSource(obj);        
     end
     
 end

@@ -1,6 +1,6 @@
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc', 'ifind', 'merqh001', '146457');
+dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc');
 dir_tb = 'D:\desktop\taobao';
 dir_csv = "D:\OneDrive\hisdata";
 dir_rt = "D:\OneDrive\hisdata";
