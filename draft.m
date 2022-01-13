@@ -11,7 +11,7 @@ dir_csv = "D:\OneDrive\hisdata";
 dir_rt = "D:\OneDrive\hisdata";
 
 
-variety = '510050';
+variety = '510300';
 exchange = 'sse';
 instrus = dm.LoadOptChain(variety, exchange, dir_rt);
 for i = 1 : size(instrus, 1)
