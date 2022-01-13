@@ -49,7 +49,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             
             % ÏÂÔØ
             exc = obj.exchanges(EnumType.Exchange.ToString(opt.exchange));
-            [md, obj.err.code, dt, ~,~, obj.err.msg, ~, ~] = THS_HF([opt.symbol, '.', exc],'open;high;low;close;amount;volume;openInterest',...
+            [md, obj.err.code, dt, ~,~, errmsg, ~, ~] = THS_HF([opt.symbol, '.', exc],'open;high;low;close;amount;volume;openInterest',...
                 sprintf('Fill:Previous,Interval:%i',  inv), ...
                 datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), ...
                 datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), ...
@@ -57,6 +57,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             
             % Êä³ö
             if (obj.err.code)
+                obj.err.msg = errmsg{:};
                 obj.DispErr(sprintf('Fetching option %s market data', opt.symbol));
                 md = [];
                 is_err = true;      
