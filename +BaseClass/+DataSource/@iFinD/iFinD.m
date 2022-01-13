@@ -7,15 +7,15 @@
 %       Ê×´ÎÌí¼Ó
 classdef iFinD < BaseClass.DataSource.DataSource
     properties (Access = private)
-        user;
-        password;
+        user@char;
+        password@char;
         api;
     end
     properties (Constant)
-        name = 'iFinD';
+        name@char = 'iFinD';
     end
     properties (Hidden)
-        exchanges;
+        exchanges@containers.Map;
     end
     
     methods

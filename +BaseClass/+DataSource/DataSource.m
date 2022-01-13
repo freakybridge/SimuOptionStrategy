@@ -5,13 +5,13 @@ classdef DataSource
     %DATASOURCEAPI 此处显示有关此类的摘要
     %   此处显示详细说明
     properties
-        err;
+        err@struct;
     end
     properties (Abstract, Constant)
-        name;
+        name@char;
     end
     properties (Abstract)
-        exchanges;
+        exchanges@containers.Map;
     end
         
     methods

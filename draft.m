@@ -1,6 +1,11 @@
 clear;
 clc;
-dm = Apps.DataManager('mss', 'sa', 'bridgeinmfc');
+
+import Apps.DataManager;
+import BaseClass.Asset.Option.Option;
+
+
+dm = DataManager('mss', 'sa', 'bridgeisbest');
 dir_tb = 'D:\desktop\taobao';
 dir_csv = "D:\OneDrive\hisdata";
 dir_rt = "D:\OneDrive\hisdata";
@@ -11,7 +16,7 @@ exchange = 'sse';
 instrus = dm.LoadOptChain(variety, exchange, dir_rt);
 for i = 1 : size(instrus, 1)
     info = instrus(i, :);    
-    opt = BaseClass.Asset.Option.Option.Selector( ...
+    opt = Option.Selector( ...
         info.SYMBOL{:}, ...
         info.EXCHANGE{:}, ...
         info.VARIETY{:}, ...
@@ -29,3 +34,6 @@ for i = 1 : size(instrus, 1)
 
 end
 
+
+
+ttt = DataManager('mss', 'sa', 'bridgeisbest');

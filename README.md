@@ -7,6 +7,7 @@
 - 3.加入"App\DataManger"自动选择备用数据源
 - 4.加入"BaseClass\DataSource\GetErrInfo"方法
 - 5.加入"BaseClass\DataSource\FetchXX"方法加入新输出
+- 6.所有类加入类型约束
 
 ## v1.2.0.20220105.beta
 - 1.优化框架

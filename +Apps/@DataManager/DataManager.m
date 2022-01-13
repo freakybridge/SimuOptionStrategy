@@ -1,13 +1,15 @@
 % DataManager
+% v1.3.0.20220113.beta
+%      1.属性加入类型约束
 % v1.2.0.20220105.beta
 %      1.修改构造函数，加入参数“数据库驱动” “数据源api"
-classdef DataManager
+classdef DataManager < handle
     properties
-        db;
-        ds;
+        db@BaseClass.Database.Database;
+        ds@BaseClass.DataSource.DataSource;
     end    
     properties (Access = private)
-        ds_pool;
+        ds_pool@struct;
     end
 
     % 公开方法
@@ -17,12 +19,13 @@ classdef DataManager
                 obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
             end
             
-            obj.ds_pool = obj.AddDs('wind', nan, nan);
-            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'merqh001', '146457');
-            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh051', '266742');
-            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh052', '193976');
-            obj.ds_pool(end + 1) = obj.AddDs('ifind', 'meyqh055', '913742');
-            obj.ds_pool(end + 1) = obj.AddDs('ifind', '00256770', '30377546');
+            obj.AddDs('wind', nan, nan);
+            obj.AddDs('ifind', 'merqh001', '146457');
+            obj.AddDs('ifind', 'meyqh051', '266742');
+            obj.AddDs('ifind', 'meyqh052', '193976');
+            obj.AddDs('ifind', 'meyqh055', '913742');
+            obj.AddDs('ifind', '00256770', '30377546');
+            obj.ds = obj.AutoSwitchDataSource();
         end
     end
     
@@ -48,16 +51,33 @@ classdef DataManager
     end
     
     methods (Access = private)
-        % 添加数据源
-        function ret = AddDs(obj, nm, usr, pwd)
-            ret = struct;
-            ret.source = nm;
-            ret.user = usr;
-            ret.password = pwd;
-            ret.status = nan; % nan未初始化，0正常工作，-1致命错误            
+        % 添加备选数据源
+        function AddDs(obj, nm, usr, pwd)
+            tmp = struct;
+            tmp.source = nm;
+            tmp.user = usr;
+            tmp.password = pwd;
+            tmp.status = nan; % nan未初始化，0正常工作，-1致命错误                          
+            if (isempty(obj.ds_pool))
+                obj.ds_pool = tmp;
+            else
+                obj.ds_pool(end + 1) = tmp;
+            end  
         end
         
-        ds = AutoSwitchDataSource(obj);        
+        % 入选可用数据源
+        function ret = AutoSwitchDataSource(obj)
+            loc = find(isnan([obj.ds_pool.status]), 1, 'first');
+            if (loc)
+                this = obj.ds_pool(loc);
+                this.status = 0;
+                ret = BaseClass.DataSource.DataSource.Selector(this.source, this.user, this.password);
+                obj.ds_pool(loc) = this;
+            else
+                error("All dataSource failure, please check.");
+            end               
+            
+        end
     end
     
 end
