@@ -1,4 +1,8 @@
 % 数据源端口 WindApi
+% v1.3.0.20220113.beta
+%       1.加入Source名称
+%       2.FetchXXX输出加入获取状态
+%       3.Error显示统一化
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Wind < BaseClass.DataSource.DataSource
@@ -34,6 +38,7 @@ classdef Wind < BaseClass.DataSource.DataSource
             % 确定是否数据超限
             if (datenum(opt.GetDateListed()) < now - obj.FetchApiDateLimit())
                 md = [];
+                is_err = false;       
                 return;
             end
             

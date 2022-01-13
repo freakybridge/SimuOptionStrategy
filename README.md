@@ -5,7 +5,8 @@
 - 1.整理"App\Simulation"项目
 - 2.加入"App\Update"项目
 - 3.加入"App\DataManger"自动选择备用数据源
-- 3.加入"BaseClass\DataSource\GetErrorInfo"方法
+- 4.加入"BaseClass\DataSource\GetErrInfo"方法
+- 5.加入"BaseClass\DataSource\FetchXX"方法加入新输出
 
 ## v1.2.0.20220105.beta
 - 1.优化框架
