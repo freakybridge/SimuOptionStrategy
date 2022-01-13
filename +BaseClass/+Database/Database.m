@@ -3,14 +3,14 @@
 %       Ê×´ÎÌí¼Ó
 classdef Database < handle    
     properties (Access = protected)
-        user;
-        password;
-        driver; 
-        url;
-        conns;
-        tables;
-        db_default;
-        db_instru;
+        user@char;
+        password@char;
+        driver@char; 
+        url@char;
+        conns@containers.Map;
+        tables@containers.Map;
+        db_default@char;
+        db_instru@char;
     end
         
     methods

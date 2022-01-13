@@ -198,20 +198,20 @@ classdef MSS < BaseClass.Database.Database
 
         
         % 连接数据库 / 获取端口 / 检查数据库 / 创建数据库
-        function Connect(obj, db_)
+        function Connect(obj, db)
             %  connect
-            conn = database(db_, obj.user, obj.password, obj.driver, obj.url + db_);
+            conn = database(db, obj.user, obj.password, obj.driver, sprintf('%s%s', obj.url, db));
             if isopen(conn)
-                fprintf("Database ""%s"" log on success.\r", db_);
+                fprintf("Database ""%s"" log on success.\r", db);
             else
-                fprintf("Database ""%s"" log on failure.\r", db_);
+                fprintf("Database ""%s"" log on failure.\r", db);
                 error(conn.Message);
             end
-            obj.conns(db_) = conn;
+            obj.conns(db) = conn;
             
             % tables buffer
             sql = 'SELECT NAME FROM SYSOBJECTS WHERE XTYPE=''U'' ORDER BY NAME';
-            obj.tables(db_) = table2cell(fetch(conn, sql));
+            obj.tables(db) = table2cell(fetch(conn, sql));
         end
         function conn = SelectConn(obj, db_)
             if (~CheckDatabase(obj, db_))
