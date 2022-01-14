@@ -4,6 +4,7 @@
 % v1.2.0.20220105.beta
 %      1.首次加入
 function LoadMd(obj, ast, dir_csv, dir_tb)
+
 % 读取数据库 / csv
 obj.LoadMdViaDatabase(ast);
 if (isempty(ast.md))
@@ -27,5 +28,6 @@ end
 obj.LoadMdViaDataSource(ast);
 obj.SaveMd2Database(ast);
 obj.SaveMd2Csv(ast, dir_csv);
+
 end
 
