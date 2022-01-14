@@ -5,28 +5,28 @@
 %       Ê×´ÎÌí¼Ó
 classdef Option < BaseClass.Asset.Asset
     properties (Constant)
-        product@EnumType.Product = EnumType.Product.Option;
+        product EnumType.Product = EnumType.Product.Option;
     end
     
     properties
-        call_or_put@EnumType.CallOrPut;
-        strike@double;
+        call_or_put EnumType.CallOrPut;
+        strike double;
     end
     properties (Hidden)
-        expire@double;
-        listed@double;
+        expire double;
+        listed double;
     end
     properties (Dependent)
-        dlmonth@double;
+        dlmonth double;
     end
     
     properties (Abstract, Constant)
-        ud_product@EnumType.Product;
-        ud_symbol@char;
-        ud_exchange@EnumType.Exchange;
-        strike_type@EnumType.OptionStrikeType;
-        settle_mode@EnumType.OptionSettleMode;
-        date_ini@char;
+        ud_product EnumType.Product;
+        ud_symbol char;
+        ud_exchange EnumType.Exchange;
+        strike_type EnumType.OptionStrikeType;
+        settle_mode EnumType.OptionSettleMode;
+        date_ini char;
     end    
     
     methods

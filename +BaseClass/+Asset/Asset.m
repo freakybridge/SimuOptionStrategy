@@ -6,19 +6,19 @@
 classdef Asset < handle & matlab.mixin.Heterogeneous
 
     properties
-        symbol@char;
-        exchange@EnumType.Exchange;
-        variety@char;
-        unit@double;
-        interval@EnumType.Interval;
-        md@double;
-        move@double;
-        sec_name@char;
+        symbol char;
+        exchange EnumType.Exchange;
+        variety char;
+        unit double;
+        interval EnumType.Interval;
+        md double;
+        move double;
+        sec_name char;
     end
     properties (Abstract, Constant)
-        product@EnumType.Product;
-        tradetimetable@double;
-        tick_size@double;
+        product EnumType.Product;
+        tradetimetable double;
+        tick_size double;
     end
     
     %% 公共方法

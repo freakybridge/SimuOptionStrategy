@@ -5,10 +5,10 @@
 %       Ê×´ÎÌí¼Ó
 classdef ETF < BaseClass.Asset.Option.Option
     properties (Constant)
-        ud_product@EnumType.Product = EnumType.Product.Etf;
+        ud_product EnumType.Product = EnumType.Product.Etf;
     end    
     properties (Abstract, Constant)
-        divlst@cell;
+        divlst cell;
     end
     
     methods

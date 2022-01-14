@@ -5,11 +5,11 @@
 %       Ê×´ÎÌí¼Ó
 classdef SSE_510050 < BaseClass.Asset.Option.ETF
     properties (Constant)
-        ud_symbol@char = "510050";
-        ud_exchange@EnumType.Exchange = EnumType.Exchange.SSE;
-        tradetimetable@double = [[930, 1130]; [1300, 1500]];
-        tick_size@double = 0.0001;
-        divlst@cell = [ ...
+        ud_symbol char = "510050";
+        ud_exchange EnumType.Exchange = EnumType.Exchange.SSE;
+        tradetimetable double = [[930, 1130]; [1300, 1500]];
+        tick_size double = 0.0001;
+        divlst cell = [ ...
             {'2016/11/29'}, {0.053}; ...
             {'2017/11/28'}, {0.054}; ...
             {'2018/12/03'}, {0.049}; ...
@@ -17,9 +17,9 @@ classdef SSE_510050 < BaseClass.Asset.Option.ETF
             {'2020/11/30'}, {0.051}; ...
             {'2021/11/29'}, {0.041}; ...
             ];
-        strike_type@EnumType.OptionStrikeType = EnumType.OptionStrikeType.European;
-        settle_mode@EnumType.OptionSettleMode = EnumType.OptionSettleMode.Physical;
-        date_ini@char = '2015-02-09';
+        strike_type EnumType.OptionStrikeType = EnumType.OptionStrikeType.European;
+        settle_mode EnumType.OptionSettleMode = EnumType.OptionSettleMode.Physical;
+        date_ini char = '2015-02-09';
     end
     
     methods
