@@ -66,7 +66,7 @@ classdef Wind < BaseClass.DataSource.DataSource
             [date_s, date_e] = obj.GetChainUpdateSE(opt_s, ins_local);
             
             % 下载           
-            exc_ud = obj.exchanges(EnumType.Exchange.ToString(opt_s.ud_exchange));
+            exc_ud = obj.exchanges(opt_s.GetUnderExchange());
             exc_opt = lower(EnumType.Exchange.ToString(opt_s.exchange));
             str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
                 date_s, date_e, exc_opt, opt_s.variety, exc_ud);
@@ -92,9 +92,9 @@ classdef Wind < BaseClass.DataSource.DataSource
                     % 补全信息
                     exc = upper(char(EnumType.Exchange.ToString(opt_s.exchange)));
                     var = char(opt_s.variety);
-                    ud_symb = char(opt_s.ud_symbol);
-                    ud_product = upper(char(EnumType.Product.ToString(opt_s.ud_product)));
-                    ud_exc = upper(char(EnumType.Exchange.ToString(opt_s.ud_exchange)));
+                    ud_symb = char(opt_s.GetUnderSymbol());
+                    ud_product = upper(char(opt_s.GetUnderProduct()));
+                    ud_exc = upper(char(opt_s.GetUnderExchange()));
                     striketype = Utility.InitCapital(EnumType.OptionStrikeType.ToString(opt_s.strike_type));
                     ticksz = opt_s.tick_size;
                     sttmode = Utility.InitCapital(EnumType.OptionSettleMode.ToString(opt_s.settle_mode));

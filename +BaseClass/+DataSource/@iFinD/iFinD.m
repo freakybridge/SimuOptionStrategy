@@ -132,9 +132,9 @@ classdef iFinD < BaseClass.DataSource.DataSource
                     % ²¹È«ÐÅÏ¢
                     exc = upper(char(EnumType.Exchange.ToString(opt_s.exchange)));
                     var = char(opt_s.variety);
-                    ud_symb = char(opt_s.ud_symbol);
-                    ud_product = upper(char(EnumType.Product.ToString(opt_s.ud_product)));
-                    ud_exc = upper(char(EnumType.Exchange.ToString(opt_s.ud_exchange)));
+                    ud_symb = char(opt_s.GetUnderSymbol());
+                    ud_product = upper(char(opt_s.GetUnderProduct()));
+                    ud_exc = upper(char(opt_s.GetUnderExchange()));
                     striketype = Utility.InitCapital(EnumType.OptionStrikeType.ToString(opt_s.strike_type));
                     ticksz = opt_s.tick_size;
                     sttmode = Utility.InitCapital(EnumType.OptionSettleMode.ToString(opt_s.settle_mode));
@@ -159,8 +159,6 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 is_err = false;   
 
             end
-            
-
         end
     end
     
