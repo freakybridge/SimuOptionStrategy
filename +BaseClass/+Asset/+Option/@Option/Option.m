@@ -4,7 +4,7 @@
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Option < BaseClass.Asset.Asset
-    % 父类属性
+    % 父类Asset属性
     properties (Constant)
         product EnumType.Product = EnumType.Product.Option;
     end

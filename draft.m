@@ -39,3 +39,5 @@ for i = 1 : size(instrus, 1)
 
 end
 
+
+BaseClass.Asset.ETF.Instance.SZSE_159919('5m')
