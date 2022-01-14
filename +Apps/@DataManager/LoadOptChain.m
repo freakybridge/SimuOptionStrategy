@@ -1,4 +1,6 @@
 % DataManager / LoadOptChain 多种方式获取期权链
+% v1.3.0.20220113.beta
+%      1.修改逻辑，提升效率
 % v1.2.0.20220105.beta
 %      1.首次加入
 function instrus = LoadOptChain(obj, var, exc, dir_)
@@ -23,7 +25,5 @@ if (obj.IsInstruNeedUpdate(ins_local))
 
 else
     instrus = ins_local;
-    obj.SaveOptChain2Db(var, exc, instrus);
 end
-
 end
