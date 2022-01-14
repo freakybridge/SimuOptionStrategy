@@ -4,10 +4,12 @@
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Option < BaseClass.Asset.Asset
+    % 父类属性
     properties (Constant)
         product EnumType.Product = EnumType.Product.Option;
     end
-    
+       
+    % 新增属性
     properties
         call_or_put EnumType.CallOrPut;
         strike double;
@@ -18,21 +20,19 @@ classdef Option < BaseClass.Asset.Asset
     end
     properties (Dependent)
         dlmonth double;
-    end
-    
+    end    
     properties (Abstract, Constant)
         ud_product EnumType.Product;
         ud_symbol char;
         ud_exchange EnumType.Exchange;
         strike_type EnumType.OptionStrikeType;
         settle_mode EnumType.OptionSettleMode;
-        date_ini char;
     end    
     
     methods
         % 初始化
-        function obj = Option(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
-            obj = obj@BaseClass.Asset.Asset(symb, exc, var, sz, inv, snm);
+        function obj = Option(symb, snm, inv, sz, cop, k, ldt, edt)
+            obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
             
             obj.call_or_put = EnumType.CallOrPut.ToEnum(cop);
             obj.strike = k;
@@ -70,17 +70,17 @@ classdef Option < BaseClass.Asset.Asset
     
     methods (Static)        
         % 反射器
-        function obj = Selector(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
+        function obj = Selector(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)            
             mark = upper(sprintf("%s-%s", var, exc));
             switch mark
                 case "159919-SZSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_159919(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    obj = BaseClass.Asset.Option.Instance.SSE_159919(symb, snm, inv, sz, cop, k, ldt, edt);
                     
                 case "510050-SSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_510050(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    obj = BaseClass.Asset.Option.Instance.SSE_510050(symb, snm, inv, sz, cop, k, ldt, edt);
                     
                 case "510300-SSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_510300(symb, exc, var, sz, inv, snm, cop, k, ldt, edt);
+                    obj = BaseClass.Asset.Option.Instance.SSE_510300(symb, snm, inv, sz, cop, k, ldt, edt);
                     
                 otherwise
                     error("Unsupported option class, please check.");
