@@ -4,6 +4,7 @@ classdef Exchange < EnumType.BaseEnum
         CZCE;
         DCE;
         INE;
+        SHFE;
         SSE;
         SZSE;
     end        
@@ -22,6 +23,8 @@ classdef Exchange < EnumType.BaseEnum
                     ret = EnumType.Exchange.DCE;
                 case "INE"
                     ret = EnumType.Exchange.INE;
+                case {"SHF", "SHFE"}
+                    ret = EnumType.Exchange.SHFE;
                 case {"SSE", "SH"}
                     ret = EnumType.Exchange.SSE;
                 case {"SZSE", "SZ"}
