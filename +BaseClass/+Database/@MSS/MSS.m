@@ -207,7 +207,8 @@ classdef MSS < BaseClass.Database.Database
                 fprintf("Database ""%s"" log on success.\r", db);
             else
                 fprintf("Database ""%s"" log on failure.\r", db);
-                error(conn.Message);
+                warning(conn.Message);
+                return;
             end
             obj.conns(db) = conn;
             

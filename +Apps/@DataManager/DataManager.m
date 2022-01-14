@@ -5,12 +5,12 @@
 %      1.修改构造函数，加入参数“数据库驱动” “数据源api"
 classdef DataManager < handle
     properties
-        db@BaseClass.Database.Database;
-        ds@BaseClass.DataSource.DataSource;
+        db	BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
+        ds	BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
     end    
     properties (Access = private)
-        ds_pool@struct;
-        ds_pointer@double;
+        ds_pool struct;
+        ds_pointer(1, 1) double;
     end
 
     % 公开方法

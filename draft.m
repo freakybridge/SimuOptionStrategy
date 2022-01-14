@@ -5,7 +5,7 @@ import Apps.DataManager;
 import BaseClass.Asset.Option.Option;
 
 
-dm = DataManager('mss', 'sa', 'bridgeisbest');
+dm = DataManager('mss', 'sa', 'bridgeinmfc');
 dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
 dir_csv = "E:\OneDrive\hisdata";
 dir_rt = "E:\OneDrive\hisdata";
