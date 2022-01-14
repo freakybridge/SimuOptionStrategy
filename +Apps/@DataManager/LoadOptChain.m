@@ -7,10 +7,8 @@ function instrus = LoadOptChain(obj, var, exc, dir_)
 instrus = obj.LoadOptChainViaDb(var, exc);
 
 % 从excel获取
-if (obj.IsInstruNeedUpdate(instrus))
+if (isempty(instrus))
     instrus = obj.LoadOptChainViaExcel(var, exc, dir_);
-else
-    return;
 end
 
 % 从数据源获取

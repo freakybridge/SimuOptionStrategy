@@ -17,17 +17,11 @@ classdef (Sealed) SSE_510300 < BaseClass.Asset.Option.ETF
     
     % 父类Option属性
     properties (Constant)
-        ud_symbol char = "510300";
-        ud_exchange EnumType.Exchange = EnumType.Exchange.SSE;
         strike_type EnumType.OptionStrikeType = EnumType.OptionStrikeType.European;
         settle_mode EnumType.OptionSettleMode = EnumType.OptionSettleMode.Physical;
     end
-    
-    % 父类ETF属性
-    properties (Constant)
-        divlst cell = [ ...
-            {'2021/01/18'}, {0.072}; ...
-            ];
+    properties
+        underlying = BaseClass.Asset.ETF.Instance.SSE_510300('5m');
     end
     
     % 构造函数

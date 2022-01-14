@@ -17,18 +17,11 @@ classdef (Sealed) SZSE_159919 < BaseClass.Asset.Option.ETF
     
     % 父类Option属性
     properties (Constant)
-        ud_symbol char = "159919";
-        ud_exchange EnumType.Exchange = EnumType.Exchange.SZSE;
         strike_type EnumType.OptionStrikeType = EnumType.OptionStrikeType.European;
         settle_mode EnumType.OptionSettleMode = EnumType.OptionSettleMode.Physical;
     end
-    
-    % 父类ETF属性
-    properties (Constant)
-        divlst cell = [ ...
-            {'2020/08/16'}, {0.0700}; ...
-            {'2021/09/13'}, {0.1520}; ...
-            ];
+    properties
+        underlying = BaseClass.Asset.ETF.Instance.SZSE_159919('5m');
     end
     
     % 构造函数
