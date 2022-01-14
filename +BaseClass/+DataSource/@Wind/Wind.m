@@ -8,13 +8,13 @@
 %       Ê×´ÎÌí¼Ó
 classdef Wind < BaseClass.DataSource.DataSource
     properties (Access = private)
-        api@windmatlab;
+        api windmatlab;
     end
     properties (Constant)
-        name@char = 'Wind';
+        name char = 'Wind';
     end
     properties (Hidden)        
-        exchanges@containers.Map;
+        exchanges containers.Map;
     end
     
     methods

@@ -8,23 +8,19 @@ classdef DataSource
     %DATASOURCEAPI 此处显示有关此类的摘要
     %   此处显示详细说明
     properties
-        err@struct;
+        err struct = struct('code', 0, 'msg', '', 'is_fatal', false);
     end
     properties (Abstract, Constant)
-        name@char;
+        name char;
     end
     properties (Abstract)
-        exchanges@containers.Map;
+        exchanges containers.Map;
     end
         
     methods
         function obj = DataSource()
             %DATASOURCEAPI 构造此类的实例
-            %   此处显示详细说明
-            obj.err = struct;
-            obj.err.code = 0;
-            obj.err.msg = 0;
-            obj.err.is_fatal = 0;            
+            %   此处显示详细说明        
         end
         
         % 获取错误信息
