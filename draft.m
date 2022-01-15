@@ -35,3 +35,6 @@ for i = 1 : size(instrus, 1)
     fprintf("Loading %s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, i, size(instrus, 1));
     dm.LoadMd(opt, dir_csv, dir_tb);
 end
+
+
+cal = dm.ds.FetchCalendar();
