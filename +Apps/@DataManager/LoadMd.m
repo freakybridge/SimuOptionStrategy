@@ -26,8 +26,10 @@ end
 
 % ¸üĞÂ
 obj.LoadMdViaDataSource(ast);
-obj.SaveMd2Database(ast);
-obj.SaveMd2Csv(ast, dir_csv);
+if (~isempty(ast.md))
+    obj.SaveMd2Database(ast);
+    obj.SaveMd2Csv(ast, dir_csv);
+end
 
 end
 
