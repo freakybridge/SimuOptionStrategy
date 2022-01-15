@@ -5,7 +5,7 @@
 % v1.2.0.20220105.beta
 %       首次添加
 classdef DataSource
-    %DATASOURCEAPI 此处显示有关此类的摘要
+    % DataSource 此处显示有关此类的摘要
     %   此处显示详细说明
     properties
         err struct = struct('code', 0, 'msg', '', 'is_fatal', false);
@@ -19,7 +19,7 @@ classdef DataSource
         
     methods
         function obj = DataSource()
-            %DATASOURCEAPI 构造此类的实例
+            % DataSource 构造此类的实例
             %   此处显示详细说明        
         end
         
@@ -40,12 +40,22 @@ classdef DataSource
     
     
     methods (Abstract)
-        % 获取期权分钟数据
-        [is_err, md] = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
+        % 获取交易日历
+        cal = FetchCalendar(obj);
         
-        % 获取期权合约列表
+        % 获取行情数据
+        [is_err, md] = FetchEtfMinData(obj, etf, ts_s, ts_e, inv);
+        [is_err, md] = FetchEtfDayData(obj, ind, ts_s, ts_e, inv);
+        [is_err, md] = FetchIndexMinData(obj, ind, ts_s, ts_e, inv);
+        [is_err, md] = FetchIndexDayData(obj, ind, ts_s, ts_e, inv);
+        [is_err, md] = FetchFutureMinData(obj, fut, ts_s, ts_e, inv);
+        [is_err, md] = FetchFutureDayData(obj, fut, ts_s, ts_e, inv);
+        [is_err, md] = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
+        [is_err, md] = FetchOptionDayData(obj, opt, ts_s, ts_e, inv);
+        
+        % 获取期权/期货合约列表
         [is_err, ins] = FetchOptionChain(obj, opt_s, ins_local);        
-
+        [is_err, ins] = FetchFutureChain(obj, opt_s, ins_local);        
     end
     
     methods (Abstract, Static)

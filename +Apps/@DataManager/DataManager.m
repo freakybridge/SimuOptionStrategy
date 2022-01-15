@@ -30,6 +30,7 @@ classdef DataManager < handle
         end
     end
     
+    % 行情管理
     methods
         LoadMd(obj, ast, dir_csv, dirt_tb);
         LoadMdViaCsv(obj,  ast, dir_csv);
@@ -40,7 +41,10 @@ classdef DataManager < handle
         ret = SaveMd2Database(obj, ast);
         ret = SaveMd2Csv(obj, ast, dir_csv);                
         ret = IsMdComplete(obj, ast);       
-                
+    end
+    
+    % 合约列表管理
+    methods
         instrus = LoadOptChain(obj, var, exc, dir_);
         instrus = LoadOptChainViaDb(obj, var, exc);
         instrus = LoadOptChainViaDs(obj, var, exc, instru_local);
@@ -49,6 +53,17 @@ classdef DataManager < handle
         ret = SaveOptChain2Db(obj, var, exc, instrus);
         ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
         ret = IsInstruNeedUpdate(obj, instrus);
+    end
+    
+    % 日历管理
+    methods
+        cal = LoadCal(obj);
+        cal = LoadCalViaDs(obj);
+        cal = LoadCalViaDb(obj);
+        cal = LoadCalViaExcel(obj, dir_);
+        
+        ret = SaveCal2Db(obj);
+        ret = SaveCal2Excel(obj, dir_);
     end
     
     methods (Access = private)

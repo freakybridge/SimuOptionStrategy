@@ -33,6 +33,11 @@ classdef Wind < BaseClass.DataSource.DataSource
                 fprintf('DataSource %s Ready.\r', obj.name);
             end
         end
+        
+        % 获取交易日历
+        function cal = FetchCalendar(obj)
+            disp(12345);
+        end
                        
         % 获取期权分钟数据
         function [is_err, md] = FetchOptionMinData(obj, opt, ts_s, ts_e, inv)
