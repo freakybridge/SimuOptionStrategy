@@ -55,7 +55,7 @@ classdef DataSource
         
         % 获取期权/期货合约列表
         [is_err, ins] = FetchOptionChain(obj, opt_s, ins_local);        
-        [is_err, ins] = FetchFutureChain(obj, opt_s, ins_local);        
+        [is_err, ins] = FetchFutureChain(obj, fut_s, ins_local);        
     end
     
     methods (Abstract, Static)

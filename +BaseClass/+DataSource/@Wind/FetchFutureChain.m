@@ -1,0 +1,5 @@
+% Wind 获取期货合约列表
+% v1.3.0.20220113.beta
+%       1.首次加入
+function [is_err, ins] = FetchFutureChain(obj, fut_s, ins_local)
+end
