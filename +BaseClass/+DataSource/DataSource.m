@@ -51,7 +51,7 @@ classdef DataSource
         [is_err, md] = FetchFutureMinData(obj, fut, ts_s, ts_e, inv);
         [is_err, md] = FetchFutureDayData(obj, fut, ts_s, ts_e, inv);
         [is_err, md] = FetchOptionMinData(obj, opt, ts_s, ts_e, inv);
-        [is_err, md] = FetchOptionDayData(obj, opt, ts_s, ts_e, inv);
+        [is_err, md] = FetchOptionDayData(obj, opt, ts_s, ts_e);
         
         % 获取期权/期货合约列表
         [is_err, ins] = FetchOptionChain(obj, opt_s, ins_local);        

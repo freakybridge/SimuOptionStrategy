@@ -17,7 +17,7 @@ exc = obj.exchanges(EnumType.Exchange.ToString(opt.exchange));
 % Êä³ö
 if (obj.err.code)
     obj.err.msg = md{:};
-    obj.DispErr(sprintf('Fetching option %s market data', opt.symbol));
+    obj.DispErr(sprintf('Fetching option %s minitue market data', opt.symbol));
     md = [];
     is_err = true;
 else

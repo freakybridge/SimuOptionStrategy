@@ -23,7 +23,6 @@ classdef Wind < BaseClass.DataSource.DataSource
             %WIND 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.DataSource.DataSource();
-            obj.exchanges = containers.Map;
             obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SSE)) = 'SH';
             obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';       
             
@@ -32,11 +31,10 @@ classdef Wind < BaseClass.DataSource.DataSource
             if (obj.api.isconnected())
                 fprintf('DataSource %s Ready.\r', obj.name);
             end
-        end
-                
+        end                
     end
     
-    methods (Static)        
+    methods (Static)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
             ret = 3 * 365;
