@@ -43,6 +43,7 @@ classdef Wind < BaseClass.DataSource.DataSource
     
     
     methods (Hidden)
+        % 是否为致命错误
         function ret= IsErrFatal(obj)
             if (obj.err.code)
                 ret = true;
@@ -50,6 +51,9 @@ classdef Wind < BaseClass.DataSource.DataSource
                 ret = false;
             end
         end
+
+        % 获取分钟数据
+        [is_err, md] = FetchMinMd(obj, opt, ts_s, ts_e, inv, err_fmt);
     end
     
 end
