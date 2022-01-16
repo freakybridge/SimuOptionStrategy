@@ -58,6 +58,18 @@ ret = dm.ds.FetchMinMdOption(opt, ts_s, ts_e, 5);
 idx = BaseClass.Asset.Index.Instance.SSE_000001('1m');
 ts_s = '2022-01-13 09:30';
 ts_e = '2022-01-13 10:30';
-[ttt, md] = dm.ds.FetchIndexMinData(idx, ts_s, ts_e, 5);
+[ttt, md] = dm.ds.FetchMinMdIndex(idx, ts_s, ts_e, 5);
+
+
+idx = BaseClass.Asset.ETF.Instance.SSE_510050('1m');
+ts_s = '2022-01-13 09:30';
+ts_e = '2022-01-13 10:30';
+[ttt, md] = dm.ds.FetchMinMdEtf(idx, ts_s, ts_e, 5);
+
+
+idx = BaseClass.Asset.Future.Instance.CZCE_SR('sr205', 'aaa', '5m', 10, now, 0.12, 1, 2);
+ts_s = '2022-01-13 09:30';
+ts_e = '2022-01-13 10:30';
+[ttt, md] = dm.ds.FetchMinMdFuture(idx, ts_s, ts_e, 5);
 
 

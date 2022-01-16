@@ -44,14 +44,14 @@ classdef DataSource
         cal = FetchCalendar(obj);
         
         % 获取行情数据
-        [is_err, md] = FetchMinMdEtf(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchMinMdFuture(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchMinMdIndex(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchMinMdOption(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchDailyMdEtf(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchDailyMdFuture(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchDailyMdIndex(obj, etf, ts_s, ts_e, inv);
-        [is_err, md] = FetchDailyMdOption(obj, etf, ts_s, ts_e, inv);
+        [is_err, md] = FetchMinMdEtf(obj, etf, ts_s, ts_e);
+        [is_err, md] = FetchMinMdFuture(obj, fut, ts_s, ts_e);
+        [is_err, md] = FetchMinMdIndex(obj, idx, ts_s, ts_e);
+        [is_err, md] = FetchMinMdOption(obj, opt, ts_s, ts_e);
+        [is_err, md] = FetchDailyMdEtf(obj, etf, ts_s, ts_e);
+        [is_err, md] = FetchDailyMdFuture(obj, fut, ts_s, ts_e);
+        [is_err, md] = FetchDailyMdIndex(obj, idx, ts_s, ts_e);
+        [is_err, md] = FetchDailyMdOption(obj, opt, ts_s, ts_e);
         
         % 获取期权/期货合约列表
         [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);        

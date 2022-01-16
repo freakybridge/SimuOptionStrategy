@@ -13,35 +13,43 @@ classdef Wind < BaseClass.DataSource.DataSource
     properties (Constant)
         name char = 'Wind';
     end
-    properties (Hidden)        
+    properties (Hidden)
         exchanges containers.Map;
     end
-    
+
     methods
         % 构造函数
         function obj = Wind()
             %WIND 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.DataSource.DataSource();
-            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SSE)) = 'SH';
-            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';       
-            
+
+            % 交易所转换
+            import EnumType.Exchange;
+            obj.exchanges(Exchange.ToString(Exchange.CFFEX)) = 'CFE';
+            obj.exchanges(Exchange.ToString(Exchange.CZCE)) = 'CZC';
+            obj.exchanges(Exchange.ToString(Exchange.DCE)) = 'DCE';
+            obj.exchanges(Exchange.ToString(Exchange.INE)) = 'INE';
+            obj.exchanges(Exchange.ToString(Exchange.SHFE)) = 'SHF';
+            obj.exchanges(Exchange.ToString(Exchange.SSE)) = 'SH';
+            obj.exchanges(Exchange.ToString(Exchange.SZSE)) = 'SZ';
+
             % 登录
             obj.api = windmatlab;
             if (obj.api.isconnected())
                 fprintf('DataSource %s Ready.\r', obj.name);
             end
-        end                
+        end
     end
-    
+
     methods (Static)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
             ret = 3 * 365;
         end
     end
-    
-    
+
+
     methods (Hidden)
         % 是否为致命错误
         function ret= IsErrFatal(obj)
@@ -55,6 +63,6 @@ classdef Wind < BaseClass.DataSource.DataSource
         % 获取分钟数据
         [is_err, md] = FetchMinMd(obj, opt, ts_s, ts_e, inv, err_fmt);
     end
-    
+
 end
 
