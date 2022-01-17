@@ -11,13 +11,15 @@ if (datenum(ts_s) < now - obj.FetchApiDateLimit())
 end
 
 % ÏÂÔØ
-exc = obj.exchanges(EnumType.Exchange.ToString(exc));
-[md, ~, ~, dt, obj.err.code, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
-    datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), sprintf('BarSize=%s',  inv));
+[md, obj.err.code, dt, ~,~, errmsg, ~, ~] = THS_HF([symb, '.', exc],'open;high;low;close;amount;volume;openInterest',...
+    sprintf('Fill:Previous,Interval:%i',  inv), ...
+    datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), ...
+    datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), ...
+    'format:matrix');
 
 % Êä³ö¼ì²é
 if (obj.err.code)
-    obj.err.msg = md{:};
+    obj.err.msg = errmsg{:};
     obj.DispErr(sprintf(err_fmt, symb, exc));
     md = [];
     is_err = true;

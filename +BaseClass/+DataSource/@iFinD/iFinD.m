@@ -44,37 +44,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 fprintf('DataSource %s@[User:%s] Ready.\r', obj.name, obj.user);
             end
         end
-        
-        % 获取期权分钟数据
-        function [is_err, md] = FetchOptionMinData(obj, opt, ts_s, ts_e, inv)
-            % 确定是否数据超限
-            if (datenum(opt.GetDateListed()) < now - obj.FetchApiDateLimit())
-                md = [];
-                is_err = false;
-                return;
-            end
-            
-            % 下载
-            exc = obj.exchanges(EnumType.Exchange.ToString(opt.exchange));
-            [md, obj.err.code, dt, ~,~, errmsg, ~, ~] = THS_HF([opt.symbol, '.', exc],'open;high;low;close;amount;volume;openInterest',...
-                sprintf('Fill:Previous,Interval:%i',  inv), ...
-                datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), ...
-                datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), ...
-                'format:matrix');
-            
-            % 输出
-            if (obj.err.code)
-                obj.err.msg = errmsg{:};
-                obj.DispErr(sprintf('Fetching option %s market data', opt.symbol));
-                md = [];
-                is_err = true;
-            else
-                md = [datenum(dt), md];
-                is_err = false;
-            end
-            
-        end
-        
+                
     end
     
     methods (Static)

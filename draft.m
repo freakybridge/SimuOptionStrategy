@@ -40,24 +40,20 @@ end
 ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
 cal = ds.FetchCalendar();
 
-ds_wind = BaseClass.DataSource.Wind();
-cal_wind = ds_wind.FetchCalendar();
 
 
 [mark, ins] = ds.FetchChainFuture(2, 3);
-[mark, ins] = ds.FetchChainOption(opt, []);
 
-
-inv = EnumType.Interval.day;
-ts_s = '2022-01-06 9:30';
+inv = EnumType.Interval.min5;
+ts_s = '2022-01-13 9:30';
 ts_e = '2022-01-13 10:00';
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'M2205', EnumType.Exchange.DCE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'SC2203', EnumType.Exchange.INE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'CU2204', EnumType.Exchange.SHFE, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'IF2203', EnumType.Exchange.CFFEX, inv, ts_s, ts_e);
-[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Option, '10003776', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'M2205', EnumType.Exchange.DCE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SC2203', EnumType.Exchange.INE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'CU2204', EnumType.Exchange.SHFE, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'IF2203', EnumType.Exchange.CFFEX, inv, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(EnumType.Product.Option, '10003776', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 
 
