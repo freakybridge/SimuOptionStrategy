@@ -39,14 +39,12 @@ end
 
 
 
-[mark, ins] = ds.FetchChainFuture(2, 3);
 
-inv = EnumType.Interval.day;
 ts_s = '2022-01-06 9:30';
 ts_e = '2022-01-13 10:00';
-[mark, md] = ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 
-etf = BaseClass.Asset.ETF.Instance.SSE_510050('5m');
+asset = BaseClass.Asset.ETF.Instance.SSE_510050('1d');
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 etf.MergeMarketData(md);
 dm.db.SaveMarketData(etf);
 

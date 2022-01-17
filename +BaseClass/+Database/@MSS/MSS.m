@@ -101,5 +101,31 @@ classdef MSS < BaseClass.Database.Database
         ret = CreateTable(obj, conn, db, tb,  varargin);
 
     end
+    
+    % 抽象方法实现
+    methods
+        % 保存期权 / 期货合约列表
+        ret = SaveChainOption(obj, var, exc, instrus);
+        ret = SaveChainFuture(obj, var, exc, instrus);
+
+        % 获取期权 / 期货合约列表
+        instru = LoadChainOption(obj, var, exc);
+        instru = LoadChainFuture(obj, var, exc);
+    end
+    methods (Hidden)
+        % 保存K线行情
+        ret = SaveBarMin(obj, asset);
+        ret = SaveBarDayEtf(obj, asset);
+        ret = SaveBarDayFuture(obj, asset);
+        ret = SaveBarDayIndex(obj, asset);
+        ret = SaveBarDayOption(obj, asset);
+
+        % 读取K线行情
+        LoadBarMin(obj, asset);
+        LoadBarDayEtf(obj, asset);
+        LoadBarDayFuture(obj, asset);
+        LoadBarDayIndex(obj, asset);
+        LoadBarDayOption(obj, asset);
+    end
 end
 
