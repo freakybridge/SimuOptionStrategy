@@ -12,36 +12,28 @@ if (nargin() == 5)
         
     elseif (ismember('BaseClass.Asset.Asset', superclasses(varargin{1})))
         % 按照资产建立行情表
-        ast = varargin{1};
-        switch ast.product
-            case EnumType.Product.Etf
-                error("Unexpected ""product"" for create table, please check.");
-                
-                
-            case EnumType.Product.Future
-                error("Unexpected ""product"" for create table, please check.");
-                
-                
-            case EnumType.Product.Index
-                error("Unexpected ""product"" for create table, please check.");
-                
-                
-            case EnumType.Product.Option
-                switch ast.interval
-                    case {EnumType.Interval.min1, EnumType.Interval.min5}
-                        ret = CreateTableBar(conn, db, tb);
-                        
+        asset = varargin{1};
+        switch asset.interval
+            case {EnumType.Interval.min1, EnumType.Interval.min5}
+                ret = CreateTableBarMin(conn, db, tb);
+
+            case EnumType.Interval.day
+                switch asset.product
+                    case EnumType.Product.Etf
+
+                    case EnumType.Product.Future
+
+                    case EnumType.Product.Index
+
+                    case EnumType.Product.Option
+
                     otherwise
-                        error("Unexpected ""interval"" for create table, please check.");
+                        error("Unexpected ""product"" for create table, please check.");
                 end
-                
-                
-            case EnumType.Product.Stock
-                error("Unexpected ""product"" for create table, please check.");
-                
-                
+
+
             otherwise
-                error("Unexpected ""product"" for create table, please check.");
+                error("Unexpected ""interval"" for create table, please check.");
         end
         
     else
@@ -72,8 +64,8 @@ else
 end
 end
 
-% 建表K线数据
-function ret = CreateTableBar(conn, db, tb)
+% 建表分钟K线数据
+function ret = CreateTableBarMin(conn, db, tb)
 sql = sprintf("CREATE TABLE [%s](" ...
     + "[DATETIME] [datetime] NOT NULL PRIMARY KEY, " ...
     + "[OPEN] [numeric](18, 4) NULL, " ...
