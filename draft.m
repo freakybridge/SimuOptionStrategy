@@ -37,7 +37,11 @@ for i = 1 : size(instrus, 1)
 end
 
 
-ds = BaseClass.DataSource.iFinD('meyqh051', '266742')
+ds = BaseClass.DataSource.iFinD('meyqh051', '266742');
+cal = ds.FetchCalendar(); 
+
+
+
 inv = EnumType.Interval.day;
 ts_s = '2022-01-06 9:30';
 ts_e = '2022-01-13 10:00';
