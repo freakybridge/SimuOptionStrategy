@@ -37,9 +37,15 @@ for i = 1 : size(instrus, 1)
 end
 
 
-ds = BaseClass.DataSource.iFinD('meyqh051', '266742');
-cal = ds.FetchCalendar(); 
+ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
+cal = ds.FetchCalendar();
 
+ds_wind = BaseClass.DataSource.Wind();
+cal_wind = ds_wind.FetchCalendar();
+
+
+[mark, ins] = ds.FetchChainFuture(2, 3);
+[mark, ins] = ds.FetchChainOption(opt, []);
 
 
 inv = EnumType.Interval.day;
