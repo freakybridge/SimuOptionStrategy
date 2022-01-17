@@ -9,8 +9,10 @@ switch inv
     case EnumType.Interval.min5
         [is_err, md] = obj.FetchMinMd(symb, exc, '5', ts_s, ts_e, 'Fetching future [%s.%s] minitue market data');
         
-    case EnumTYpe.Interval.day
-        error('123');
+    case EnumType.Interval.day
+        [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...
+            'open, high, low, close, amt, volume, oi, dealnum, pre_settle, settle, st_stock', ...
+            'Fetching future [%s.%s] daily market data');
         
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);
