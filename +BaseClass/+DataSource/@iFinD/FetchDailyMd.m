@@ -18,6 +18,9 @@ if (obj.err.code)
     md = [];
     is_err = true;
 else
+    if (isa(md, 'cell'))
+        md = cell2mat(md);
+    end
     md(isnan(md)) = 0;
     md = [datenum(dt), md];
     is_err = false;
