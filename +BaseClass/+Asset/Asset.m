@@ -61,32 +61,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             obj.md = sortrows(obj.md, 1);
             obj.RepairData(obj.md(:, 1));
         end
-        
-        % 修补行情
-        function RepairData(obj, tm_ax_std)
-            % 行情对齐
-            [~, loc] = intersect(tm_ax_std(:, 1), obj.md(:, 1));
-            md_new = tm_ax_std;
-            md_new(loc, 2 : size(obj.md, 2)) = obj.md(:, 2 : end);
-            
-            % 消除nan
-            md_new(isnan(md_new)) = 0;
-            
-            % 补足行情
-            % 补足前端行情
-            loc_start = find(md_new(:, 7) ~= 0, 1, 'first');
-            md_new(1 : loc_start, 7) = md_new(loc_start, 4);
-            
-            % 补足后端行情
-            loc_end = find(md_new(:, 1) <= obj.expire, 1, 'last');
-            for i = loc_start + 1 : loc_end
-                if (md_new(i, 7) == 0)
-                    md_new(i, 4 : 7) = md_new(i - 1, 7);
-                end
-            end
-            obj.md = md_new;
-        end
-        
+               
         % 生成新周期K线
         function NewBarMarketData(obj, inv)
             % 生成时间轴
@@ -210,6 +185,13 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             
         end
     end
+
+    %% 抽象方法
+    methods (Abstract)
+        % 修补行情
+        RepairData(obj, tm_ax_std);
+    end
+        
     
     
         
