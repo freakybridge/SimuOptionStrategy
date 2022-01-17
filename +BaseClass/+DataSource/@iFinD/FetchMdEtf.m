@@ -1,13 +1,15 @@
-% Wind 获取ETF数据
+% iFinD 获取ETF数据
 % v1.3.0.20220113.beta
 %       1.首次加入
-function [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e)
+function [is_err, md] = FetchMdEtf(obj, symb, ~, inv, ts_s, ts_e)
+
+exc = 'OF';
 switch inv
     case EnumType.Interval.min1
-        [is_err, md] = obj.FetchMinMd(symb, 'OF', 1, ts_s, ts_e,  'Fetching etf [%s.%s] minitue market data');
+        [is_err, md] = obj.FetchMinMd(symb,  exc, 1, ts_s, ts_e,  'Fetching etf [%s.%s] minitue market data');
         
     case EnumType.Interval.min5
-        [is_err, md] = obj.FetchMinMd(symb, 'OF', 5, ts_s, ts_e, 'Fetching etf [%s.%s] minitue market data');
+        [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching etf [%s.%s] minitue market data');
         
     case EnumType.Interval.day
         [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...

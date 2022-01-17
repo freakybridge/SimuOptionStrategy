@@ -31,7 +31,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             obj.exchanges(Exchange.ToString(Exchange.CFFEX)) = 'CFE';
             obj.exchanges(Exchange.ToString(Exchange.CZCE)) = 'CZC';
             obj.exchanges(Exchange.ToString(Exchange.DCE)) = 'DCE';
-            obj.exchanges(Exchange.ToString(Exchange.INE)) = 'INE';
+            obj.exchanges(Exchange.ToString(Exchange.INE)) = 'SHF';
             obj.exchanges(Exchange.ToString(Exchange.SHFE)) = 'SHF';
             obj.exchanges(Exchange.ToString(Exchange.SSE)) = 'SH';
             obj.exchanges(Exchange.ToString(Exchange.SZSE)) = 'SZ';
