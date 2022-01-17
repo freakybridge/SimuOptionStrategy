@@ -45,6 +45,15 @@ inv = EnumType.Interval.day;
 ts_s = '2022-01-06 9:30';
 ts_e = '2022-01-13 10:00';
 [mark, md] = ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+
+etf = BaseClass.Asset.ETF.Instance.SSE_510050('5m');
+etf.MergeMarketData(md);
+dm.db.SaveMarketData(etf);
+
+
+
+
+
 [mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 [mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
 [mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'M2205', EnumType.Exchange.DCE, inv, ts_s, ts_e);

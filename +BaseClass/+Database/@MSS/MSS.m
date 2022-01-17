@@ -100,7 +100,6 @@ classdef MSS < BaseClass.Database.Database
         end
         ret = CreateTable(obj, conn, db, tb,  varargin);
 
-
     end
 end
 
