@@ -15,5 +15,4 @@ switch inv
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);
 end
-
 end

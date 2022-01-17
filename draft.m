@@ -43,5 +43,7 @@ ts_e = '2022-01-13 10:00';
 
 [mark, md] = dm.ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 [mark, md] = dm.ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
+[mark, md] = dm.ds.FetchMarketData(EnumType.Product.Option, '10003776', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 
 

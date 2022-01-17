@@ -38,7 +38,7 @@ classdef DataSource
                     [is_err, md] = obj.FetchMdIndex(symb, exc, inv, ts_s, ts_e);
                     
                 case EnumType.Product.Option
-                    [is_err, md] = obj.FetchMdOptionMd(symb, exc, inv, ts_s, ts_e);
+                    [is_err, md] = obj.FetchMdOption(symb, exc, inv, ts_s, ts_e);
                     
                 otherwise
                     error('Unexpected "product" for fetching data, please check.');
