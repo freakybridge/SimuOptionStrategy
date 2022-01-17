@@ -38,7 +38,7 @@ end
 
 
 inv = EnumType.Interval.day;
-ts_s = '2022-01-11 9:30';
+ts_s = '2022-01-06 9:30';
 ts_e = '2022-01-13 10:00';
 
 [mark, md] = dm.ds.FetchMarketData(EnumType.Product.Etf, '510050', EnumType.Exchange.SSE, inv, ts_s, ts_e);
