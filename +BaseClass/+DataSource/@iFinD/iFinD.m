@@ -66,7 +66,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
         
         % 获取分钟 / 日级数据
         [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
-        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, err_fmt);
+        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, params, err_fmt);
     end
 end
 
