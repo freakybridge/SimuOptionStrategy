@@ -29,16 +29,16 @@ classdef DataSource
         function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
             switch pdt
                 case EnumType.Product.Etf
-                    [is_err, md] = obj.FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
+                    [is_err, md] = obj.FetchMdEtf(symb, exc, inv, ts_s, ts_e);
                     
                 case EnumType.Product.Future
-                    [is_err, md] = obj.FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
+                    [is_err, md] = obj.FetchMdFuture(symb, exc, inv, ts_s, ts_e);
                     
                 case EnumType.Product.Index
-                    [is_err, md] = obj.FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e);
+                    [is_err, md] = obj.FetchMdIndex(symb, exc, inv, ts_s, ts_e);
                     
                 case EnumType.Product.Option
-                    [is_err, md] = obj.FetchMdOptionMd(obj, symb, exc, inv, ts_s, ts_e);
+                    [is_err, md] = obj.FetchMdOptionMd(symb, exc, inv, ts_s, ts_e);
                     
                 otherwise
                     error('Unexpected "product" for fetching data, please check.');

@@ -60,8 +60,9 @@ classdef Wind < BaseClass.DataSource.DataSource
             end
         end
 
-        % 获取分钟数据
-        [is_err, md] = FetchMinMd(obj, opt, ts_s, ts_e, inv, err_fmt);
+        % 获取分钟 / 日级数据
+        [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
+        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, err_fmt);
     end
 
 end
