@@ -1,6 +1,7 @@
 % 数据库基类
 % v1.3.0.20220113.beta
-%       加入成员类型约束
+%       1.加入成员类型约束
+%       2.重构方法
 % v1.2.0.20220105.beta
 %       首次添加
 classdef Database < handle    
@@ -27,52 +28,90 @@ classdef Database < handle
         end
         
         % 保存行情
-        function ret = SaveMarketData(obj, ast)
-            switch ast.product
-                case EnumType.Product.Option
-                    switch ast.interval
-                        case {EnumType.Interval.min1, EnumType.Interval.min5, EnumType.Interval.day}
-                            ret = SaveBar(obj, ast);
-                        otherwise
-                            error("Unsupported ""interval"" for market data saving, please check.");
-                    end                            
+        function ret = SaveMarketData(obj, asset)           
+            switch asset.interval
+                case {EnumType.Interval.min1, EnumType.Interval.min5}
+                    ret = obj.SaveBarMin(asset);
+                    
+                case {EnumType.Interval.day}
+                    switch asset.product
+                        case EnumType.Product.Etf
+                            ret = obj.SaveBarDayEtf(asset);
                             
+                        case EnumType.Product.Future
+                            ret = obj.SaveBarDayFuture(asset);
+                            
+                        case EnumType.Product.Index
+                            ret = obj.SaveBarDayIndex(asset);                            
+                            
+                        case EnumType.Product.Option
+                            ret = obj.SaveBarDayOption(asset);
+                            
+                        otherwise
+                            error("Unsupported ""product"" for daily market data saving, please check.");
+                            
+                    end
                     
                 otherwise
-                    error("Unsupported ""product"" for market data saving, please check.");
+                    error("Unsupported ""interval"" for market data saving, please check.");
             end
         end
         
         % 读取行情
-        function LoadMarketData(obj, ast)
-            switch ast.product
-                case EnumType.Product.Option
-                    switch ast.interval
-                        case {EnumType.Interval.min1, EnumType.Interval.min5, EnumType.Interval.day}
-                            obj.LoadBar(ast);
+        function LoadMarketData(obj, asset)
+            switch asset.interval
+                case {EnumType.Interval.min1, EnumType.Interval.min5}
+                    LoadBarMin(obj, asset);
+                    
+                case {EnumType.Interval.day}
+                    switch asset.product
+                        case EnumType.Product.Etf
+                            obj.LoadBarDayEtf(asset);
+                            
+                        case EnumType.Product.Future
+                            obj.LoadBarDayFuture(asset);
+                            
+                        case EnumType.Product.Index
+                            obj.LoadBarDayIndex(asset);
+                            
+                        case EnumType.Product.Option
+                            obj.LoadBarDayOption(asset);
+                            
                         otherwise
-                            error("Unsupported ""interval"" for market data loading, please check.");
-                    end      
+                            error("Unsupported ""product"" for daily market data loading, please check.");
+                            
+                    end
                     
                 otherwise
-                    error("Unsupported ""product"" for market data saving, please check.");
+                    error("Unsupported ""interval"" for market data loading, please check.");
             end
         end
     end
     
+    
     methods (Abstract)
-        % 保存期权链
-        ret = SaveOptionChain(obj, var, exc, instrus);
+        % 保存期权 / 期货合约列表
+        ret = SaveChainOption(obj, var, exc, instrus);
+        ret = SaveChainFuture(obj, var, exc, instrus);
         
-        % 获取期权链
-        instru = LoadOptionChain(obj, var, exc);
+        % 获取期权 / 期货合约列表
+        instru = LoadChainOption(obj, var, exc);
+        instru = LoadChainFuture(obj, var, exc);
     end
     methods (Abstract, Hidden)
         % 保存K线行情
-        ret = SaveBar(obj, opt);
+        ret = SaveBarMin(obj, asset);
+        ret = SaveBarDayEtf(obj, asset);
+        ret = SaveBarDayFuture(obj, asset);
+        ret = SaveBarDayIndex(obj, asset);
+        ret = SaveBarDayOption(obj, asset);
         
         % 读取K线行情
-        LoadBar(obj, opt);      
+        LoadBarMin(obj, asset);
+        LoadBarDayEtf(obj, asset);
+        LoadBarDayFuture(obj, asset);
+        LoadBarDayIndex(obj, asset);
+        LoadBarDayOption(obj, asset);
     end
     
     methods (Static)

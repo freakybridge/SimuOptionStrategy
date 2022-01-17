@@ -37,9 +37,6 @@ for i = 1 : size(instrus, 1)
 end
 
 
-ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
-cal = ds.FetchCalendar();
-
 
 
 [mark, ins] = ds.FetchChainFuture(2, 3);
