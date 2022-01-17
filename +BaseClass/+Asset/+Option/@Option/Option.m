@@ -112,7 +112,7 @@ classdef Option < BaseClass.Asset.Asset
             md_new(1 : loc_start, col_close) = md_new(loc_start, col_open);
 
             % ²¹×ãºó¶ËÐÐÇé
-            loc_end = size(md_new, 1);
+            loc_end = find(md_new(:, 1) <= obj.expire, 1, 'last');
             for i = loc_start + 1 : loc_end
                 if (md_new(i, col_close) == 0)
                     md_new(i, col_price) = md_new(i - 1, col_close);

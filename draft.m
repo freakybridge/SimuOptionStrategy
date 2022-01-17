@@ -56,6 +56,10 @@ dm.db.SaveMarketData(etf);
 
 
 
+asset = BaseClass.Asset.Index.Instance.SSE_000016('1d');
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(etf);
 
 
 [mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
