@@ -62,6 +62,12 @@ asset.MergeMarketData(md);
 dm.db.SaveMarketData(etf);
 
 
+asset = BaseClass.Asset.Future.Instance.DCE_M('m2205', 'abc', '1d', 10, now(), 0.1, 1, 5);
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(etf);
+
+
 [mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
 [mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
 [mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'M2205', EnumType.Exchange.DCE, inv, ts_s, ts_e);
