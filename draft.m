@@ -5,15 +5,15 @@ import Apps.DataManager;
 import BaseClass.Asset.Option.Option;
 
 
-% dm = DataManager('mss', 'sa', 'bridgeisbest');
-% dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
-% dir_csv = "E:\OneDrive\hisdata";
-% dir_rt = "E:\OneDrive\hisdata";
+dm = DataManager('mss', 'sa', 'bridgeisbest');
+dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
+dir_csv = "E:\OneDrive\hisdata";
+dir_rt = "E:\OneDrive\hisdata";
 
-dm = DataManager('mss', 'sa', 'bridgeinmfc');
-dir_tb = 'D:\desktop\taobao';
-dir_csv = "D:\OneDrive\hisdata";
-dir_rt = "D:\OneDrive\hisdata";
+% dm = DataManager('mss', 'sa', 'bridgeinmfc');
+% dir_tb = 'D:\desktop\taobao';
+% dir_csv = "D:\OneDrive\hisdata";
+% dir_rt = "D:\OneDrive\hisdata";
 
 
 variety = '510300';

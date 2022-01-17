@@ -13,106 +13,12 @@ classdef MSS < BaseClass.Database.Database
             obj = obj@BaseClass.Database.Database(user, pwd, 'master');
             obj.driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
             obj.url = obj.ConfirmUrl();
-            obj.Connect(obj.db_default);   
+            obj.Connect(obj.db_default);
         end
-        
-        % 保存期权链
-        function ret = SaveOptionChain(obj, var, exc, instrus)
-            % 数据库准备
-            if (isempty(instrus))
-                ret = false;
-                return;
-            end
-            db = obj.db_instru;
-            conn = obj.SelectConn(db);
-            
-            % 表准备
-            tb = BaseClass.Database.Database.GetTableName(EnumType.Product.Option, var, EnumType.Exchange.ToEnum(exc));
-            if (~obj.CheckTable(db, tb))
-                obj.CreateTable(conn, db, tb, instrus);
-            end           
-            
-            % 生成sql
-            fprintf("Inserting option chain ""%s"", please wait ...\r", tb);
-            sql = string();
-            for i = 1 : size(instrus, 1)
-                this = instrus(i, :);                    
-                head = sprintf("IF EXISTS (SELECT * FROM [%s] WHERE [SYMBOL] = '%s') UPDATE [%s] SET [SEC_NAME] = '%s', [EXCHANGE] = '%s', [VARIETY] = '%s', [UD_SYMBOL] = '%s', [UD_PRODUCT] = '%s', [UD_EXCHANGE] = '%s', [CALL_OR_PUT] = '%s', [STRIKE_TYPE] = '%s', [STRIKE] = %f, [SIZE] = %f, [TICK_SIZE] = %f, [DLMONTH] = %i, [START_TRADE_DATE] = '%s', [END_TRADE_DATE] = '%s', [SETTLE_MODE] = '%s', [LAST_UPDATE_DATE] = '%s' WHERE [SYMBOL] = '%s'", ...
-                    tb, ...
-                    this.SYMBOL{:}, ...
-                    tb, ...
-                    this.SEC_NAME{:}, ...
-                    this.EXCHANGE{:}, ...
-                    this.VARIETY{:}, ...
-                    this.UD_SYMBOL{:}, ...
-                    this.UD_PRODUCT{:}, ...
-                    this.UD_EXCHANGE{:}, ...
-                    this.CALL_OR_PUT{:}, ...
-                    this.STRIKE_TYPE{:}, ...
-                    this.STRIKE, ...
-                    this.SIZE, ...
-                    this.TICK_SIZE, ...
-                    this.DLMONTH, ...
-                    this.START_TRADE_DATE{:}, ...
-                    this.END_TRADE_DATE{:}, ...
-                    this.SETTLE_MODE{:}, ...
-                    this.LAST_UPDATE_DATE{:}, ...
-                    this.SYMBOL{:} ...
-                    );
-                
-                tail = sprintf(" ELSE INSERT [%s]([SYMBOL], [SEC_NAME], [EXCHANGE], [VARIETY], [UD_SYMBOL], [UD_PRODUCT], [UD_EXCHANGE], [CALL_OR_PUT], [STRIKE_TYPE], [STRIKE], [SIZE], [TICK_SIZE], [DLMONTH], [START_TRADE_DATE], [END_TRADE_DATE], [SETTLE_MODE], [LAST_UPDATE_DATE]) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %f, %f, %f, %i, '%s', '%s', '%s', '%s')", ...
-                    tb, ...
-                    this.SYMBOL{:}, ...
-                    this.SEC_NAME{:}, ...
-                    this.EXCHANGE{:}, ...
-                    this.VARIETY{:}, ...
-                    this.UD_SYMBOL{:}, ...
-                    this.UD_PRODUCT{:}, ...
-                    this.UD_EXCHANGE{:}, ...
-                    this.CALL_OR_PUT{:}, ...
-                    this.STRIKE_TYPE{:}, ...
-                    this.STRIKE, ...
-                    this.SIZE, ...
-                    this.TICK_SIZE, ...
-                    this.DLMONTH, ...
-                    this.START_TRADE_DATE{:}, ...
-                    this.END_TRADE_DATE{:}, ...
-                    this.SETTLE_MODE{:}, ...
-                    this.LAST_UPDATE_DATE{:} ...
-                    );
-                
-                sql = sql + head + tail;
-            end
 
-            % 入库
-            exec(conn, sql);
-            ret = true;
-        end
-        
-        % 获取期权链
-        function instru = LoadOptionChain(obj, var, exc)
-            try           
-                % 数据库 / 表准备
-                db = obj.db_instru;
-                tb = BaseClass.Database.Database.GetTableName(EnumType.Product.Option, var, EnumType.Exchange.ToEnum(exc));
-                
-                % 读取
-                sql = sprintf("SELECT [SYMBOL], [SEC_NAME], [EXCHANGE], [VARIETY], [UD_SYMBOL], [UD_PRODUCT], [UD_EXCHANGE], [CALL_OR_PUT], [STRIKE_TYPE], [STRIKE], [SIZE], [TICK_SIZE], [DLMONTH], [START_TRADE_DATE], [END_TRADE_DATE], [SETTLE_MODE], [LAST_UPDATE_DATE] FROM [%s].[dbo].[%s]  ORDER BY [SYMBOL]", ...
-                    db, tb);
-                conn = obj.SelectConn(db);
-                value = fetch(conn, sql);
-                
-            catch
-                warning("Fetching option chain ""%s"" failure, please check ...\r", tb);                
-                value = [];
-            end
-            instru = value;
-                
-        end
-        
     end
-        
-    
+
+
     methods (Hidden)
         % 保存分钟行情
         function ret = SaveBar(obj, ast)
@@ -123,7 +29,7 @@ classdef MSS < BaseClass.Database.Database
             if (~CheckTable(obj, db, tb))
                 ret = CreateTable(obj, conn, db, tb, ast);
             end
-            
+
             % 生成sql
             sql = string();
             for i = 1 : size(ast.md, 1)
@@ -134,19 +40,19 @@ classdef MSS < BaseClass.Database.Database
                     tb, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4), this(5), this(6), this(7), this(8), this(9), this(10));
                 sql = sql + head + tail;
             end
-            
+
             % 入库
             exec(conn, sql);
             ret = true;
         end
-        
+
         % 读取期权分钟行情
         function LoadBar(obj, ast)
             % 预处理
             db = BaseClass.Database.Database.GetDbName(ast);
             tb = BaseClass.Database.Database.GetTableName(ast);
             conn = SelectConn(obj, db);
-            
+
             % 读取
             try
                 sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
@@ -157,10 +63,10 @@ classdef MSS < BaseClass.Database.Database
             catch
                 ast.md = [];
             end
-        end        
+        end
     end
-    
-    
+
+
     % 内部方法
     methods (Access = private, Hidden)
         % 确定url
@@ -172,7 +78,7 @@ classdef MSS < BaseClass.Database.Database
             ip(isspace(ip)) = [];
             ret = sprintf("jdbc:sqlserver://%s:1433;;databaseName=", ip);
         end
-        
+
         % 关闭
         function obj = Off(obj)
             close(obj.conn);
@@ -183,12 +89,12 @@ classdef MSS < BaseClass.Database.Database
                 error(cThis.Conn.Message);
             end
         end
-        
-        
-        
-        % 
-        
-        
+
+
+
+        %
+
+
         function ret = ExecUpdateSQL()
         end
         function ret = ExecDeleteSQL()
@@ -197,9 +103,9 @@ classdef MSS < BaseClass.Database.Database
         end
         function ret = LoadOption()
         end
-               
 
-        
+
+
         % 连接数据库 / 获取端口 / 检查数据库 / 创建数据库
         function Connect(obj, db)
             %  connect
@@ -212,7 +118,7 @@ classdef MSS < BaseClass.Database.Database
                 return;
             end
             obj.conns(db) = conn;
-            
+
             % tables buffer
             sql = 'SELECT NAME FROM SYSOBJECTS WHERE XTYPE=''U'' ORDER BY NAME';
             obj.tables(db) = table2cell(fetch(conn, sql));
@@ -241,8 +147,8 @@ classdef MSS < BaseClass.Database.Database
                 error("Create database %s error, msg: %, please check!", db_, res.Message);
             end
         end
-        
-        % 检查表 / 创建表        
+
+        % 检查表 / 创建表
         function ret = CheckTable(obj, db, tb)
             if (obj.tables.isKey(db))
                 tmp = obj.tables.at(db);
@@ -258,7 +164,7 @@ classdef MSS < BaseClass.Database.Database
             end
         end
         ret = CreateTable(obj, conn, db, tb,  varargin);
-        
+
 
     end
 end

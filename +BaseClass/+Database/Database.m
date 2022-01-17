@@ -4,18 +4,18 @@
 %       2.重构方法
 % v1.2.0.20220105.beta
 %       首次添加
-classdef Database < handle    
+classdef Database < handle
     properties (Access = protected)
         user char;
         password char;
-        driver char; 
+        driver char;
         url char;
         conns containers.Map;
         tables containers.Map;
         db_default char;
         db_instru char;
     end
-        
+
     methods
         % 端口初始化
         function obj = Database(user, pwd, db_dft)
@@ -26,74 +26,74 @@ classdef Database < handle
             obj.conns = containers.Map();
             obj.tables = containers.Map();
         end
-        
+
         % 保存行情
-        function ret = SaveMarketData(obj, asset)           
+        function ret = SaveMarketData(obj, asset)
             switch asset.interval
                 case {EnumType.Interval.min1, EnumType.Interval.min5}
                     ret = obj.SaveBarMin(asset);
-                    
+
                 case {EnumType.Interval.day}
                     switch asset.product
                         case EnumType.Product.Etf
                             ret = obj.SaveBarDayEtf(asset);
-                            
+
                         case EnumType.Product.Future
                             ret = obj.SaveBarDayFuture(asset);
-                            
+
                         case EnumType.Product.Index
-                            ret = obj.SaveBarDayIndex(asset);                            
-                            
+                            ret = obj.SaveBarDayIndex(asset);
+
                         case EnumType.Product.Option
                             ret = obj.SaveBarDayOption(asset);
-                            
+
                         otherwise
                             error("Unsupported ""product"" for daily market data saving, please check.");
-                            
+
                     end
-                    
+
                 otherwise
                     error("Unsupported ""interval"" for market data saving, please check.");
             end
         end
-        
+
         % 读取行情
         function LoadMarketData(obj, asset)
             switch asset.interval
                 case {EnumType.Interval.min1, EnumType.Interval.min5}
                     LoadBarMin(obj, asset);
-                    
+
                 case {EnumType.Interval.day}
                     switch asset.product
                         case EnumType.Product.Etf
                             obj.LoadBarDayEtf(asset);
-                            
+
                         case EnumType.Product.Future
                             obj.LoadBarDayFuture(asset);
-                            
+
                         case EnumType.Product.Index
                             obj.LoadBarDayIndex(asset);
-                            
+
                         case EnumType.Product.Option
                             obj.LoadBarDayOption(asset);
-                            
+
                         otherwise
                             error("Unsupported ""product"" for daily market data loading, please check.");
-                            
+
                     end
-                    
+
                 otherwise
                     error("Unsupported ""interval"" for market data loading, please check.");
             end
         end
     end
-    
-    
+
+
     methods (Abstract)
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus);
         ret = SaveChainFuture(obj, var, exc, instrus);
-        
+
         % 获取期权 / 期货合约列表
         instru = LoadChainOption(obj, var, exc);
         instru = LoadChainFuture(obj, var, exc);
@@ -105,7 +105,7 @@ classdef Database < handle
         ret = SaveBarDayFuture(obj, asset);
         ret = SaveBarDayIndex(obj, asset);
         ret = SaveBarDayOption(obj, asset);
-        
+
         % 读取K线行情
         LoadBarMin(obj, asset);
         LoadBarDayEtf(obj, asset);
@@ -113,19 +113,19 @@ classdef Database < handle
         LoadBarDayIndex(obj, asset);
         LoadBarDayOption(obj, asset);
     end
-    
+
     methods (Static)
         % 反射器
         function obj = Selector(driver, user, pwd)
             switch EnumType.DatabaseSupported.ToEnum(driver)
                 case EnumType.DatabaseSupported.Mss
                     obj = BaseClass.Database.MSS(user, pwd);
-                    
+
                 otherwise
                     error("Unsupported database driver, please check.");
-            end            
+            end
         end
-        
+
         % 获取库名 / 获取表名
         function ret = GetDbName(ast)
             % 预处理
@@ -133,21 +133,21 @@ classdef Database < handle
             product = EnumType.Product.ToString(ast.product);
             variety = ast.variety;
             exchange = EnumType.Exchange.ToString(ast.exchange);
-            
+
             % 分类命名
             switch ast.product
                 case EnumType.Product.Etf
                     ret = sprintf("%s-%s", inv, product);
-                    
+
                 case EnumType.Product.Future
                     ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
-                    
+
                 case EnumType.Product.Index
                     ret = sprintf("%s-%s", inv, product);
-                    
+
                 case EnumType.Product.Option
                     ret = sprintf("%s-%s-%s-%s", inv, product, variety, exchange);
-                    
+
                 otherwise
                     error("Unexpected product for name database, please check !");
             end
@@ -161,37 +161,37 @@ classdef Database < handle
                 ast = varargin{1};
                 symbol = ast.symbol;
                 exchange = EnumType.Exchange.ToString(ast.exchange);
-                
+
                 % 分类命名
                 switch ast.product
                     case EnumType.Product.Etf
                         ret = sprintf("%s_%s", symbol, exchange);
-                        
+
                     case EnumType.Product.Future
                         ret = symbol;
-                        
+
                     case EnumType.Product.Index
                         ret = sprintf("%s_%s", symbol, exchange);
-                        
+
                     case EnumType.Product.Option
                         ret = symbol;
-                        
+
                     otherwise
                         error("Unexpected product for name table, please check !");
                 end
                 ret = upper(ret);
-                
+
             elseif (nargin() == 3 && isa(varargin{1}, 'EnumType.Product') && (isa(varargin{2}, 'string') || isa(varargin{2}, 'char')) && isa(varargin{3}, 'EnumType.Exchange'))
                 % 合约表名
                 pdt = varargin{1};
                 var = varargin{2};
                 exc = varargin{3};
                 ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
-                
+
             else
                 error("Unexpected input arguments, please check!");
             end
         end
-        
+
     end
 end
