@@ -2,6 +2,7 @@
 % v1.3.0.20220113.beta
 %      1.加入成员类型约束
 %      2.加入错误处理方案
+%      3.调整功能结构
 % v1.2.0.20220105.beta
 %       首次添加
 classdef DataSource
@@ -18,19 +19,40 @@ classdef DataSource
     end
         
     methods
+        % 构造函数
         function obj = DataSource()
             % DataSource 构造此类的实例
             %   此处显示详细说明        
         end
         
+        % 下载数据
+        function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
+            switch pdt
+                case EnumType.Product.Etf
+                    [is_err, md] = obj.FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
+                    
+                case EnumType.Product.Future
+                    [is_err, md] = obj.FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
+                    
+                case EnumType.Product.Index
+                    [is_err, md] = obj.FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e);
+                    
+                case EnumType.Product.Option
+                    [is_err, md] = obj.FetchMdOptionMd(obj, symb, exc, inv, ts_s, ts_e);
+                    
+                otherwise
+                    error('Unexpected "product" for fetching data, please check.');
+            end
+                    
+        end
+                
         % 获取错误信息
         function [err_id, err_msg, is_fatal] = GetErrInfo(obj)
             err_id = obj.err.code;
             err_msg = obj.err.msg;
             is_fatal = obj.IsErrFatal();
         end
-        
-        
+                
         % 输出错误信息
         function DispErr(obj, usr_ht)
             fprintf('%s ERROR: %s, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
@@ -44,14 +66,10 @@ classdef DataSource
         cal = FetchCalendar(obj);
         
         % 获取行情数据
-        [is_err, md] = FetchMinMdEtf(obj, etf, ts_s, ts_e);
-        [is_err, md] = FetchMinMdFuture(obj, fut, ts_s, ts_e);
-        [is_err, md] = FetchMinMdIndex(obj, idx, ts_s, ts_e);
-        [is_err, md] = FetchMinMdOption(obj, opt, ts_s, ts_e);
-        [is_err, md] = FetchDailyMdEtf(obj, etf, ts_s, ts_e);
-        [is_err, md] = FetchDailyMdFuture(obj, fut, ts_s, ts_e);
-        [is_err, md] = FetchDailyMdIndex(obj, idx, ts_s, ts_e);
-        [is_err, md] = FetchDailyMdOption(obj, opt, ts_s, ts_e);
+        [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e);
         
         % 获取期权/期货合约列表
         [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);        
