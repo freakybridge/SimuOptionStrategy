@@ -3,8 +3,8 @@
 %       首次添加
 function LoadBarMin(obj, asset)
 % 预处理
-db = BaseClass.Database.Database.GetDbName(asset);
-tb = BaseClass.Database.Database.GetTableName(asset);
+db = obj.GetDbName(asset);
+tb = obj.GetTableName(asset);
 conn = SelectConn(obj, db);
 
 % 读取

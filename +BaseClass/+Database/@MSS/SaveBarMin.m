@@ -3,9 +3,9 @@
 %       首次添加
 function ret = SaveBarMin(obj, asset)
 % 获取数据库 / 端口 / 表名 / 检查
-db = BaseClass.Database.Database.GetDbName(asset);
-conn = SelectConn(obj, db);
-tb = BaseClass.Database.Database.GetTableName(asset);
+db = obj.GetDbName(asset);
+conn = obj.SelectConn(db);
+tb = obj.GetTableName(asset);
 if (~CheckTable(obj, db, tb))
     CreateTable(obj, conn, db, tb, asset);
 end
