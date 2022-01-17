@@ -25,9 +25,16 @@ classdef iFinD < BaseClass.DataSource.DataSource
             % iFinD 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.DataSource.DataSource();
-            obj.exchanges = containers.Map;
-            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SSE)) = 'SH';
-            obj.exchanges(EnumType.Exchange.ToString(EnumType.Exchange.SZSE)) = 'SZ';
+
+            % 交易所转换
+            import EnumType.Exchange;
+            obj.exchanges(Exchange.ToString(Exchange.CFFEX)) = 'CFE';
+            obj.exchanges(Exchange.ToString(Exchange.CZCE)) = 'CZC';
+            obj.exchanges(Exchange.ToString(Exchange.DCE)) = 'DCE';
+            obj.exchanges(Exchange.ToString(Exchange.INE)) = 'INE';
+            obj.exchanges(Exchange.ToString(Exchange.SHFE)) = 'SHF';
+            obj.exchanges(Exchange.ToString(Exchange.SSE)) = 'SH';
+            obj.exchanges(Exchange.ToString(Exchange.SZSE)) = 'SZ';
             
             % 登录
             obj.user = ur;
@@ -170,6 +177,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
     end
     
     methods (Hidden)
+        % 是否为致命错误
         function ret= IsErrFatal(obj)
             if (obj.err.code && obj.err.code ~= -201)
                 ret = true;
@@ -177,6 +185,10 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 ret = false;
             end
         end
+        
+        % 获取分钟 / 日级数据
+        [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
+        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, err_fmt);
     end
 end
 
