@@ -37,7 +37,7 @@ classdef Database < handle
         % 建表
         function ret = CreateTableMd(obj, asset)
             product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Product.ToString(asset.interval);
+            interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_create_table_func(product);
             func = func(interval);
             ret = func(asset);
@@ -47,7 +47,7 @@ classdef Database < handle
         % 保存行情
         function ret = SaveMarketData(obj, asset)
             product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Product.ToString(asset.interval);
+            interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_save_func(product);
             func = func(interval);
             ret = func(asset);
@@ -56,7 +56,7 @@ classdef Database < handle
         % 读取行情
         function LoadMarketData(obj, asset)
             product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Product.ToString(asset.interval);
+            interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_load_func(product);
             func = func(interval);
             func(asset);
@@ -142,10 +142,10 @@ classdef Database < handle
             OPT(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
             OPT(Interval.ToString(Interval.day))= @obj.CreateTableBarDayOption;
             
-            obj.map_load_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_load_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_load_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_load_func(Product.ToString(Product.Option)) = OPT;
+            obj.map_create_table_func(Product.ToString(Product.Etf)) = ETF;
+            obj.map_create_table_func(Product.ToString(Product.Future)) = FUT;
+            obj.map_create_table_func(Product.ToString(Product.Index)) = IDX;
+            obj.map_create_table_func(Product.ToString(Product.Option)) = OPT;
             
             
         end
