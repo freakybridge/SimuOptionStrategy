@@ -38,21 +38,21 @@ classdef ExcelReader
         end
         
         % 保存行情
-        function ret = SaveMarketData(obj, asset)
+        function ret = SaveMarketData(obj, asset, dir_)
             product = EnumType.Product.ToString(asset.product);
             interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_save_func(product);
             func = func(interval);
-            ret = func(asset);
+            ret = func(asset, dir_);
         end
 
         % 读取行情
-        function LoadMarketData(obj, asset)
+        function LoadMarketData(obj, asset, dir_)
             product = EnumType.Product.ToString(asset.product);
             interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_load_func(product);
             func = func(interval);
-            func(asset);
+            func(asset, dir_);
         end
     end
     
@@ -126,17 +126,17 @@ classdef ExcelReader
         instru = LoadChainFuture(obj, var, exc, dir_);
         
         % 保存K线行情
-        ret = SaveBarMin(obj, asset);
-        ret = SaveBarDayEtf(obj, asset);
-        ret = SaveBarDayFuture(obj, asset);
-        ret = SaveBarDayIndex(obj, asset);
-        ret = SaveBarDayOption(obj, asset);
+        ret = SaveBarMin(obj, asset, dir_);
+        ret = SaveBarDayEtf(obj, asset, dir_);
+        ret = SaveBarDayFuture(obj, asset, dir_);
+        ret = SaveBarDayIndex(obj, asset, dir_);
+        ret = SaveBarDayOption(obj, asset, dir_);
 
         % 读取K线行情
-        LoadBarMin(obj, asset);
-        LoadBarDayEtf(obj, asset);
-        LoadBarDayFuture(obj, asset);
-        LoadBarDayIndex(obj, asset);
-        LoadBarDayOption(obj, asset);
+        LoadBarMin(obj, asset, dir_);
+        LoadBarDayEtf(obj, asset, dir_);
+        LoadBarDayFuture(obj, asset, dir_);
+        LoadBarDayIndex(obj, asset, dir_);
+        LoadBarDayOption(obj, asset, dir_);
     end
 end
