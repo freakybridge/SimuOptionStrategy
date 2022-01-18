@@ -6,11 +6,11 @@
 function LoadMd(obj, asset, dir_csv, dir_tb)
 
 % 读取数据库 / csv
-obj.LoadMdViaDatabase(asset);
+obj.db.LoadMarketData(asset);
 if (isempty(asset.md))
-    obj.LoadMdViaCsv(asset, dir_csv);
+    obj.er.LoadMarketData(asset, dir_csv);
     if (obj.IsMdComplete(asset))
-        obj.SaveMd2Database(asset);
+        obj.db.SaveMarketData(asset);
         return;
     end
 elseif (obj.IsMdComplete(asset))
@@ -20,15 +20,15 @@ end
 % 读取淘宝excel
 obj.LoadMdViaTaobaoExcel(asset, dir_tb);
 if (obj.IsMdComplete(asset))    
-    obj.SaveMd2Database(asset);
-    obj.SaveMd2Csv(asset, dir_csv);
+    obj.db.SaveMarketData(asset);
+    obj.er.SaveMarketData(asset, dir_csv);
 end
 
 % 更新
 obj.LoadMdViaDataSource(asset);
 if (~isempty(asset.md))
-    obj.SaveMd2Database(asset);
-    obj.SaveMd2Csv(asset, dir_csv);
+    obj.db.SaveMarketData(asset);
+    obj.er.SaveMarketData(asset, dir_csv);
 end
 
 end

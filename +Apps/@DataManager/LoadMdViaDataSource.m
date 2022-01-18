@@ -19,6 +19,28 @@ end
 end
 
 
+% 确定更新起点终点
+function [dt_s, dt_e] = FindUpdateSE(obj, asset)
+switch asset.product
+    case EnumType.Product.Etf
+
+    case EnumType.Product.Future
+
+    case EnumType.Product.Index
+
+    case EnumType.Product.Option
+        % 确定起点
+        if
+
+    otherwise
+        error('Unexpected "product" for update start & end point determine, please check.');
+
+end
+
+
+end
+
+
 % 载入期权数据
 function md = LoadOption(obj, ast)
 
