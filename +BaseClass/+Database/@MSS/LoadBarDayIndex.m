@@ -1,13 +1,13 @@
 % Microsoft Sql Server / LoadBarDayIndex
 % v1.3.0.20220113.beta
-%       é¦–æ¬¡æ·»åŠ 
+%       Ê×´Î¼ÓÈë
 function LoadBarDayIndex(obj, asset)
-% é¢„å¤„ç†
+% ¿âÃû / ±íÃû
 db = obj.GetDbName(asset);
 tb = obj.GetTableName(asset);
 conn = SelectConn(obj, db);
 
-% è¯»å–
+% ÔØÈë
 try
     sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
     setdbprefs('DataReturnFormat', 'numeric');

@@ -1,8 +1,8 @@
 % Microsoft Sql Server / LoadBarDayFuture
 % v1.3.0.20220113.beta
-%       首次添加
+%       �״μ���
 function LoadBarDayFuture(obj, asset)
-% 预处理
+% 预处�?
 db = obj.GetDbName(asset);
 tb = obj.GetTableName(asset);
 conn = SelectConn(obj, db);

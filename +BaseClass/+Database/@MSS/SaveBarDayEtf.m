@@ -27,7 +27,7 @@ ret = true;
 
 end
 
-% 建表ETF日线数据
+% 建表 ETF 日线数据
 function ret = CreateTable(obj, conn, db, tb)
 sql = sprintf("CREATE TABLE [%s](" ...
     + "[DATETIME] [datetime] NOT NULL PRIMARY KEY, " ...

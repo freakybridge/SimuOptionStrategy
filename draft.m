@@ -53,7 +53,8 @@ dm.db.LoadMarketData(asset);
 asset = BaseClass.Asset.Option.Instance.SSE_510050('10003776', 'abc', '1d', 10000, 'c', 3.0, now(), now());
 [mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
-dm.db.SaveMarketData(assetsensbybls);
+dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
 
 
 
@@ -61,12 +62,14 @@ asset = BaseClass.Asset.Index.Instance.SSE_000016('1d');
 [mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
 dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
 
 
 asset = BaseClass.Asset.Future.Instance.DCE_M('m2205', 'abc', '1d', 10, now(), 0.1, 1, 5);
 [mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
 dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
 
 
 [mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);

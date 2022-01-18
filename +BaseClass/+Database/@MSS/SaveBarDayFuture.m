@@ -1,8 +1,8 @@
 % Microsoft Sql Server / SaveBarDayFuture
 % v1.3.0.20220113.beta
-%       首次添加
+%       �״μ���
 function ret = SaveBarDayFuture(obj, asset)
-% 获取数据库 / 端口 / 表名 / 检查
+% 获取数据�? / 端口 / 表名 / �?�?
 db = obj.GetDbName(asset);
 conn = obj.SelectConn(db);
 tb = obj.GetTableName(asset);
