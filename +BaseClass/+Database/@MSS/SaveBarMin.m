@@ -1,16 +1,16 @@
 % Microsoft Sql Server / SaveBarMin
 % v1.3.0.20220113.beta
-%       é¦–æ¬¡æ·»åŠ 
+%       Ê×´Î¼ÓÈë
 function ret = SaveBarMin(obj, asset)
-% è·å–æ•°æ®åº“ / ç«¯å£ / è¡¨å / æ£€æŸ¥
+% È·¶¨¿âÃû / ¶Ë¿Ú / ±íÃû
 db = obj.GetDbName(asset);
 conn = obj.SelectConn(db);
 tb = obj.GetTableName(asset);
 if (~CheckTable(obj, db, tb))
-    CreateTable(obj, conn, db, tb, asset);
+    CreateTable(obj, conn, db, tb);
 end
 
-% ç”Ÿæˆsql
+% Éú³É sql
 sql = string();
 for i = 1 : size(asset.md, 1)
     this = asset.md(i, :);
@@ -21,7 +21,31 @@ for i = 1 : size(asset.md, 1)
     sql = sql + head + tail;
 end
 
-% å…¥åº“
+% Èë¿â
 exec(conn, sql);
 ret = true;
+end
+
+% ½¨±í·ÖÖÓKÏßÊı¾İ
+function ret = CreateTable(obj, conn, db, tb)
+sql = sprintf("CREATE TABLE [%s](" ...
+    + "[DATETIME] [datetime] NOT NULL PRIMARY KEY, " ...
+    + "[OPEN] [numeric](18, 4) NULL, " ...
+    + "[HIGH] [numeric](18, 4) NULL, " ...
+    + "[LOW] [numeric](18, 4) NULL, " ...
+    + "[LAST] [numeric](18, 4) NULL, " ...
+    + "[TURNOVER] [numeric](18, 4) NULL, " ...
+    + "[VOLUME] [numeric](18, 4) NULL, " ...
+    + "[OI] [numeric](18, 4) NULL " ...
+    + ")ON [PRIMARY];" ...
+    + "CREATE INDEX [%s] ON [%s] ([DATETIME] ASC);" ...
+    , tb, obj.TableIndex(db, tb), tb);
+res = exec(conn, sql);
+
+if (~isempty(res.Cursor))
+    ret = true;
+else
+    ret = false;
+end
+obj.CreateTbResDisp(ret, db, tb, res.Message);
 end
