@@ -1,12 +1,12 @@
 % 从数据接口获取行情数据
 % v1.2.0.20220105.beta
 %      1.首次加入
-function LoadMdViaDataSource(obj, ast)
+function LoadMdViaDataSource(obj, asset)
 
 % 下载
-switch ast.product
+switch asset.product
     case EnumType.Product.Option
-        md = LoadOption(obj, ast);            
+        md = LoadOption(obj, asset);            
         
     otherwise
         error("Unsupported ""product"" for DataSource loading. ");
@@ -14,7 +14,7 @@ end
 
 % 合并
 if (~isempty(md))
-    ast.MergeMarketData(md);
+    asset.MergeMarketData(md);
 end
 end
 

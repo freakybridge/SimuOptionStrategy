@@ -1,17 +1,18 @@
-% DataManager / LoadOptChain 多种方式获取期权链
+% DataManager / LoadChain 获取合约列表
 % v1.3.0.20220113.beta
 %      1.修改逻辑，提升效率
+%      2.改名修正逻辑
 % v1.2.0.20220105.beta
 %      1.首次加入
-function ins = LoadOptChain(obj, var, exc, dir_)
+function ins = LoadChain(obj, var, exc, dir_)
 
 % 从数据库 / excel获取
-ins_local = obj.LoadOptChainViaDb(var, exc);
+ins_local = obj.LoadChainViaDb(var, exc);
 if (isempty(ins_local))
-    ins_local = obj.LoadOptChainViaExcel(var, exc, dir_);
+    ins_local = obj.LoadChainViaExcel(var, exc, dir_);
     if (~obj.IsInstruNeedUpdate(ins_local))
         ins = ins_local;
-        obj.SaveOptChain2Db(var, exc, ins);
+        obj.SaveChain2Db(var, exc, ins);
         return;
     end
     

@@ -7,6 +7,7 @@ classdef DataManager < handle
     properties
         db	BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds	BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
+        er  BaseClass.ExcelReader = BaseClass.ExcelReader();
     end    
     properties (Access = private)
         ds_pool struct;
@@ -15,6 +16,7 @@ classdef DataManager < handle
 
     % 公开方法
     methods
+        % 构造函数
         function obj = DataManager(db_driver, db_ur, db_pwd)
             if (~isnan(db_driver))
                 obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
@@ -28,45 +30,45 @@ classdef DataManager < handle
             obj.AddDs('ifind', '00256770', '30377546');
             obj.ds = obj.AutoSwitchDataSource();
         end
-    end
-    
-    % 行情管理
-    methods
-        LoadMd(obj, ast, dir_csv, dirt_tb);
-        LoadMdViaCsv(obj,  ast, dir_csv);
-        LoadMdViaDatabase(obj, ast);
-        LoadMdViaDataSource(obj, ast);
-        LoadMdViaTaobaoExcel(obj, ast, dirt_tb);        
-        
-        ret = SaveMd2Database(obj, ast);
-        ret = SaveMd2Csv(obj, ast, dir_csv);                
-        ret = IsMdComplete(obj, ast);       
-    end
-    
-    % 合约列表管理
-    methods
-        instrus = LoadOptChain(obj, var, exc, dir_);
-        instrus = LoadOptChainViaDb(obj, var, exc);
-        instrus = LoadOptChainViaDs(obj, var, exc, instru_local);
-        instrus = LoadOptChainViaExcel(obj, var, exc, dir_);
-        
-        ret = SaveOptChain2Db(obj, var, exc, instrus);
-        ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
-        ret = IsInstruNeedUpdate(obj, instrus);
-    end
-    
-    % 日历管理
-    methods
-        cal = LoadCal(obj);
-        cal = LoadCalViaDs(obj);
-        cal = LoadCalViaDb(obj);
-        cal = LoadCalViaExcel(obj, dir_);
-        
-        ret = SaveCal2Db(obj);
-        ret = SaveCal2Excel(obj, dir_);
+
+        % 载入行情
+        LoadMd(obj, asset, dir_csv, dirt_tb);
+
+        % 载入合约列表
+        instrus = LoadChain(obj, var, exc, dir_);
+
+        % 更新数据
+
+        % 备份数据库到excel
     end
     
     methods (Access = private)
+        % 行情管理
+        LoadMdViaCsv(obj, asset, dir_csv);
+        LoadMdViaDatabase(obj, asset);
+        LoadMdViaDataSource(obj, asset);
+        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);   
+        ret = SaveMd2Database(obj, asset);
+        ret = SaveMd2Csv(obj, asset, dir_csv);                
+        ret = IsMdComplete(obj, asset);       
+
+        % 合约列表管理
+        instrus = LoadOptChain(obj, var, exc, dir_);
+        instrus = LoadOptChainViaDb(obj, var, exc);
+        instrus = LoadOptChainViaDs(obj, var, exc, instru_local);
+        instrus = LoadOptChainViaExcel(obj, var, exc, dir_);        
+        ret = SaveOptChain2Db(obj, var, exc, instrus);
+        ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
+        ret = IsInstruNeedUpdate(obj, instrus);
+
+        % 日历管理
+        cal = LoadCal(obj);
+        cal = LoadCalViaDs(obj);
+        cal = LoadCalViaDb(obj);
+        cal = LoadCalViaExcel(obj, dir_);        
+        ret = SaveCal2Db(obj);
+        ret = SaveCal2Excel(obj, dir_);
+
         % 添加备选数据源
         function AddDs(obj, nm, usr, pwd)
             tmp = struct;

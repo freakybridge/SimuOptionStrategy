@@ -3,32 +3,32 @@
 %      1.修改逻辑，提升效率
 % v1.2.0.20220105.beta
 %      1.首次加入
-function LoadMd(obj, ast, dir_csv, dir_tb)
+function LoadMd(obj, asset, dir_csv, dir_tb)
 
 % 读取数据库 / csv
-obj.LoadMdViaDatabase(ast);
-if (isempty(ast.md))
-    obj.LoadMdViaCsv(ast, dir_csv);
-    if (obj.IsMdComplete(ast))
-        obj.SaveMd2Database(ast);
+obj.LoadMdViaDatabase(asset);
+if (isempty(asset.md))
+    obj.LoadMdViaCsv(asset, dir_csv);
+    if (obj.IsMdComplete(asset))
+        obj.SaveMd2Database(asset);
         return;
     end
-elseif (obj.IsMdComplete(ast))
+elseif (obj.IsMdComplete(asset))
     return;
 end
     
 % 读取淘宝excel
-obj.LoadMdViaTaobaoExcel(ast, dir_tb);
-if (obj.IsMdComplete(ast))    
-    obj.SaveMd2Database(ast);
-    obj.SaveMd2Csv(ast, dir_csv);
+obj.LoadMdViaTaobaoExcel(asset, dir_tb);
+if (obj.IsMdComplete(asset))    
+    obj.SaveMd2Database(asset);
+    obj.SaveMd2Csv(asset, dir_csv);
 end
 
 % 更新
-obj.LoadMdViaDataSource(ast);
-if (~isempty(ast.md))
-    obj.SaveMd2Database(ast);
-    obj.SaveMd2Csv(ast, dir_csv);
+obj.LoadMdViaDataSource(asset);
+if (~isempty(asset.md))
+    obj.SaveMd2Database(asset);
+    obj.SaveMd2Csv(asset, dir_csv);
 end
 
 end
