@@ -14,77 +14,140 @@ classdef Database < handle
         tables containers.Map;
         db_default char;
         db_instru char;
+        
+        map_save_func containers.Map;
+        map_load_func containers.Map;
+        map_create_table_func containers.Map;
+        
     end
 
     methods
         % 端口初始化
         function obj = Database(user, pwd, db_dft)
+            % 属性初始化
             obj.user = user;
             obj.password = pwd;
             obj.db_default = db_dft;
             obj.db_instru = "INSTRUMENTS";
             obj.conns = containers.Map();
-            obj.tables = containers.Map();
+            obj.tables = containers.Map();            
+            obj.AttachFuncHandle();            
         end
+        
+        % 建表
+        function ret = CreateTableMd(obj, asset)
+            product = EnumType.Product.ToString(asset.product);
+            interval = EnumType.Product.ToString(asset.interval);
+            func = obj.map_create_table_func(product);
+            func = func(interval);
+            ret = func(asset);
+        end
+        
 
         % 保存行情
         function ret = SaveMarketData(obj, asset)
-            switch asset.interval
-                case {EnumType.Interval.min1, EnumType.Interval.min5}
-                    ret = obj.SaveBarMin(asset);
-
-                case {EnumType.Interval.day}
-                    switch asset.product
-                        case EnumType.Product.Etf
-                            ret = obj.SaveBarDayEtf(asset);
-
-                        case EnumType.Product.Future
-                            ret = obj.SaveBarDayFuture(asset);
-
-                        case EnumType.Product.Index
-                            ret = obj.SaveBarDayIndex(asset);
-
-                        case EnumType.Product.Option
-                            ret = obj.SaveBarDayOption(asset);
-
-                        otherwise
-                            error("Unsupported ""product"" for daily market data saving, please check.");
-
-                    end
-
-                otherwise
-                    error("Unsupported ""interval"" for market data saving, please check.");
-            end
+            product = EnumType.Product.ToString(asset.product);
+            interval = EnumType.Product.ToString(asset.interval);
+            func = obj.map_save_func(product);
+            func = func(interval);
+            ret = func(asset);
         end
 
         % 读取行情
         function LoadMarketData(obj, asset)
-            switch asset.interval
-                case {EnumType.Interval.min1, EnumType.Interval.min5}
-                    LoadBarMin(obj, asset);
-
-                case {EnumType.Interval.day}
-                    switch asset.product
-                        case EnumType.Product.Etf
-                            obj.LoadBarDayEtf(asset);
-
-                        case EnumType.Product.Future
-                            obj.LoadBarDayFuture(asset);
-
-                        case EnumType.Product.Index
-                            obj.LoadBarDayIndex(asset);
-
-                        case EnumType.Product.Option
-                            obj.LoadBarDayOption(asset);
-
-                        otherwise
-                            error("Unsupported ""product"" for daily market data loading, please check.");
-
-                    end
-
-                otherwise
-                    error("Unsupported ""interval"" for market data loading, please check.");
-            end
+            product = EnumType.Product.ToString(asset.product);
+            interval = EnumType.Product.ToString(asset.interval);
+            func = obj.map_load_func(product);
+            func = func(interval);
+            func(asset);
+        end
+    end
+    
+    
+    methods (Hidden)
+        function AttachFuncHandle(obj)
+            % 整理 Save
+            import EnumType.Product;
+            import EnumType.Interval;
+            
+            ETF = containers.Map();
+            ETF(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
+            ETF(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
+            ETF(Interval.ToString(Interval.day))= @obj.SaveBarDayEtf;
+            
+            FUT = containers.Map();
+            FUT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
+            FUT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
+            FUT(Interval.ToString(Interval.day))= @obj.SaveBarDayFuture;
+            
+            IDX = containers.Map();
+            IDX(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
+            IDX(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
+            IDX(Interval.ToString(Interval.day))= @obj.SaveBarDayIndex;
+            
+            OPT = containers.Map();
+            OPT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
+            OPT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
+            OPT(Interval.ToString(Interval.day))= @obj.SaveBarDayOption;
+            
+            obj.map_save_func(Product.ToString(Product.Etf)) = ETF;
+            obj.map_save_func(Product.ToString(Product.Future)) = FUT;
+            obj.map_save_func(Product.ToString(Product.Index)) = IDX;
+            obj.map_save_func(Product.ToString(Product.Option)) = OPT;
+            
+            % 整理 Load
+            ETF = containers.Map();
+            ETF(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
+            ETF(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
+            ETF(Interval.ToString(Interval.day))= @obj.LoadBarDayEtf;
+            
+            FUT = containers.Map();
+            FUT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
+            FUT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
+            FUT(Interval.ToString(Interval.day))= @obj.LoadBarDayFuture;
+            
+            IDX = containers.Map();
+            IDX(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
+            IDX(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
+            IDX(Interval.ToString(Interval.day))= @obj.LoadBarDayIndex;
+            
+            OPT = containers.Map();
+            OPT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
+            OPT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
+            OPT(Interval.ToString(Interval.day))= @obj.LoadBarDayOption;
+            
+            obj.map_load_func(Product.ToString(Product.Etf)) = ETF;
+            obj.map_load_func(Product.ToString(Product.Future)) = FUT;
+            obj.map_load_func(Product.ToString(Product.Index)) = IDX;
+            obj.map_load_func(Product.ToString(Product.Option)) = OPT;
+            
+            % 整理 CreateTable
+            ETF = containers.Map();
+            ETF(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
+            ETF(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
+            ETF(Interval.ToString(Interval.day))= @obj.CreateTableBarDayEtf;
+            
+            FUT = containers.Map();
+            FUT(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
+            FUT(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
+            FUT(Interval.ToString(Interval.day))= @obj.CreateTableBarDayFuture;
+            
+            IDX = containers.Map();
+            IDX(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
+            IDX(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
+            IDX(Interval.ToString(Interval.day))= @obj.CreateTableBarDayIndex;
+            
+            OPT = containers.Map();
+            OPT(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
+            OPT(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
+            OPT(Interval.ToString(Interval.day))= @obj.CreateTableBarDayOption;
+            
+            obj.map_load_func(Product.ToString(Product.Etf)) = ETF;
+            obj.map_load_func(Product.ToString(Product.Future)) = FUT;
+            obj.map_load_func(Product.ToString(Product.Index)) = IDX;
+            obj.map_load_func(Product.ToString(Product.Option)) = OPT;
+            
+            
         end
     end
 
@@ -99,6 +162,15 @@ classdef Database < handle
         instru = LoadChainFuture(obj, var, exc);
     end
     methods (Abstract, Hidden)
+        % 建表
+        ret = CreateTableInstru(obj, product);
+        ret = CreateTableBarMin(obj, asset);
+        ret = CreateTableBarDayEtf(obj, asset);
+        ret = CreateTableBarDayFuture(obj, asset);
+        ret = CreateTableBarDayIndex(obj, asset);
+        ret = CreateTableBarDayOption(obj, asset);
+        
+        
         % 保存K线行情
         ret = SaveBarMin(obj, asset);
         ret = SaveBarDayEtf(obj, asset);

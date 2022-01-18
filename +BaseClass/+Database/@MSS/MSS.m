@@ -83,7 +83,7 @@ classdef MSS < BaseClass.Database.Database
             end
         end
 
-        % 检查表 / 创建表
+        % 检查表
         function ret = CheckTable(obj, db, tb)
             if (obj.tables.isKey(db))
                 tmp = obj.tables.at(db);
@@ -98,8 +98,6 @@ classdef MSS < BaseClass.Database.Database
                 ret = false;
             end
         end
-        ret = CreateTable(obj, conn, db, tb,  varargin);
-
     end
     
     % 抽象方法实现
@@ -113,6 +111,15 @@ classdef MSS < BaseClass.Database.Database
         instru = LoadChainFuture(obj, var, exc);
     end
     methods (Hidden)
+        % 建表
+        ret = CreateTableInstru(obj, product);
+        ret = CreateTableBarMin(obj, asset);
+        ret = CreateTableBarDayEtf(obj, asset);
+        ret = CreateTableBarDayFuture(obj, asset);
+        ret = CreateTableBarDayIndex(obj, asset);
+        ret = CreateTableBarDayOption(obj, asset);
+        
+        
         % 保存K线行情
         ret = SaveBarMin(obj, asset);
         ret = SaveBarDayEtf(obj, asset);
