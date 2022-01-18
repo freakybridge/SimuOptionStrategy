@@ -42,7 +42,7 @@ end
 
 ts_s = '2022-01-06 9:30';
 ts_e = '2022-01-13 10:00';
-dm.ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
+% dm.ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
 
 asset = BaseClass.Asset.ETF.Instance.SSE_510050('1d');
 [mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
