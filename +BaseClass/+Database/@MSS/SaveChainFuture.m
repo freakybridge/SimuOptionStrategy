@@ -1,6 +1,6 @@
 % Microsoft Sql Server / SaveChainFuture
 % v1.3.0.20220113.beta
-%       棣栨娣诲姞
+%       首次加入
 function ret = SaveChainFuture(obj, var, exc, instrus)
 error('Under construction, please check.');
 end

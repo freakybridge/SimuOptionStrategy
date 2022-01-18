@@ -17,7 +17,6 @@ classdef Database < handle
         
         map_save_func containers.Map;
         map_load_func containers.Map;
-        map_create_table_func containers.Map;
         
     end
 
@@ -33,17 +32,7 @@ classdef Database < handle
             obj.tables = containers.Map();            
             obj.AttachFuncHandle();            
         end
-        
-        % 建表
-        function ret = CreateTableMd(obj, asset)
-            product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Interval.ToString(asset.interval);
-            func = obj.map_create_table_func(product);
-            func = func(interval);
-            ret = func(asset);
-        end
-        
-
+             
         % 保存行情
         function ret = SaveMarketData(obj, asset)
             product = EnumType.Product.ToString(asset.product);
@@ -121,33 +110,6 @@ classdef Database < handle
             obj.map_load_func(Product.ToString(Product.Index)) = IDX;
             obj.map_load_func(Product.ToString(Product.Option)) = OPT;
             
-            % 整理 CreateTable
-            ETF = containers.Map();
-            ETF(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
-            ETF(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
-            ETF(Interval.ToString(Interval.day))= @obj.CreateTableBarDayEtf;
-            
-            FUT = containers.Map();
-            FUT(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
-            FUT(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
-            FUT(Interval.ToString(Interval.day))= @obj.CreateTableBarDayFuture;
-            
-            IDX = containers.Map();
-            IDX(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
-            IDX(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
-            IDX(Interval.ToString(Interval.day))= @obj.CreateTableBarDayIndex;
-            
-            OPT = containers.Map();
-            OPT(Interval.ToString(Interval.min1)) = @obj.CreateTableBarMin;
-            OPT(Interval.ToString(Interval.min5)) = @obj.CreateTableBarMin;
-            OPT(Interval.ToString(Interval.day))= @obj.CreateTableBarDayOption;
-            
-            obj.map_create_table_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_create_table_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_create_table_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_create_table_func(Product.ToString(Product.Option)) = OPT;
-            
-            
         end
     end
 
@@ -161,16 +123,7 @@ classdef Database < handle
         instru = LoadChainOption(obj, var, exc);
         instru = LoadChainFuture(obj, var, exc);
     end
-    methods (Abstract, Hidden)
-        % 建表
-        ret = CreateTableInstru(obj, product);
-        ret = CreateTableBarMin(obj, asset);
-        ret = CreateTableBarDayEtf(obj, asset);
-        ret = CreateTableBarDayFuture(obj, asset);
-        ret = CreateTableBarDayIndex(obj, asset);
-        ret = CreateTableBarDayOption(obj, asset);
-        
-        
+    methods (Abstract, Hidden)        
         % 保存K线行情
         ret = SaveBarMin(obj, asset);
         ret = SaveBarDayEtf(obj, asset);
@@ -198,7 +151,7 @@ classdef Database < handle
             end
         end
 
-        % 获取库名 / 获取表名
+        % 获取库名 / 获取表名 / 表索引
         function ret = GetDbName(ast)
             % 预处理
             inv = EnumType.Interval.ToString(ast.interval);
@@ -264,6 +217,9 @@ classdef Database < handle
                 error("Unexpected input arguments, please check!");
             end
         end
-
+        function ret = TableIndex(db, tb)
+            ret = sprintf("id_%s_%s", db, tb);
+        end
+        
     end
 end

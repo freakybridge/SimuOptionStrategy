@@ -1,8 +1,8 @@
 % Microsoft Sql Server / SaveChainOption
 % v1.3.0.20220113.beta
-%       È¶ñÊ¨°Ê∑ªÂä†
+%        ◊¥Œº”»Î
 function ret = SaveChainOption(obj, var, exc, instrus)
-% Êï∞ÊçÆÂ∫ìÂáÜÂ§á
+% ‘§¥¶¿Ì
 if (isempty(instrus))
     ret = false;
     return;
@@ -10,13 +10,13 @@ end
 db = obj.db_instru;
 conn = obj.SelectConn(db);
 
-% Ë°®ÂáÜÂ§á
-tb = BaseClass.Database.Database.GetTableName(EnumType.Product.Option, var, EnumType.Exchange.ToEnum(exc));
+% ºÏ≤È±Ì
+tb = obj.GetTableName(EnumType.Product.Option, var, EnumType.Exchange.ToEnum(exc));
 if (~obj.CheckTable(db, tb))
-    obj.CreateTable(conn, db, tb, instrus);
+    CreateTable(obj, conn, db, tb);
 end
 
-% ÁîüÊàêsql
+% ◊º±∏sql
 fprintf("Inserting option chain ""%s"", please wait ...\r", tb);
 sql = string();
 for i = 1 : size(instrus, 1)
@@ -68,7 +68,41 @@ for i = 1 : size(instrus, 1)
     sql = sql + head + tail;
 end
 
-% ÂÖ•Â∫ì
+% »Îø‚
 exec(conn, sql);
 ret = true;
+end
+
+
+% Ω®±Ì∫œ‘º±Ì
+function ret = CreateTable(obj, conn, db, tb)
+sql = sprintf("CREATE TABLE [%s](" ...
+    + "[SYMBOL] [varchar](128) NOT NULL PRIMARY KEY, " ...
+    + "[SEC_NAME] [varchar](128) NULL, " ...
+    + "[EXCHANGE] [varchar](128) NULL, " ...
+    + "[VARIETY] [varchar](128) NULL, " ...
+    + "[UD_SYMBOL] [varchar](128) NULL, " ...
+    + "[UD_PRODUCT] [varchar](128) NULL, " ...
+    + "[UD_EXCHANGE] [varchar](128) NULL, " ...
+    + "[CALL_OR_PUT] [varchar](128) NULL, " ...
+    + "[STRIKE_TYPE] [varchar](128) NULL, " ...
+    + "[STRIKE] [numeric](18, 4) NULL, " ...
+    + "[SIZE] [numeric](18, 4) NULL, " ...
+    + "[TICK_SIZE] [numeric](18, 4) NULL, " ...
+    + "[DLMONTH] [integer] NULL, " ...
+    + "[START_TRADE_DATE] [datetime] NULL, " ...
+    + "[END_TRADE_DATE] [datetime] NULL, " ...
+    + "[SETTLE_MODE] [varchar](128) NULL, " ...
+    + "[LAST_UPDATE_DATE] [datetime] NULL" ...    
+    + ")ON [PRIMARY];" ...
+    + "CREATE INDEX [%s] ON [%s] ([SYMBOL] ASC);" ...
+    , tb, obj.TableIndex(db, tb), tb);
+res = exec(conn, sql);
+
+if (~isempty(res.Cursor))
+    ret = true;
+else
+    ret = false;
+end
+obj.CreateTbResDisp(ret, db, tb, res.Message);
 end

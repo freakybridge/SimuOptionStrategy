@@ -98,6 +98,15 @@ classdef MSS < BaseClass.Database.Database
                 ret = false;
             end
         end
+        
+        % 结果输出
+        function CreateTbResDisp(~, ret, db, tb, msg)
+            if (ret)
+                fprintf("Table ""%s""/""%s"" created success.\r", db, tb);
+            else
+                error("Table ""%s""/""%s"" created failure. Msg: %s\r", db, tb, msg);
+            end
+        end
     end
     
     % 抽象方法实现
