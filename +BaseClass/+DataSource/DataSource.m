@@ -25,6 +25,9 @@ classdef DataSource
             %   此处显示详细说明        
         end
         
+        % 下载交易日历
+        cal = FetchCalendar(obj);
+
         % 下载数据
         function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
             switch pdt
@@ -46,25 +49,31 @@ classdef DataSource
                     
         end
                 
+        % 下载合约表
+        function [is_err, ins] = FetchChain(obj, pdt, var, exc, ins_local)
+            switch pdt
+                case EnumType.Product.Future     
+                    [is_err, ins] = FetchChainFuture(obj, [], ins_local);
+
+                case EnumType.Product.Option
+                    opt_s = BaseClass.Asset.Option.Option.Selector('sample', exc, var, 10000, '5m', 'sample', 'call', 888, now(), now());
+                    [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);
+
+                otherwise
+                    error('Unexpected "product" for instruments fetching from datasource, please check.');
+            end
+        end
+
         % 获取错误信息
         function [err_id, err_msg, is_fatal] = GetErrInfo(obj)
             err_id = obj.err.code;
             err_msg = obj.err.msg;
             is_fatal = obj.IsErrFatal();
         end
-                
-        % 输出错误信息
-        function DispErr(obj, usr_ht)
-            fprintf('%s ERROR: %s, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
-        end
-        
     end
     
     
-    methods (Abstract)
-        % 获取交易日历
-        cal = FetchCalendar(obj);
-        
+    methods (Abstract, Hidden)        
         % 获取行情数据
         [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
         [is_err, md] = FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
@@ -76,7 +85,7 @@ classdef DataSource
         [is_err, ins] = FetchChainFuture(obj, fut_s, ins_local);        
     end
     
-    methods (Abstract, Static)
+    methods (Abstract, Static, Hidden)
         % 获取api流量时限
         ret = FetchApiDateLimit();
     end
@@ -116,6 +125,10 @@ classdef DataSource
             date_e = datestr(now(), 'yyyy-mm-dd');
         end
         
+        % 输出错误信息
+        function DispErr(obj, usr_ht)
+            fprintf('%s ERROR: %s, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
+        end
     end
 end
 

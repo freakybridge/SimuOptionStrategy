@@ -50,6 +50,30 @@ classdef Database < handle
             func = func(interval);
             func(asset);
         end
+
+        % 保存合约表
+        function ret = SaveChain(obj, pdt, var, exc, instrus)
+            switch  pdt
+                case EnumType.Product.Future
+                    ret = obj.SaveChainFuture(var, exc, instrus);
+                case EnumType.Product.Option
+                    ret = obj.SaveChainOption(var, exc, instrus);
+                otherwise
+                    error('Unexpected "product" for instruments save to database, please check.')
+            end
+        end
+
+        % 读取合约表
+        function instrus = LoadChain(obj, pdt, var, exc)
+            switch  pdt
+                case EnumType.Product.Future
+                    instrus = obj.LoadChainFuture(var, exc);
+                case EnumType.Product.Option
+                    instrus = obj.LoadChainOption(var, exc);
+                otherwise
+                    error('Unexpected "product" for instruments load from database, please check.')
+            end
+        end
     end
     
     
@@ -114,7 +138,7 @@ classdef Database < handle
     end
 
 
-    methods (Abstract)
+    methods (Abstract, Hidden)
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus);
         ret = SaveChainFuture(obj, var, exc, instrus);
