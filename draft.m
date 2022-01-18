@@ -46,12 +46,12 @@ tt = er.LoadChain(EnumType.Product.Option, variety, exchange, 'C:\Users\dell\Des
 
 
 
-ts_s = '2022-01-13 9:30';
+ts_s = '2022-01-6 9:30';
 ts_e = '2022-01-13 10:00';
 % dm.ds = BaseClass.DataSource.iFinD('meyqh055', '913742');
 ds = BaseClass.DataSource.Wind();
 
-asset = BaseClass.Asset.ETF.Instance.SSE_510050('5m');
+asset = BaseClass.Asset.ETF.Instance.SSE_510050('1d');
 [mark, md] = ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
 er.SaveMarketData(asset, "C:\Users\dell\Desktop\");
@@ -59,25 +59,25 @@ er.LoadMarketData(asset, "C:\Users\dell\Desktop\");
 
 
 asset = BaseClass.Asset.Option.Instance.SSE_510050('10003776', 'abc', '1d', 10000, 'c', 3.0, now(), now());
-[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
-dm.db.SaveMarketData(asset);
-dm.db.LoadMarketData(asset);
+er.SaveMarketData(asset, "C:\Users\dell\Desktop\");
+er.LoadMarketData(asset, "C:\Users\dell\Desktop\");
 
 
 
 asset = BaseClass.Asset.Index.Instance.SSE_000016('1d');
-[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
-dm.db.SaveMarketData(asset);
-dm.db.LoadMarketData(asset);
+er.SaveMarketData(asset, "C:\Users\dell\Desktop\");
+er.LoadMarketData(asset, "C:\Users\dell\Desktop\");
 
 
 asset = BaseClass.Asset.Future.Instance.DCE_M('M2205', 'abc', '1d', 10, now(), 0.1, 1, 5);
-[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+[mark, md] = ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
 asset.MergeMarketData(md);
-dm.db.SaveMarketData(asset);
-dm.db.LoadMarketData(asset);
+er.SaveMarketData(asset, "C:\Users\dell\Desktop\");
+er.LoadMarketData(asset, "C:\Users\dell\Desktop\");
 
 
 asset = BaseClass.Asset.Future.Instance.CZCE_SR('SR205', 'abc', '1d', 10, now(), 0.1, 1, 5);

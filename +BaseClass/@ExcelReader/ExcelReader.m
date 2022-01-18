@@ -9,8 +9,7 @@ classdef ExcelReader
 
     methods
         % 初始化
-        function obj = ExcelReader()
-            obj.AttachFuncHandle();            
+        function obj = ExcelReader()     
         end
              
         % 保存合约列表
@@ -39,83 +38,41 @@ classdef ExcelReader
         
         % 保存行情
         function ret = SaveMarketData(obj, asset, dir_)
-            product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Interval.ToString(asset.interval);
-            func = obj.map_save_func(product);
-            func = func(interval);
-            ret = func(asset, dir_);
+            switch asset.interval
+                case {EnumType.Interval.min1, EnumType.Interval.min5}
+                    ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i');
+                    
+                case {EnumType.Interval.day}
+                    switch asset.product
+                        case EnumType.Product.Etf
+                            ret = obj.SaveBar(asset, dir_, 'datetime,nav, nav_adj, open,high,low,last,turnover,volume', '%s,%.5f,%.5f,%.4f,%.4f,%.4f,%.4f,%i,%i');
+                            
+                        case EnumType.Product.Future
+                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi,presettle,settle,st_stock', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i');
+                            
+                        case EnumType.Product.Index
+                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i');
+                            
+                        case EnumType.Product.Option
+                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi,presettle,settle,remain_n, remain_t', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i,%i');
+                            
+                        otherwise
+                            error('Unexpected "product" for market data csv saving, please check');
+                    end
+                    
+                otherwise
+                    error('Unexpected "interval" for market data csv saving, please check');
+            end
         end
 
         % 读取行情
         function LoadMarketData(obj, asset, dir_)
-            product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Interval.ToString(asset.interval);
-            func = obj.map_load_func(product);
-            func = func(interval);
-            func(asset, dir_);
+            obj.LoadBar(asset, dir_);
         end
     end
     
     
     methods (Hidden)
-        % 粘贴句柄
-        function AttachFuncHandle(obj)
-            % 整理 Save
-            import EnumType.Product;
-            import EnumType.Interval;
-            
-            ETF = containers.Map();
-            ETF(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            ETF(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            ETF(Interval.ToString(Interval.day))= @obj.SaveBarDayEtf;
-            
-            FUT = containers.Map();
-            FUT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            FUT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            FUT(Interval.ToString(Interval.day))= @obj.SaveBarDayFuture;
-            
-            IDX = containers.Map();
-            IDX(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            IDX(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            IDX(Interval.ToString(Interval.day))= @obj.SaveBarDayIndex;
-            
-            OPT = containers.Map();
-            OPT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            OPT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            OPT(Interval.ToString(Interval.day))= @obj.SaveBarDayOption;
-            
-            obj.map_save_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_save_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_save_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_save_func(Product.ToString(Product.Option)) = OPT;
-            
-            % 整理 Load
-            ETF = containers.Map();
-            ETF(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            ETF(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            ETF(Interval.ToString(Interval.day))= @obj.LoadBarDayEtf;
-            
-            FUT = containers.Map();
-            FUT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            FUT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            FUT(Interval.ToString(Interval.day))= @obj.LoadBarDayFuture;
-            
-            IDX = containers.Map();
-            IDX(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            IDX(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            IDX(Interval.ToString(Interval.day))= @obj.LoadBarDayIndex;
-            
-            OPT = containers.Map();
-            OPT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            OPT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            OPT(Interval.ToString(Interval.day))= @obj.LoadBarDayOption;
-            
-            obj.map_load_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_load_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_load_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_load_func(Product.ToString(Product.Option)) = OPT;
-            
-        end
         
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus, dir_);
@@ -126,17 +83,9 @@ classdef ExcelReader
         instru = LoadChainFuture(obj, var, exc, dir_);
         
         % 保存K线行情
-        ret = SaveBarMin(obj, asset, dir_);
-        ret = SaveBarDayEtf(obj, asset, dir_);
-        ret = SaveBarDayFuture(obj, asset, dir_);
-        ret = SaveBarDayIndex(obj, asset, dir_);
-        ret = SaveBarDayOption(obj, asset, dir_);
+        ret = SaveBar(obj, asset, dir_, header, dat_fmt);
 
         % 读取K线行情
-        LoadBarMin(obj, asset, dir_);
-        LoadBarDayEtf(obj, asset, dir_);
-        LoadBarDayFuture(obj, asset, dir_);
-        LoadBarDayIndex(obj, asset, dir_);
-        LoadBarDayOption(obj, asset, dir_);
+        LoadBar(obj, asset, dir_);
     end
 end
