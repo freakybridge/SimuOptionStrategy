@@ -1,16 +1,15 @@
 % Microsoft Sql Server / LoadBarDayEtf
 % v1.3.0.20220113.beta
-%       È¶ñÊ¨°Ê∑ªÂä†
+%        ◊¥Œº”»Î
 function LoadBarDayEtf(obj, asset)
-
-% È¢ÑÂ§ÑÁêÜ
+% ø‚√˚ / ±Ì√˚
 db = obj.GetDbName(asset);
 tb = obj.GetTableName(asset);
 conn = SelectConn(obj, db);
 
-% ËØªÂèñ
+% ‘ÿ»Î
 try
-    sql = sprintf("SELECT [DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
+    sql = sprintf("SELECT [DATETIME], [NAV], [NAV_ADJ], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME] FROM [%s].[dbo].[%s] ORDER BY [DATETIME]", db, tb);
     setdbprefs('DataReturnFormat', 'numeric');
     md = fetch(conn, sql);
     md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
@@ -18,5 +17,4 @@ try
 catch
     asset.md = [];
 end
-
 end
