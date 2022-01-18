@@ -1,7 +1,7 @@
-% CSV行情读写器
+% Excel读写器
 % v1.3.0.20220113.beta
 %       1.加入成员类型约束
-classdef CsvMdReader
+classdef ExcelReader
     properties (Access = protected)        
         map_save_func containers.Map;
         map_load_func containers.Map;        
@@ -9,10 +9,34 @@ classdef CsvMdReader
 
     methods
         % 初始化
-        function obj = CsvMdReader()
+        function obj = ExcelReader()
             obj.AttachFuncHandle();            
         end
              
+        % 保存合约列表
+        function ret = SaveChain(obj, pdt, var, exc, instrus, dir_)
+            switch pdt
+                case EnumType.Product.Option
+                    ret = obj.SaveChainOption(var, exc, instrus, dir_);
+                case EnumType.Product.Future
+                    ret = obj.SaveChainFuture(var, exc, instrus, dir_);
+                otherwise
+                    error('Unexpected "product" for instruments saving, please check.')
+            end                    
+        end
+             
+        % 读取合约列表
+        function instru = LoadChain(obj, pdt, var, exc, dir_)
+            switch pdt
+                case EnumType.Product.Option
+                    instru = obj.LoadChainOption(var, exc, dir_);
+                case EnumType.Product.Future
+                    instru = obj.LoadChainFuture(var, exc, dir_);
+                otherwise
+                    error('Unexpected "product" for instruments loading, please check.')
+            end                    
+        end
+        
         % 保存行情
         function ret = SaveMarketData(obj, asset)
             product = EnumType.Product.ToString(asset.product);
@@ -34,6 +58,7 @@ classdef CsvMdReader
     
     
     methods (Hidden)
+        % 粘贴句柄
         function AttachFuncHandle(obj)
             % 整理 Save
             import EnumType.Product;
@@ -91,17 +116,14 @@ classdef CsvMdReader
             obj.map_load_func(Product.ToString(Product.Option)) = OPT;
             
         end
-    end
-
-
-    methods 
+        
         % 保存期权 / 期货合约列表
-        ret = SaveChainOption(obj, var, exc, instrus);
-        ret = SaveChainFuture(obj, var, exc, instrus);
+        ret = SaveChainOption(obj, var, exc, instrus, dir_);
+        ret = SaveChainFuture(obj, var, exc, instrus, dir_);
 
         % 获取期权 / 期货合约列表
-        instru = LoadChainOption(obj, var, exc);
-        instru = LoadChainFuture(obj, var, exc);
+        instru = LoadChainOption(obj, var, exc, dir_);
+        instru = LoadChainFuture(obj, var, exc, dir_);
         
         % 保存K线行情
         ret = SaveBarMin(obj, asset);

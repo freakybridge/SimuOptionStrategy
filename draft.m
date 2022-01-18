@@ -37,6 +37,13 @@ for i = 1 : size(instrus, 1)
 end
 
 
+variety = '510300';
+exchange = 'sse';
+instrus = dm.db.LoadChainOption(variety, exchange);
+er = BaseClass.ExcelReader();
+er.SaveChain(EnumType.Product.Option, variety, exchange, instrus, 'C:\Users\dell\Desktop\');
+tt = er.LoadChain(EnumType.Product.Option, variety, exchange, 'C:\Users\dell\Desktop\');
+
 
 
 
