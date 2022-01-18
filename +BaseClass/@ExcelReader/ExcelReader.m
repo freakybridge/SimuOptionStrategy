@@ -2,16 +2,15 @@
 % v1.3.0.20220113.beta
 %       1.加入成员类型约束
 classdef ExcelReader
-    properties (Access = protected)        
-        map_save_func containers.Map;
-        map_load_func containers.Map;        
+    properties (Access = protected)
     end
-
+    
     methods
         % 初始化
-        function obj = ExcelReader()     
+        function obj = ExcelReader()
+            disp('[Excel Reader] ready.');
         end
-             
+        
         % 保存合约列表
         function ret = SaveChain(obj, pdt, var, exc, instrus, dir_)
             switch pdt
@@ -21,9 +20,9 @@ classdef ExcelReader
                     ret = obj.SaveChainFuture(var, exc, instrus, dir_);
                 otherwise
                     error('Unexpected "product" for instruments saving, please check.')
-            end                    
+            end
         end
-             
+        
         % 读取合约列表
         function instru = LoadChain(obj, pdt, var, exc, dir_)
             switch pdt
@@ -33,7 +32,7 @@ classdef ExcelReader
                     instru = obj.LoadChainFuture(var, exc, dir_);
                 otherwise
                     error('Unexpected "product" for instruments loading, please check.')
-            end                    
+            end
         end
         
         % 保存行情
@@ -64,7 +63,7 @@ classdef ExcelReader
                     error('Unexpected "interval" for market data csv saving, please check');
             end
         end
-
+        
         % 读取行情
         function LoadMarketData(obj, asset, dir_)
             obj.LoadBar(asset, dir_);
@@ -77,14 +76,14 @@ classdef ExcelReader
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus, dir_);
         ret = SaveChainFuture(obj, var, exc, instrus, dir_);
-
+        
         % 获取期权 / 期货合约列表
         instru = LoadChainOption(obj, var, exc, dir_);
         instru = LoadChainFuture(obj, var, exc, dir_);
         
         % 保存K线行情
         ret = SaveBar(obj, asset, dir_, header, dat_fmt);
-
+        
         % 读取K线行情
         LoadBar(obj, asset, dir_);
     end

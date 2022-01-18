@@ -37,7 +37,7 @@ classdef Wind < BaseClass.DataSource.DataSource
             % µÇÂ¼
             obj.api = windmatlab;
             if (obj.api.isconnected())
-                fprintf('DataSource %s Ready.\r', obj.name);
+                fprintf('DataSource [%s] Ready.\r', obj.name);
             end
         end
     end

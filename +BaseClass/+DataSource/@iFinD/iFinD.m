@@ -41,7 +41,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             obj.password = pwd;
             obj.err.code = THS_iFinDLogin(ur, pwd);
             if (obj.err.code == 0 || obj.err.code == -201)
-                fprintf('DataSource %s@[User:%s] Ready.\r', obj.name, obj.user);
+                fprintf('DataSource [%s]@[User:%s] Ready.\r', obj.name, obj.user);
             end
         end
                 
