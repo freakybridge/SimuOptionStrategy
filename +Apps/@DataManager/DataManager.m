@@ -5,8 +5,8 @@
 %      1.修改构造函数，加入参数“数据库驱动” “数据源api"
 classdef DataManager < handle
     properties
-        db	BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
-        ds	BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
+        db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
+        ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
         er  BaseClass.ExcelReader = BaseClass.ExcelReader();
     end    
     properties (Access = private)
@@ -35,7 +35,7 @@ classdef DataManager < handle
         LoadMd(obj, asset, dir_csv, dirt_tb);
 
         % 载入合约列表
-        instrus = LoadChain(obj, var, exc, dir_);
+        instrus = LoadChain(obj, pdt, var, exc, dir_);
 
         % 更新数据
 
@@ -53,12 +53,7 @@ classdef DataManager < handle
         ret = IsMdComplete(obj, asset);       
 
         % 合约列表管理
-        instrus = LoadOptChain(obj, var, exc, dir_);
-        instrus = LoadOptChainViaDb(obj, var, exc);
-        instrus = LoadOptChainViaDs(obj, var, exc, instru_local);
-        instrus = LoadOptChainViaExcel(obj, var, exc, dir_);        
-        ret = SaveOptChain2Db(obj, var, exc, instrus);
-        ret = SaveOptChain2Excel(obj, var, exc, instrus, dir_);
+        instrus = LoadChainViaDs(obj, var, exc, instru_local);
         ret = IsInstruNeedUpdate(obj, instrus);
 
         % 日历管理

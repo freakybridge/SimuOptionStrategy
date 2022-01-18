@@ -3,6 +3,7 @@ clc;
 
 import Apps.DataManager;
 import BaseClass.Asset.Option.Option;
+import EnumType.Product;
 
 
 dm = DataManager('mss', 'sa', 'bridgeisbest');
@@ -16,9 +17,10 @@ dir_rt = "E:\OneDrive\hisdata";
 % dir_rt = "D:\OneDrive\hisdata";
 
 
+product = Product.Option;
 variety = '510300';
 exchange = 'sse';
-instrus = dm.LoadChain(variety, exchange, dir_rt);
+instrus = dm.LoadChain(product, variety, exchange, dir_rt);
 for i = 1 : size(instrus, 1)
     info = instrus(i, :);    
     opt = Option.Selector( ...

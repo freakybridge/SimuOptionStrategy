@@ -4,15 +4,15 @@
 %      2.改名修正逻辑
 % v1.2.0.20220105.beta
 %      1.首次加入
-function ins = LoadChain(obj, var, exc, dir_)
+function ins = LoadChain(obj, pdt, var, exc, dir_)
 
 % 从数据库 / excel获取
-ins_local = obj.LoadChainViaDb(var, exc);
+ins_local = obj.db.LoadChain(pdt, var, exc);
 if (isempty(ins_local))
-    ins_local = obj.LoadChainViaExcel(var, exc, dir_);
+    ins_local = obj.er.LoadChain(pdt, var, exc, dir_);    
     if (~obj.IsInstruNeedUpdate(ins_local))
         ins = ins_local;
-        obj.SaveChain2Db(var, exc, ins);
+        obj.db.SaveChain(pdt, var, exc, ins);
         return;
     end
     
@@ -22,12 +22,12 @@ elseif (~obj.IsInstruNeedUpdate(ins_local))
 end
 
 % 从数据源获取
-ins = obj.LoadOptChainViaDs(var, exc, ins_local);
+ins = obj.LoadChainViaDs(var, exc, ins_local);
 if (isequal(ins_local, ins))
     ins = ins_local;
     return;
 end
-obj.SaveOptChain2Db(var, exc, ins);
-obj.SaveOptChain2Excel(var, exc, ins, dir_);
+obj.db.SaveChain(pdt, var, exc, ins);
+obj.er.SaveChain(pdt, var, exc, ins, dir_);
 
 end
