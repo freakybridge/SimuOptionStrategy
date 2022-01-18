@@ -44,12 +44,8 @@ classdef DataManager < handle
     
     methods (Access = private)
         % 行情管理
-        LoadMdViaCsv(obj, asset, dir_csv);
-        LoadMdViaDatabase(obj, asset);
         LoadMdViaDataSource(obj, asset);
-        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);   
-        ret = SaveMd2Database(obj, asset);
-        ret = SaveMd2Csv(obj, asset, dir_csv);                
+        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);               
         ret = IsMdComplete(obj, asset);       
 
         % 合约列表管理
