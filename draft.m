@@ -73,12 +73,30 @@ dm.db.SaveMarketData(asset);
 dm.db.LoadMarketData(asset);
 
 
-[mark, md] = ds.FetchMarketData(EnumType.Product.Index, '000300', EnumType.Exchange.SSE, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SR205', EnumType.Exchange.CZCE, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'M2205', EnumType.Exchange.DCE, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'SC2203', EnumType.Exchange.INE, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'CU2204', EnumType.Exchange.SHFE, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Future, 'IF2203', EnumType.Exchange.CFFEX, inv, ts_s, ts_e);
-[mark, md] = ds.FetchMarketData(EnumType.Product.Option, '10003776', EnumType.Exchange.SSE, inv, ts_s, ts_e);
+asset = BaseClass.Asset.Future.Instance.CZCE_SR('SR205', 'abc', '1d', 10, now(), 0.1, 1, 5);
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
 
 
+asset = BaseClass.Asset.Future.Instance.SHFE_CU('CU2205', 'abc', '1d', 10, now(), 0.1, 1, 5);
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
+open(asset.md);
+
+asset = BaseClass.Asset.Future.Instance.INE_SC('SC2205', 'abc', '1d', 10, now(), 0.1, 1, 5);
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
+open(asset.md);
+
+asset = BaseClass.Asset.Future.Instance.CFFEX_IF('IF2203', 'abc', '1d', 10, now(), 0.1, 1, 5);
+[mark, md] = dm.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, ts_s, ts_e);
+asset.MergeMarketData(md);
+dm.db.SaveMarketData(asset);
+dm.db.LoadMarketData(asset);
+open(asset.md);
