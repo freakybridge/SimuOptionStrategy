@@ -70,7 +70,7 @@ classdef Database < handle
 
         % 读取合约表
         function instrus = LoadChain(obj, pdt, var, exc)
-            fprintf('Fetching [%s-%s-%s]''s instruments to [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
+            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     instrus = obj.LoadChainFuture(var, exc);
