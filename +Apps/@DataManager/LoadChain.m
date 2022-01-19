@@ -28,6 +28,6 @@ if (isequal(ins_local, ins))
     return;
 end
 obj.db.SaveChain(pdt, var, exc, ins);
-obj.er.SaveChain(pdt, var, exc, ins, dir_);
+obj.dr.SaveChain(pdt, var, exc, ins, dir_);
 
 end

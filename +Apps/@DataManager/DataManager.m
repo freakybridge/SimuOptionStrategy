@@ -7,7 +7,7 @@ classdef DataManager < handle
     properties
         db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
-        er  BaseClass.ExcelReader = BaseClass.ExcelReader();
+        dr  BaseClass.DataRecorder = BaseClass.DataRecorder();
     end    
     properties (Access = private)
         ds_pool struct;

@@ -1,14 +1,14 @@
 % Excel读写器
 % v1.3.0.20220113.beta
 %       1.加入成员类型约束
-classdef ExcelReader
+classdef DataRecorder
     properties (Access = protected)
-        name char = 'Excel Reader';
+        name char = 'Data Recorder';
     end
     
     methods
         % 初始化
-        function obj = ExcelReader()
+        function obj = DataRecorder()
             fprintf('[%s] ready.\r', obj.name);
         end
         
