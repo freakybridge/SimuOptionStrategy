@@ -13,8 +13,32 @@ for i = 1 : length(dbs)
     tbs = setdiff(tbs, tb_ig_lst);
     
     for j = 1 : length(dbs)
+        % 读取数据
         curr_db = dbs{i};
-        curr_tb = db{j};
+        curr_tb = tbs{j};
+        md = obj.db.FetchRawData(curr_db, curr_tb);
+        
+        % 生成资产 / 品种 / 交易所
+        loc = strfind(curr_db, '_');
+        if (isempty(loc))
+            if (strcmp(curr_db, 'Fund'))
+                pdt = EnumType.Product.Etf;
+                loc = strfind(curr_tb, '.');
+                var = curr_tb(1 : loc(1) - 1);
+                exc = [];
+            else
+                pdt = EnumType.Product.ToEnum(curr_db);
+                loc = strfind(curr_tb, '.');
+                var = curr_tb(1 : loc(1) - 1);
+                exc = EnumType.Exchange.ToEnum(curr_tb(loc(1) + 1 : end);
+            end
+        else
+            pdt = EnumType.Product.ToEnum(curr_db(1 : loc(1) - 1));
+            var = curr_db(loc(1) + 1 : loc(2) - 1);
+            exc = EnumType.Exchange.ToEnum(curr_db(loc(2) + 1 : end));
+        end
+        
+        
         
         
         
