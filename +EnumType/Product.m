@@ -7,7 +7,7 @@ classdef Product < EnumType.BaseEnum
         Stock;
     end        
     
-    methods (Static)
+    methods (Static, Hidden)
         function ret = ToString(in_)
             ret = upper(in_.char);
         end

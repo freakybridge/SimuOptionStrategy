@@ -6,7 +6,7 @@ classdef Interval < EnumType.BaseEnum
     end        
     
     
-    methods (Static)
+    methods (Static, Hidden)
         function ret = ToString(in_)
             switch in_
                 case EnumType.Interval.min1

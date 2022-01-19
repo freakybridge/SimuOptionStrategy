@@ -47,5 +47,3 @@ for i = 1 : 2
     end
 end
 
-tt = EnumType.CallOrPut.Call;
-EnumType.CallOrPut.ToString(tt)

@@ -1,5 +1,5 @@
 classdef BaseEnum
-    methods (Abstract)
+    methods (Abstract, Hidden)
         ret = ToString(in_);
         ret = ToEnum(in_);
     end
