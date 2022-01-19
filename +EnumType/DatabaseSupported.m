@@ -8,16 +8,16 @@ classdef DatabaseSupported < EnumType.BaseEnum
     
     methods (Static)
         function ret = ToString(in_)
-            ret = upper(in_.string);
+            ret = upper(in_.char);
         end
         function ret = ToEnum(in_)
             switch upper(in_)
-                case {"MSS"}
+                case {'MSS'}
                     ret = EnumType.DatabaseSupported.Mss;
-                case {"POSTGRES"}
+                case {'POSTGRES'}
                     ret = EnumType.DatabaseSupported.Postgres;
                 otherwise
-                    error("Unsupported database, please check.");
+                    error('Unsupported "database", please check.');
             end
         end
     end

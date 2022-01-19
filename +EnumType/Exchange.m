@@ -11,26 +11,26 @@ classdef Exchange < EnumType.BaseEnum
         
     methods (Static)
         function ret = ToString(in_)
-            ret = upper(in_.string);
+            ret = upper(in_.char);
         end
         function ret = ToEnum(in_)
             switch upper(in_)
-                case {"CFFEX", "CFE"}
+                case {'CFFEX', 'CFE'}
                     ret = EnumType.Exchange.CFFEX;
-                case {"CZCE", "CZC"}
+                case {'CZCE', 'CZC'}
                     ret = EnumType.Exchange.CZCE;
-                case "DCE"
+                case 'DCE'
                     ret = EnumType.Exchange.DCE;
-                case "INE"
+                case 'INE'
                     ret = EnumType.Exchange.INE;
-                case {"SHF", "SHFE"}
+                case {'SHF', 'SHFE'}
                     ret = EnumType.Exchange.SHFE;
-                case {"SSE", "SH"}
+                case {'SSE', 'SH'}
                     ret = EnumType.Exchange.SSE;
-                case {"SZSE", "SZ"}
+                case {'SZSE', 'SZ'}
                     ret = EnumType.Exchange.SZSE;
                 otherwise
-                    error("Unexpected Exchange, Please Check !");
+                    error('Unexpected "exchange", please check !');
             end
         end
     end

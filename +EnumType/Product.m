@@ -9,22 +9,22 @@ classdef Product < EnumType.BaseEnum
     
     methods (Static)
         function ret = ToString(in_)
-            ret = upper(in_.string);
+            ret = upper(in_.char);
         end
         function ret = ToEnum(in_)
             switch upper(in_)
-                case {"ETF"}
+                case {'ETF'}
                     ret = EnumType.Product.Etf;
-                case {"FUTURE"}
+                case {'FUTURE'}
                     ret = EnumType.Product.Future;
-                case {"INDEX"}
+                case {'INDEX'}
                     ret = EnumType.Product.Index;
-                case {"OPTION"}
+                case {'OPTION'}
                     ret = EnumType.Product.Option;
-                case {"STOCK"}
+                case {'STOCK'}
                     ret = EnumType.Product.Stock;
                 otherwise
-                    error("Unexpected Option, Please Check !");
+                    error('Unexpected "product", please check !');
             end
         end
     end
