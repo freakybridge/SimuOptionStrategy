@@ -16,7 +16,10 @@ dir_tb = 'C:\Users\dell\Desktop\taobao';
 dir_csv = "D:\OneDrive\hisdata";
 dir_rt = "D:\OneDrive\hisdata";
 
-dm.DatabaseBackup('C:\Users\dell\Desktop')
+db_ig_lst = {'1D-ETF', '1D-FUTURE-CU-SHFE', '1D-FUTURE-IF-CFFEX', '1D-FUTURE-M-DCE', '1D-FUTURE-SC-INE', '1D-FUTURE-SR-CZCE', '1D-INDEX', '1D-OPTION-510050-SSE', '1MIN-ETF', ...
+    '5MIN-OPTION-510050-SSE', '5MIN-OPTION-510300-SSE', 'Calendar', 'Interest', 'master', 'model', 'msdb',  'tempdb', 'INSTRUMENTS'};
+tb_ig_lst = {'CodeList'};
+dm.DatabaseBackup('C:\Users\dell\Desktop', db_ig_lst, tb_ig_lst);
 
 for i = 1 : 2
     if (i == 1)

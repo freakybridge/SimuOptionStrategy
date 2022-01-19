@@ -13,6 +13,11 @@ for i = 1 : length(dbs)
     tbs = setdiff(tbs, tb_ig_lst);
     
     for j = 1 : length(dbs)
+        curr_db = dbs{i};
+        curr_tb = db{j};
+        
+        
+        
         asset
         obj.db.LoadMarketData(asset);
         % 整理数据
