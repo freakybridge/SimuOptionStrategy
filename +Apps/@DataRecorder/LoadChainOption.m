@@ -23,7 +23,7 @@ end
 % 整理
 instrus = cell2table(instrus(2 : end, :), 'VariableNames', instrus(1, :));
 instrus = UnifyInstruFmt(EnumType.Product.Option, instrus);
-
+ 
 end
 
 % 统一合约表格式
@@ -34,11 +34,11 @@ switch pdt
         ret = cell(size(instrus));
         for i = 1 : size(instrus, 1)
             this = instrus(i, :);
-            ret{i, 1} = Utility.Trans2Str(this.SYMBOL);
+            ret{i, 1} = Utility.ToString(this.SYMBOL);
             ret{i, 2} = this.SEC_NAME;
             ret{i, 3} = this.EXCHANGE{:};
-            ret{i, 4} = Utility.Trans2Str(this.VARIETY);
-            ret{i, 5} = Utility.Trans2Str(this.UD_SYMBOL);
+            ret{i, 4} = Utility.ToString(this.VARIETY);
+            ret{i, 5} = Utility.ToString(this.UD_SYMBOL);
             ret{i, 6} = this.UD_PRODUCT{:};
             ret{i, 7} = this.UD_EXCHANGE{:};
             ret{i, 8} = this.CALL_OR_PUT{:};
