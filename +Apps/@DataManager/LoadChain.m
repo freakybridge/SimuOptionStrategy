@@ -22,7 +22,7 @@ elseif (~obj.IsInstruNeedUpdate(ins_local))
 end
 
 % 从数据源获取
-ins = obj.LoadChainViaDs(var, exc, ins_local);
+ins = obj.LoadChainViaDs(pdt, var, exc, ins_local);
 if (isequal(ins_local, ins))
     ins = ins_local;
     return;

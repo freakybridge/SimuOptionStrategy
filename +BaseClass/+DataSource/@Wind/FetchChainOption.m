@@ -1,7 +1,7 @@
 % Wind 获取期权合约列表
 % v1.3.0.20220113.beta
 %       1.首次加入
-function [is_err, ins] = FetchOptionChain(obj, opt_s, ins_local)
+function [is_err, ins] = FetchChainOption(obj, opt_s, ins_local)
 % 获取下载起点终点
 [date_s, date_e] = obj.GetChainUpdateSE(opt_s, ins_local);
 

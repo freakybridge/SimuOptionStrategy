@@ -49,7 +49,7 @@ classdef DataManager < handle
         ret = IsMdComplete(obj, asset);       
 
         % 合约列表管理
-        instrus = LoadChainViaDs(obj, var, exc, instru_local);
+        instrus = LoadChainViaDs(obj, pdt, var, exc, instru_local);
         ret = IsInstruNeedUpdate(obj, instrus);
 
         % 日历管理
