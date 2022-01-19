@@ -3,13 +3,13 @@
 %       1.加入成员类型约束
 classdef DataRecorder
     properties (Access = protected)
-        name char = 'Data Recorder';
+        name char = 'DataRecorder';
     end
     
     methods
         % 初始化
         function obj = DataRecorder()
-            fprintf('[%s] ready.\r', obj.name);
+            fprintf('App [%s] ready.\r', obj.name);
         end
         
         % 保存合约列表
