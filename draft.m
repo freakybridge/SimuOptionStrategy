@@ -16,6 +16,8 @@ dir_tb = 'C:\Users\dell\Desktop\taobao';
 dir_csv = "D:\OneDrive\hisdata";
 dir_rt = "D:\OneDrive\hisdata";
 
+dm.DatabaseBackup('C:\Users\dell\Desktop')
+
 for i = 1 : 2
     if (i == 1)
         product = Product.Option;

@@ -151,9 +151,8 @@ classdef Database < handle
 
         % 获取期权 / 期货合约列表
         instru = LoadChainOption(obj, var, exc);
-        instru = LoadChainFuture(obj, var, exc);
-    end
-    methods (Abstract, Hidden)        
+        instru = LoadChainFuture(obj, var, exc); 
+        
         % 保存K线行情
         ret = SaveBarMin(obj, asset);
         ret = SaveBarDayEtf(obj, asset);
@@ -167,6 +166,11 @@ classdef Database < handle
         LoadBarDayFuture(obj, asset);
         LoadBarDayIndex(obj, asset);
         LoadBarDayOption(obj, asset);
+        
+        % 读取 全部数据库 / 当前库所有表
+        ret = FetchAllDbs(obj);
+        ret = FetchAllTables(obj, db);
+        
     end
 
     methods (Static)

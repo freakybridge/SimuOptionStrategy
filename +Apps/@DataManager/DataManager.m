@@ -4,7 +4,7 @@
 % v1.2.0.20220105.beta
 %      1.修改构造函数，加入参数“数据库驱动” “数据源api"
 classdef DataManager < handle
-    properties
+    properties (Access = private)
         db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
         dr  Apps.DataRecorder = Apps.DataRecorder();
@@ -39,7 +39,11 @@ classdef DataManager < handle
 
         % 更新数据
 
-        % 备份数据库到excel
+        % 备份数据库
+        DatabaseBackup(obj, dir_rt, db_ig_lst, tb_ig_lst);
+        
+        % 数据库还原
+        DatabaseRestore(obj, dir_rt);
     end
     
     methods (Access = private)

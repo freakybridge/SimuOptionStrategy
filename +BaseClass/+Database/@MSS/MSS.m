@@ -59,8 +59,7 @@ classdef MSS < BaseClass.Database.Database
             obj.conns(db) = conn;
 
             % tables buffer
-            sql = 'SELECT NAME FROM SYSOBJECTS WHERE XTYPE=''U'' ORDER BY NAME';
-            obj.tables(db) = table2cell(fetch(conn, sql));
+            obj.tables(db) = obj.FetchAllTables(db);
         end
         function conn = SelectConn(obj, db)
             if (~CheckDatabase(obj, db))
@@ -114,7 +113,7 @@ classdef MSS < BaseClass.Database.Database
     end
     
     % 抽象方法实现
-    methods
+    methods (Hidden)
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus);
         ret = SaveChainFuture(obj, var, exc, instrus);
@@ -122,8 +121,7 @@ classdef MSS < BaseClass.Database.Database
         % 获取期权 / 期货合约列表
         instru = LoadChainOption(obj, var, exc);
         instru = LoadChainFuture(obj, var, exc);
-    end
-    methods (Hidden)
+        
         % 建表
         ret = CreateTableInstru(obj, product);
         ret = CreateTableBarMin(obj, asset);
@@ -146,6 +144,10 @@ classdef MSS < BaseClass.Database.Database
         LoadBarDayFuture(obj, asset);
         LoadBarDayIndex(obj, asset);
         LoadBarDayOption(obj, asset);
+                
+        % 读取 全部数据库 / 当前库所有表
+        ret = FetchAllDbs(obj);
+        ret = FetchAllTables(obj, db);
     end
 end
 
