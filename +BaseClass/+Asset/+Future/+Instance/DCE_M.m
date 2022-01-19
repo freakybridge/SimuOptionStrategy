@@ -14,8 +14,8 @@ classdef (Sealed) DCE_M < BaseClass.Asset.Future.Future
     
     % ¹¹Ôìº¯Êý
     methods
-        function obj = DCE_M(symb, snm, inv, sz, epdt, mgn, fety, f)
-            obj = obj@BaseClass.Asset.Future.Future(symb, snm, inv, sz, epdt, mgn, fety, f);
+        function obj = DCE_M(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
+            obj = obj@BaseClass.Asset.Future.Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f);
         end
     end
 end

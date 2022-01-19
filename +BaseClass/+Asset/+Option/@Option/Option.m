@@ -47,12 +47,6 @@ classdef Option < BaseClass.Asset.Asset
             ret = str2double(datestr(obj.expire, 'yymm'));
         end
         
-        %         % 合约全名
-        %         function ret = GetFullSymbol(obj)
-        %             cop = EnumType.CallOrPut.ToString(obj.call_or_put);
-        %             ret = [obj.symbol, '-',  num2str(obj.dlmonth), '-', lower(cop{1}(1)), '-', num2str(obj.strike, '%.03f')];
-        %         end
-        
         % 获取品种起点时点
         function ret = GetDateInit(obj)
             ret = datestr(obj.date_ini);

@@ -21,12 +21,15 @@ end
 
 % 确定更新起点终点
 function [dt_s, dt_e] = FindUpdateSE(obj, asset)
-switch asset.product
-    case EnumType.Product.Etf
 
+switch asset.product
+    % 类似永续
+    case {EnumType.Product.Etf, EnumType.Product.Index}
+
+        
     case EnumType.Product.Future
 
-    case EnumType.Product.Index
+    case 
 
     case EnumType.Product.Option
         % 确定起点

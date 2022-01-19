@@ -10,6 +10,7 @@ classdef Future < BaseClass.Asset.Asset
     % 新增属性
     properties (Hidden)        
         expire double;
+        listed double;
     end
     properties
         ratio_margin double;
@@ -22,10 +23,11 @@ classdef Future < BaseClass.Asset.Asset
     
     methods
         % 构造函数
-        function obj = Future(symb, snm, inv, sz, epdt, mgn, fety, f)
+        function obj = Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
             % Future 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
+            obj.listed = ltdt;
             obj.expire = epdt;
             obj.ratio_margin = mgn;
             obj.fee_ty = fety;
@@ -77,6 +79,16 @@ classdef Future < BaseClass.Asset.Asset
                 end
             end
             obj.md = md_new;
+        end
+        
+        % 获取挂牌时点
+        function ret = GetDateListed(obj)
+            ret = datestr(obj.listed);
+        end
+        
+        % 获取到期时点
+        function ret = GetDateExpire(obj)
+            ret = datestr(obj.expire);
         end
     end
 end
