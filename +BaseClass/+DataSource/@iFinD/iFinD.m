@@ -27,6 +27,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
             obj = obj@BaseClass.DataSource.DataSource();
             
             % 交易所转换
+            import EnumType.Exchange;
             obj.exchanges(Utility.ToString(Exchange.CFFEX)) = 'CFE';
             obj.exchanges(Utility.ToString(Exchange.CZCE)) = 'CZC';
             obj.exchanges(Utility.ToString(Exchange.DCE)) = 'DCE';
