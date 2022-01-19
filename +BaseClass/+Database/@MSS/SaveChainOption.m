@@ -17,7 +17,6 @@ if (~obj.CheckTable(db, tb))
 end
 
 % ×¼±¸sql
-fprintf("Inserting option chain ""%s"", please wait ...\r", tb);
 sql = string();
 for i = 1 : size(instrus, 1)
     this = instrus(i, :);

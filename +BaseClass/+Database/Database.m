@@ -47,7 +47,7 @@ classdef Database < handle
 
         % 读取行情
         function LoadMarketData(obj, asset)
-            fprintf('Fetching [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
+            fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             product =Utility.ToString(asset.product);
             interval = Utility.ToString(asset.interval);
             func = obj.map_load_func(product);
@@ -70,7 +70,7 @@ classdef Database < handle
 
         % 读取合约表
         function instrus = LoadChain(obj, pdt, var, exc)
-            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
+            fprintf('Loading [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     instrus = obj.LoadChainFuture(var, exc);

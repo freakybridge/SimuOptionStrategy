@@ -9,7 +9,7 @@ function ins = LoadChain(obj, pdt, var, exc, dir_)
 % 从数据库 / excel获取
 ins_local = obj.db.LoadChain(pdt, var, exc);
 if (isempty(ins_local))
-    ins_local = obj.er.LoadChain(pdt, var, exc, dir_);    
+    ins_local = obj.dr.LoadChain(pdt, var, exc, dir_);    
     if (~obj.IsInstruNeedUpdate(ins_local))
         ins = ins_local;
         obj.db.SaveChain(pdt, var, exc, ins);

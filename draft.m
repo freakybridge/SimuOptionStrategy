@@ -19,11 +19,11 @@ dir_rt = "D:\OneDrive\hisdata";
 for i = 1 : 2
     if (i == 1)
         product = Product.Option;
-        variety = '510050';
+        variety = '510300';
         exchange = 'sse';
     else
         product = Product.Option;
-        variety = '510300';
+        variety = '510050';
         exchange = 'sse';
     end
     
@@ -42,7 +42,7 @@ for i = 1 : 2
             info.START_TRADE_DATE{:}, ...
             info.END_TRADE_DATE{:});
         
-        fprintf("Loading %s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, j, size(instrus, 1));
+        fprintf("Loading [%s.%s]'s market data, %i/%i, please wait ...\r", info.SYMBOL{:}, info.EXCHANGE{:}, j, size(instrus, 1));
         dm.LoadMd(opt, dir_csv, dir_tb);
     end
 end

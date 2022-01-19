@@ -27,7 +27,7 @@ classdef DataRecorder
         
         % 读取合约列表
         function instru = LoadChain(obj, pdt, var, exc, dir_)
-            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
+            fprintf('Loading [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch pdt
                 case EnumType.Product.Option
                     instru = obj.LoadChainOption(var, exc, dir_);

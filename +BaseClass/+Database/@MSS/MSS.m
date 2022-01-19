@@ -106,9 +106,9 @@ classdef MSS < BaseClass.Database.Database
         % ½á¹ûÊä³ö
         function CreateTbResDisp(~, ret, db, tb, msg)
             if (ret)
-                fprintf("Table ""%s""/""%s"" created success.\r", db, tb);
+                fprintf("Table [%s]@[%s] created success.\r", tb, db);
             else
-                error("Table ""%s""/""%s"" created failure. Msg: %s\r", db, tb, msg);
+                error("Table [%s]@[%s]created failure. Msg: %s\r", tb, db, msg);
             end
         end
     end
