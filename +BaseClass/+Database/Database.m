@@ -37,9 +37,9 @@ classdef Database < handle
              
         % 保存行情
         function ret = SaveMarketData(obj, asset)
-            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
-            product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Interval.ToString(asset.interval);
+            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
+            product = Utility.ToString(asset.product);
+            interval = Utility.ToString(asset.interval);
             func = obj.map_save_func(product);
             func = func(interval);
             ret = func(asset);
@@ -47,9 +47,9 @@ classdef Database < handle
 
         % 读取行情
         function LoadMarketData(obj, asset)
-            fprintf('Fetching [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
-            product = EnumType.Product.ToString(asset.product);
-            interval = EnumType.Interval.ToString(asset.interval);
+            fprintf('Fetching [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
+            product =Utility.ToString(asset.product);
+            interval = Utility.ToString(asset.interval);
             func = obj.map_load_func(product);
             func = func(interval);
             func(asset);
@@ -57,7 +57,7 @@ classdef Database < handle
 
         % 保存合约表
         function ret = SaveChain(obj, pdt, var, exc, instrus)
-            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
+            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     ret = obj.SaveChainFuture(var, exc, instrus);
@@ -70,7 +70,7 @@ classdef Database < handle
 
         % 读取合约表
         function instrus = LoadChain(obj, pdt, var, exc)
-            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
+            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     instrus = obj.LoadChainFuture(var, exc);
@@ -90,29 +90,29 @@ classdef Database < handle
             import EnumType.Interval;
             
             ETF = containers.Map();
-            ETF(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            ETF(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            ETF(Interval.ToString(Interval.day))= @obj.SaveBarDayEtf;
+            ETF(Utility.ToString(Interval.min1)) = @obj.SaveBarMin;
+            ETF(Utility.ToString(Interval.min5)) = @obj.SaveBarMin;
+            ETF(Utility.ToString(Interval.day))= @obj.SaveBarDayEtf;
             
             FUT = containers.Map();
-            FUT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            FUT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            FUT(Interval.ToString(Interval.day))= @obj.SaveBarDayFuture;
+            FUT(Utility.ToString(Interval.min1)) = @obj.SaveBarMin;
+            FUT(Utility.ToString(Interval.min5)) = @obj.SaveBarMin;
+            FUT(Utility.ToString(Interval.day))= @obj.SaveBarDayFuture;
             
             IDX = containers.Map();
-            IDX(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            IDX(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            IDX(Interval.ToString(Interval.day))= @obj.SaveBarDayIndex;
+            IDX(Utility.ToString(Interval.min1)) = @obj.SaveBarMin;
+            IDX(Utility.ToString(Interval.min5)) = @obj.SaveBarMin;
+            IDX(Utility.ToString(Interval.day))= @obj.SaveBarDayIndex;
             
             OPT = containers.Map();
-            OPT(Interval.ToString(Interval.min1)) = @obj.SaveBarMin;
-            OPT(Interval.ToString(Interval.min5)) = @obj.SaveBarMin;
-            OPT(Interval.ToString(Interval.day))= @obj.SaveBarDayOption;
+            OPT(Utility.ToString(Interval.min1)) = @obj.SaveBarMin;
+            OPT(Utility.ToString(Interval.min5)) = @obj.SaveBarMin;
+            OPT(Utility.ToString(Interval.day))= @obj.SaveBarDayOption;
             
-            obj.map_save_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_save_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_save_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_save_func(Product.ToString(Product.Option)) = OPT;
+            obj.map_save_func(Utility.ToString(Product.Etf)) = ETF;
+            obj.map_save_func(Utility.ToString(Product.Future)) = FUT;
+            obj.map_save_func(Utility.ToString(Product.Index)) = IDX;
+            obj.map_save_func(Utility.ToString(Product.Option)) = OPT;
             
             % 整理 Load
             ETF = containers.Map();
@@ -121,24 +121,24 @@ classdef Database < handle
             ETF(Interval.ToString(Interval.day))= @obj.LoadBarDayEtf;
             
             FUT = containers.Map();
-            FUT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            FUT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            FUT(Interval.ToString(Interval.day))= @obj.LoadBarDayFuture;
+            FUT(Utility.ToString(Interval.min1)) = @obj.LoadBarMin;
+            FUT(Utility.ToString(Interval.min5)) = @obj.LoadBarMin;
+            FUT(Utility.ToString(Interval.day))= @obj.LoadBarDayFuture;
             
             IDX = containers.Map();
-            IDX(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            IDX(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            IDX(Interval.ToString(Interval.day))= @obj.LoadBarDayIndex;
+            IDX(Utility.ToString(Interval.min1)) = @obj.LoadBarMin;
+            IDX(Utility.ToString(Interval.min5)) = @obj.LoadBarMin;
+            IDX(Utility.ToString(Interval.day))= @obj.LoadBarDayIndex;
             
             OPT = containers.Map();
-            OPT(Interval.ToString(Interval.min1)) = @obj.LoadBarMin;
-            OPT(Interval.ToString(Interval.min5)) = @obj.LoadBarMin;
-            OPT(Interval.ToString(Interval.day))= @obj.LoadBarDayOption;
+            OPT(Utility.ToString(Interval.min1)) = @obj.LoadBarMin;
+            OPT(Utility.ToString(Interval.min5)) = @obj.LoadBarMin;
+            OPT(Utility.ToString(Interval.day))= @obj.LoadBarDayOption;
             
-            obj.map_load_func(Product.ToString(Product.Etf)) = ETF;
-            obj.map_load_func(Product.ToString(Product.Future)) = FUT;
-            obj.map_load_func(Product.ToString(Product.Index)) = IDX;
-            obj.map_load_func(Product.ToString(Product.Option)) = OPT;
+            obj.map_load_func(Utility.ToString(Product.Etf)) = ETF;
+            obj.map_load_func(Utility.ToString(Product.Future)) = FUT;
+            obj.map_load_func(Utility.ToString(Product.Index)) = IDX;
+            obj.map_load_func(Utility.ToString(Product.Option)) = OPT;
             
         end
     end
@@ -182,15 +182,15 @@ classdef Database < handle
         end
 
         % 获取库名 / 获取表名 / 表索引
-        function ret = GetDbName(ast)
+        function ret = GetDbName(asset)
             % 预处理
-            inv = EnumType.Interval.ToString(ast.interval);
-            product = EnumType.Product.ToString(ast.product);
-            variety = ast.variety;
-            exchange = EnumType.Exchange.ToString(ast.exchange);
+            inv = Utility.ToString(asset.interval);
+            product = Utility.ToString(asset.product);
+            variety = asset.variety;
+            exchange = Utility.ToString(asset.exchange);
 
             % 分类命名
-            switch ast.product
+            switch asset.product
                 case EnumType.Product.Etf
                     ret = sprintf("%s-%s", inv, product);
 
@@ -215,7 +215,7 @@ classdef Database < handle
                 % 预处理
                 ast = varargin{1};
                 symbol = ast.symbol;
-                exchange = EnumType.Exchange.ToString(ast.exchange);
+                exchange = Utility.ToString(ast.exchange);
 
                 % 分类命名
                 switch ast.product
@@ -241,7 +241,7 @@ classdef Database < handle
                 pdt = varargin{1};
                 var = varargin{2};
                 exc = varargin{3};
-                ret = sprintf("%s-%s-%s", EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc));
+                ret = sprintf("%s-%s-%s", Utility.ToString(pdt), var, Utility.ToString(exc));
 
             else
                 error("Unexpected input arguments, please check!");

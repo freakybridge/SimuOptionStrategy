@@ -67,10 +67,10 @@ classdef Option < BaseClass.Asset.Asset
             ret = obj.underlying.symbol;
         end
         function ret = GetUnderProduct(obj)
-            ret = EnumType.Product.ToString(obj.underlying.product);
+            ret = Utility.ToString(obj.underlying.product);
         end
         function ret = GetUnderExchange(obj)
-            ret = EnumType.Exchange.ToString(obj.underlying.exchange);
+            ret = Utility.ToString(obj.underlying.exchange);
         end
 
         % ÐÞ²¹ÐÐÇé

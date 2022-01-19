@@ -14,7 +14,7 @@ classdef DataRecorder
         
         % 保存合约列表
         function ret = SaveChain(obj, pdt, var, exc, instrus, dir_)
-            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
+            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch pdt
                 case EnumType.Product.Option
                     ret = obj.SaveChainOption(var, exc, instrus, dir_);
@@ -27,7 +27,7 @@ classdef DataRecorder
         
         % 读取合约列表
         function instru = LoadChain(obj, pdt, var, exc, dir_)
-            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
+            fprintf('Fetching [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch pdt
                 case EnumType.Product.Option
                     instru = obj.LoadChainOption(var, exc, dir_);
@@ -40,7 +40,7 @@ classdef DataRecorder
         
         % 保存行情
         function ret = SaveMarketData(obj, asset, dir_)
-            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
+            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             switch asset.interval
                 case {EnumType.Interval.min1, EnumType.Interval.min5}
                     ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i');
@@ -70,7 +70,7 @@ classdef DataRecorder
         
         % 读取行情
         function LoadMarketData(obj, asset, dir_)
-            fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
+            fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             obj.LoadBar(asset, dir_);
         end
     end

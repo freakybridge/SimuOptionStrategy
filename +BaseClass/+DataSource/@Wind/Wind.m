@@ -25,14 +25,13 @@ classdef Wind < BaseClass.DataSource.DataSource
             obj = obj@BaseClass.DataSource.DataSource();
 
             % 交易所转换
-            import EnumType.Exchange;
-            obj.exchanges(Exchange.ToString(Exchange.CFFEX)) = 'CFE';
-            obj.exchanges(Exchange.ToString(Exchange.CZCE)) = 'CZC';
-            obj.exchanges(Exchange.ToString(Exchange.DCE)) = 'DCE';
-            obj.exchanges(Exchange.ToString(Exchange.INE)) = 'INE';
-            obj.exchanges(Exchange.ToString(Exchange.SHFE)) = 'SHF';
-            obj.exchanges(Exchange.ToString(Exchange.SSE)) = 'SH';
-            obj.exchanges(Exchange.ToString(Exchange.SZSE)) = 'SZ';
+            obj.exchanges(Utility.ToString(Exchange.CFFEX)) = 'CFE';
+            obj.exchanges(Utility.ToString(Exchange.CZCE)) = 'CZC';
+            obj.exchanges(Utility.ToString(Exchange.DCE)) = 'DCE';
+            obj.exchanges(Utility.ToString(Exchange.INE)) = 'INE';
+            obj.exchanges(Utility.ToString(Exchange.SHFE)) = 'SHF';
+            obj.exchanges(Utility.ToString(Exchange.SSE)) = 'SH';
+            obj.exchanges(Utility.ToString(Exchange.SZSE)) = 'SZ';
 
             % 登录
             obj.api = windmatlab;

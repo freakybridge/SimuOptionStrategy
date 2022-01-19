@@ -63,14 +63,14 @@ else
         ins(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), ins(:, 7)));
         
         % ²¹È«ÐÅÏ¢
-        exc = upper(char(EnumType.Exchange.ToString(opt_s.exchange)));
+        exc = upper(Utility.ToString(opt_s.exchange));
         var = char(opt_s.variety);
         ud_symb = char(opt_s.GetUnderSymbol());
         ud_product = upper(char(opt_s.GetUnderProduct()));
         ud_exc = upper(char(opt_s.GetUnderExchange()));
-        striketype = Utility.InitCapital(EnumType.OptionStrikeType.ToString(opt_s.strike_type));
+        striketype = Utility.InitCapital(Utility.ToString(opt_s.strike_type));
         ticksz = opt_s.tick_size;
-        sttmode = Utility.InitCapital(EnumType.OptionSettleMode.ToString(opt_s.settle_mode));
+        sttmode = Utility.InitCapital(Utility.ToString(opt_s.settle_mode));
         upd_time = datestr(now(), 'yyyy-mm-dd HH:MM');
         info = {exc, var, ud_symb, ud_product, ud_exc,  striketype, ticksz, sttmode, upd_time};
         info = repmat(info, size(ins, 1), 1);

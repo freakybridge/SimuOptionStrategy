@@ -12,7 +12,7 @@ if (~exist(file, 'file'))
 end
 try
     exc = EnumType.Exchange.ToEnum(exc);
-    sheet = sprintf("%s-%s", var, EnumType.Exchange.ToString(exc));
+    sheet = sprintf("%s-%s", var, Utility.ToString(exc));
     [~, ~, instrus] = xlsread(file, sheet);
 catch
     warning("Excel %s reading error, please check.", file);

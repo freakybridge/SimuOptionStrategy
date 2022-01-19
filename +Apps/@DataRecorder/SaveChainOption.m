@@ -7,7 +7,7 @@ function ret = SaveChainOption(~, var, exc, instrus, dir_)
 import EnumType.Exchange;
 file = fullfile(dir_, 'instruments-option.xlsx');
 Utility.CheckDirectory(dir_);
-sheet = sprintf("%s-%s", var, Exchange.ToString(Exchange.ToEnum(exc)));
+sheet = sprintf("%s-%s", var, Utility.ToString(Exchange.ToEnum(exc)));
 
 % 整理变量
 instrus = [instrus.Properties.VariableNames; table2cell(instrus)];

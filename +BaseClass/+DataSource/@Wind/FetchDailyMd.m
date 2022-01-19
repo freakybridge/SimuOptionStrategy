@@ -4,7 +4,7 @@
 function [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, err_fmt)
 
 % обть
-exc = obj.exchanges(EnumType.Exchange.ToString(exc));
+exc = obj.exchanges(Utility.ToString(exc));
 [md, ~, ~, dt, obj.err.code, ~] = obj.api.wsd([symb, '.', exc], fields, ...
     datestr(ts_s, 'yyyy-mm-dd'), datestr(ts_e, 'yyyy-mm-dd'));
 

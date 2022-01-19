@@ -5,11 +5,10 @@ function ret = SaveChainFuture(~, var, exc, instrus, dir_)
 error('Under construction, please check.');
 
 % ‘§¥¶¿Ì
-import EnumType.Exchange;
 file = fullfile(dir_, 'instruments-option.xlsx');
 Utility.CheckDirectory(dir_);
 instrus = [instrus.Properties.VariableNames; table2cell(instrus)];
-sheet = sprintf("%s-%s", var, Exchange.ToString(Exchange.ToEnum(exc)));
+sheet = sprintf("%s-%s", var, Utility.ToString(Exchange.ToEnum(exc)));
 
 % –¥»Î
 xlswrite(file, instrus, sheet);

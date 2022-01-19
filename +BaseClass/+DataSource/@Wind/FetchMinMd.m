@@ -11,7 +11,7 @@ if (datenum(ts_s) < now - obj.FetchApiDateLimit())
 end
 
 % ÏÂÔØ
-exc = obj.exchanges(EnumType.Exchange.ToString(exc));
+exc = obj.exchanges(Utility.ToString(exc));
 [md, ~, ~, dt, obj.err.code, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
     datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), sprintf('BarSize=%i',  inv));
 

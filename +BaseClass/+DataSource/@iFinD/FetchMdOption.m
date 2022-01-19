@@ -3,7 +3,7 @@
 %       1.首次加入
 function [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e)
 
-exc = obj.exchanges(EnumType.Exchange.ToString(exc));
+exc = obj.exchanges(Utility.ToString(exc));
 switch inv
     case EnumType.Interval.min1
         [is_err, md] = obj.FetchMinMd(symb, exc, 1, ts_s, ts_e,  'Fetching option [%s.%s] minitue market data');
