@@ -16,8 +16,10 @@ classdef Database < handle
         db_instru char;
         
         map_save_func containers.Map;
-        map_load_func containers.Map;
-        
+        map_load_func containers.Map;        
+    end
+    properties (Abstract, Constant)
+        name char;
     end
 
     methods
@@ -35,6 +37,7 @@ classdef Database < handle
              
         % 保存行情
         function ret = SaveMarketData(obj, asset)
+            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
             product = EnumType.Product.ToString(asset.product);
             interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_save_func(product);
@@ -44,6 +47,7 @@ classdef Database < handle
 
         % 读取行情
         function LoadMarketData(obj, asset)
+            fprintf('Fetching [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, EnumType.Exchange.ToString(asset.exchange), EnumType.Interval.ToString(asset.interval), obj.name);
             product = EnumType.Product.ToString(asset.product);
             interval = EnumType.Interval.ToString(asset.interval);
             func = obj.map_load_func(product);
@@ -53,6 +57,7 @@ classdef Database < handle
 
         % 保存合约表
         function ret = SaveChain(obj, pdt, var, exc, instrus)
+            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     ret = obj.SaveChainFuture(var, exc, instrus);
@@ -65,6 +70,7 @@ classdef Database < handle
 
         % 读取合约表
         function instrus = LoadChain(obj, pdt, var, exc)
+            fprintf('Fetching [%s-%s-%s]''s instruments to [%s], please wait ...\r', EnumType.Product.ToString(pdt), var, EnumType.Exchange.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     instrus = obj.LoadChainFuture(var, exc);

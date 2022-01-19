@@ -6,7 +6,11 @@
 %       首次添加
 classdef MSS < BaseClass.Database.Database
     % MSS 此处显示有关此类的摘要
-    % Microsoft Sql Server
+    % Microsoft Sql Server    
+    properties (Constant)
+        name char = 'Mss';
+    end
+    
     methods
         % 构造函数
         function obj = MSS(user, pwd)
