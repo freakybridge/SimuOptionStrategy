@@ -47,7 +47,7 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 
     end
     
-    methods (Static)
+    methods (Static, Hidden)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
             ret = 1 * 365;
@@ -67,6 +67,16 @@ classdef iFinD < BaseClass.DataSource.DataSource
         % 获取分钟 / 日级数据
         [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
         [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, params, err_fmt);
+        
+        % 获取行情数据
+        [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e);
+        [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e);
+        
+        % 获取期权/期货合约列表
+        [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);
+        [is_err, ins] = FetchChainFuture(obj, fut_s, ins_local);
     end
 end
 

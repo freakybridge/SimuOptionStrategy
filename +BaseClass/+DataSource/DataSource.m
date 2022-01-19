@@ -72,6 +72,20 @@ classdef DataSource
         end
     end
     
+    methods (Static)
+        % 反射器
+        function obj = Selector(api, user, pwd)
+            switch EnumType.DataSourceSupported.ToEnum(api)
+                case EnumType.DataSourceSupported.iFinD
+                    obj = BaseClass.DataSource.iFinD(user, pwd);
+                case EnumType.DataSourceSupported.Wind
+                    obj = BaseClass.DataSource.Wind();
+                    
+                otherwise
+                    error("Unsupported datasource api, please check.");
+            end
+        end
+    end
     
     methods (Abstract, Hidden)        
         % 获取行情数据
@@ -93,21 +107,6 @@ classdef DataSource
     methods (Abstract, Hidden)
         % 判断错误是否致命
         ret = IsErrFatal(obj)        
-    end
-    
-    methods (Static)
-        % 反射器
-        function obj = Selector(api, user, pwd)
-            switch EnumType.DataSourceSupported.ToEnum(api)
-                case EnumType.DataSourceSupported.iFinD
-                    obj = BaseClass.DataSource.iFinD(user, pwd);
-                case EnumType.DataSourceSupported.Wind
-                    obj = BaseClass.DataSource.Wind();
-                    
-                otherwise
-                    error("Unsupported datasource api, please check.");
-            end
-        end
     end
     
     
