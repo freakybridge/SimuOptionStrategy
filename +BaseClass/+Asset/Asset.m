@@ -30,7 +30,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             % 此处显示详细说明
             obj.symbol = symb;
             obj.sec_name = snm;
-            obj.interval = EnumType.Interval.ToEnum(inv);
+            obj.interval = inv;
             obj.unit = sz;
             obj.md = [];
             obj.move = [];
@@ -151,6 +151,14 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
     
     %% 静态方法
     methods (Static)
+        % 反射器
+        function obj = Selector(pdt, exc, var, varargin)
+            pdt = Utility.InitCapital(Utility.ToString(pdt));
+            exc = Utility.ToString(exc);
+            str = sprintf('BaseClass.Asset.%s.Instance.%s_%s(varargin{:})', pdt, exc, var);
+            obj = eval(str);
+        end
+        
         % 获取标准时间轴
         function tm_axis_std = UnionTimeAxis(portfolio)
             tm_axis_std = [];
@@ -190,7 +198,10 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
     methods (Abstract)
         % 修补行情
         RepairData(obj, tm_ax_std);
-    end
+        
+        % 检查输入
+        varargout = CheckArgument(varargin);
+    end     
         
     
     

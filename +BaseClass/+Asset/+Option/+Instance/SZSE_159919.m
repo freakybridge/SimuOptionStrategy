@@ -26,8 +26,8 @@ classdef (Sealed) SZSE_159919 < BaseClass.Asset.Option.ETF
     
     % ¹¹Ôìº¯Êý
     methods
-        function obj = SZSE_159919(symb, snm, inv, sz, cop, k, ldt, edt)
-            obj = obj@BaseClass.Asset.Option.ETF(symb, snm, inv, sz, cop, k, ldt, edt);
+        function obj = SZSE_159919(varargin)
+            obj = obj@BaseClass.Asset.Option.ETF(varargin{:});
         end
     end
     

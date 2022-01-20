@@ -26,8 +26,8 @@ classdef (Sealed) SSE_510050 < BaseClass.Asset.ETF.ETF
     
     % 构造函数
     methods
-        function obj = SSE_510050(inv)
-            obj = obj@BaseClass.Asset.ETF.ETF('510050', '华夏上证50ETF', inv, 100);
+        function obj = SSE_510050(varargin)
+            obj = obj@BaseClass.Asset.ETF.ETF('510050', '华夏上证50ETF', varargin{:}, 100);
         end
     end
     

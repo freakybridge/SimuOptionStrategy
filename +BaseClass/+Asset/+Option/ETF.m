@@ -6,8 +6,8 @@
 %       Ê×´ÎÌí¼Ó
 classdef ETF < BaseClass.Asset.Option.Option
     methods
-        function obj = ETF(symb, snm, inv, sz, cop, k, ldt, edt)
-            obj = obj@BaseClass.Asset.Option.Option(symb, snm, inv, sz, cop, k, ldt, edt);
+        function obj = ETF(varargin)
+            obj = obj@BaseClass.Asset.Option.Option(varargin{:});
         end
     end    
 end

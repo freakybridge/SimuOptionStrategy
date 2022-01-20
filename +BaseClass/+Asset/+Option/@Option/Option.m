@@ -32,13 +32,13 @@ classdef Option < BaseClass.Asset.Asset
     
     methods
         % 初始化
-        function obj = Option(symb, snm, inv, sz, cop, k, ldt, edt)
-            obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
-            
-            obj.call_or_put = EnumType.CallOrPut.ToEnum(cop);
+        function obj = Option(varargin)
+            [symb, snm, inv, sz, cop, k, ldt, edt] = BaseClass.Asset.Option.Option.CheckArgument(varargin{:});            
+            obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);            
+            obj.call_or_put = cop;
             obj.strike = k;
-            obj.listed = datenum(ldt);
-            obj.expire = datenum(edt);
+            obj.listed = ldt;
+            obj.expire = edt;
             obj.underlying.interval = obj.interval;
         end
         
@@ -134,6 +134,52 @@ classdef Option < BaseClass.Asset.Asset
                 otherwise
                     error("Unsupported option class, please check.");
             end
+        end
+    end
+    
+    methods (Static)
+        % 检查输入
+        function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)            
+            if (nargin ~= 8)
+                error('Intialization arguments number error, need input "symbol/sec_name/interval/unit/cop/date listed/date expired", please check');
+            end
+            
+            [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};
+            if (~isa(symb, 'char') && ~isa(symb, 'string'))
+                error('Symbol arugument error, please check');
+            end
+            
+            if (~isa(snm, 'char') && ~isa(snm, 'string'))
+                error('Security name arugument error, please check');
+            end
+            
+            inv = EnumType.Interval.ToEnum(inv);
+            if (~isa(inv, 'EnumType.Interval'))
+                error('Interval arugument error, please check');
+            end
+            
+            if (~isa(sz, 'double'))
+                error('Unit arugument error, please check');
+            end
+            
+            cop = EnumType.CallOrPut.ToEnum(cop);
+            if (~isa(cop, 'EnumType.CallOrPut'))
+                error('CallOrPut arugument error, please check');
+            end           
+            
+            if (~isa(k, 'double'))
+                error('Strike arugument error, please check');
+            end    
+            
+            if(~isa(ldt, 'char') && ~isa(ldt, 'string'))
+                error('Listed date arugument error, please check');
+            end   
+            ldt = datenum(ldt);
+            
+            if (~isa(edt, 'char') && ~isa(edt, 'string'))
+                error('Expire date arugument error, please check');
+            end       
+            edt = datenum(edt);
         end
     end
     
