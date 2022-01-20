@@ -115,33 +115,12 @@ classdef Option < BaseClass.Asset.Asset
             obj.md = md_new;
         end
     end
-    
-    
-    methods (Static)
-        % ·´ÉäÆ÷
-        function obj = Selector(symb, exc, var, sz, inv, snm, cop, k, ldt, edt)
-            mark = upper(sprintf("%s-%s", var, exc));
-            switch mark
-                case "159919-SZSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_159919(symb, snm, inv, sz, cop, k, ldt, edt);
-                    
-                case "510050-SSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_510050(symb, snm, inv, sz, cop, k, ldt, edt);
-                    
-                case "510300-SSE"
-                    obj = BaseClass.Asset.Option.Instance.SSE_510300(symb, snm, inv, sz, cop, k, ldt, edt);
-                    
-                otherwise
-                    error("Unsupported option class, please check.");
-            end
-        end
-    end
-    
+      
     methods (Static)
         % ¼ì²éÊäÈë
         function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)            
             if (nargin ~= 8)
-                error('Intialization arguments number error, need input "symbol/sec_name/interval/unit/cop/date listed/date expired", please check');
+                error('Intialization arguments error, need input "symbol/sec_name/interval/unit/cop/date listed/date expired", please check');
             end
             
             [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};

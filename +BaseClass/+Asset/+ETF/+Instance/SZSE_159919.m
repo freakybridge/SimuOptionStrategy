@@ -22,8 +22,8 @@ classdef (Sealed) SZSE_159919 < BaseClass.Asset.ETF.ETF
     
     % 构造函数
     methods
-        function obj = SZSE_159919(inv)
-            obj = obj@BaseClass.Asset.ETF.ETF('510300', '嘉实沪深300ETF', inv, 100);
+        function obj = SZSE_159919(varargin)
+            obj = obj@BaseClass.Asset.ETF.ETF('510300', '嘉实沪深300ETF', varargin{:}, 100);
         end
     end
     

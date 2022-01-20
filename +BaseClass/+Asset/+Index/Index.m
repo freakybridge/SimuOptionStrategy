@@ -9,9 +9,10 @@ classdef Index < BaseClass.Asset.Asset
     
     methods
         % 构造函数
-        function obj = Index(symb, snm, inv, sz)
+        function obj = Index(varargin)
             % INDEX 构造此类的实例
             %   此处显示详细说明
+            [symb, snm, inv, sz] = BaseClass.Asset.Index.Index.CheckArgument(varargin{:});        
             obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
         end
 
@@ -55,6 +56,33 @@ classdef Index < BaseClass.Asset.Asset
                 end
             end
             obj.md = md_new;
+        end
+    end
+
+    methods (Static)
+        % 检查输入
+        function [symb, snm, inv, sz] = CheckArgument(varargin)
+            if (nargin ~= 4)
+                error('Intialization arguments error, need input "interval", please check');
+            end
+            
+            [symb, snm, inv, sz] = varargin{:};
+             if (~isa(symb, 'char') && ~isa(symb, 'string'))
+                error('Symbol arugument error, please check');
+             end
+            
+            if (~isa(snm, 'char') && ~isa(snm, 'string'))
+                error('Security name arugument error, please check');
+            end
+            
+            inv = EnumType.Interval.ToEnum(inv);
+            if (~isa(inv, 'EnumType.Interval'))
+                error('Interval arugument error, please check');
+            end
+            
+            if (~isa(sz, 'double'))
+                error('Unit arugument error, please check');
+            end     
         end
     end
 end
