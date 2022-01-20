@@ -44,7 +44,11 @@ classdef iFinD < BaseClass.DataSource.DataSource
                 fprintf('DataSource [%s]@[User:%s] Ready.\r', obj.name, obj.user);
             end
         end
-                
+
+        % µÇ³ö
+        function LogOut(~)
+            THS_iFinDLogout();
+        end
     end
     
     methods (Static, Hidden)

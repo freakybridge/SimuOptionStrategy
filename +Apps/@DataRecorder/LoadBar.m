@@ -11,8 +11,6 @@ filename = fullfile(dir_, BaseClass.Database.Database.GetTableName(asset) + ".cs
 if (~exist(filename, 'file'))
     warning('Please check csv file "%s", can''t find it.', filename);
 else
-    [~, ~, dat] = xlsread(filename);
-    dat(1, :) = [];
-    asset.MergeMarketData([datenum(dat(:, 1)), cell2mat(dat(:, 2 : end))]);
-end
+    dat = readtable(filename);
+    asset.MergeMarketData([datenum(table2array(dat(:, 1))), table2array(dat(:, 2 : end))]);
 end

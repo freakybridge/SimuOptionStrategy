@@ -88,7 +88,11 @@ classdef DataSource
             end
         end
     end
-    
+
+    methods (Abstract)
+        LogOut(obj);
+    end
+
     methods (Abstract, Hidden)        
         % 获取行情数据
         [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
@@ -109,8 +113,7 @@ classdef DataSource
     methods (Abstract, Hidden)
         % 判断错误是否致命
         ret = IsErrFatal(obj)        
-    end
-    
+    end    
     
     % 内部方法
     methods (Access = protected)

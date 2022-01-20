@@ -40,6 +40,10 @@ classdef Wind < BaseClass.DataSource.DataSource
                 fprintf('DataSource [%s] Ready.\r', obj.name);
             end
         end
+    
+        % µÇ³ö
+        function LogOut(~)
+        end
     end
 
     methods (Static, Hidden)
@@ -48,7 +52,6 @@ classdef Wind < BaseClass.DataSource.DataSource
             ret = 3 * 365;
         end
     end
-
 
     methods (Hidden)
         % ÊÇ·ñÎªÖÂÃü´íÎó
