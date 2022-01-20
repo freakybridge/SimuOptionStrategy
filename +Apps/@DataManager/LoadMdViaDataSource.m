@@ -11,6 +11,7 @@ while (true)
     [is_err, md] = obj.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, dt_s, dt_e);
     if (is_err)
         obj.SetDsFailure();
+        obj.ds.LogOut();
         obj.ds = obj.AutoSwitchDataSource();
         continue;
     else
