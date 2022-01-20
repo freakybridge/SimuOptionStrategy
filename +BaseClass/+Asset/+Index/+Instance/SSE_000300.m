@@ -13,8 +13,8 @@ classdef (Sealed) SSE_000300< BaseClass.Asset.Index.Index
     end
     
     methods
-        function obj = SSE_000300(inv)
-            obj = obj@BaseClass.Asset.Index.Index('000300', '沪深300指数', inv, 1);
+        function obj = SSE_000300(varargin)
+            obj = obj@BaseClass.Asset.Index.Index('000300', '沪深300指数', varargin{:}, 1);
         end
     end
 end

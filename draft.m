@@ -57,3 +57,11 @@ a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, 
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, '510300', '5m');
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SZSE, '159919', '5m');
 
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000001', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000016', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000300', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000905', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399001', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399005', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399006', '5m');
+

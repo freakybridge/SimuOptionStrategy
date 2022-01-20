@@ -13,8 +13,8 @@ classdef (Sealed) SZSE_399001< BaseClass.Asset.Index.Index
     end
     
     methods
-        function obj = SZSE_399001(inv)
-            obj = obj@BaseClass.Asset.Index.Index('399001', '深证成指', inv, 1);
+        function obj = SZSE_399001(varargin)
+            obj = obj@BaseClass.Asset.Index.Index('399001', '深证成指', varargin{:}, 1);
         end
     end
 end
