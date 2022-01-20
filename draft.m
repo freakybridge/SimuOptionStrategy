@@ -2,19 +2,20 @@ clear;
 clc;
 
 import Apps.DataManager;
-import BaseClass.Asset.Option.Option;
+import BaseClass.Asset.Asset;
 import EnumType.Product;
+import EnumType.Exchange;
 
 
-% dm = DataManager('mss', 'sa', 'bridgeisbest');
-% dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
-% dir_csv = "E:\OneDrive\hisdata";
-% dir_rt = "E:\OneDrive\hisdata";
+dm = DataManager('mss', 'sa', 'bridgeisbest');
+dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
+dir_csv = "E:\OneDrive\hisdata";
+dir_rt = "E:\OneDrive\hisdata";
 
-dm = DataManager('mss', 'sa', 'bridgeinmfc');
-dir_tb = 'C:\Users\dell\Desktop\taobao';
-dir_csv = "D:\OneDrive\hisdata";
-dir_rt = "D:\OneDrive\hisdata";
+% dm = DataManager('mss', 'sa', 'bridgeinmfc');
+% dir_tb = 'C:\Users\dell\Desktop\taobao';
+% dir_csv = "D:\OneDrive\hisdata";
+% dir_rt = "D:\OneDrive\hisdata";
 
 % db_ig_lst = {'1D-ETF', '1D-FUTURE-CU-SHFE', '1D-FUTURE-IF-CFFEX', '1D-FUTURE-M-DCE', '1D-FUTURE-SC-INE', '1D-FUTURE-SR-CZCE', '1D-INDEX', '1D-OPTION-510050-SSE', '1MIN-ETF', ...
 %     '5MIN-OPTION-510050-SSE', '5MIN-OPTION-510300-SSE', 'Calendar', 'Interest', 'master', 'model', 'msdb',  'tempdb', 'INSTRUMENTS'};
@@ -25,23 +26,22 @@ for i = 1 : 2
     if (i == 1)
         product = Product.Option;
         variety = '510300';
-        exchange = 'sse';
+        exchange = Exchange.SSE;
     else
         product = Product.Option;
         variety = '510050';
-        exchange = 'sse';
+        exchange = Exchange.SSE;
     end
     
     
     instrus = dm.LoadChain(product, variety, exchange, dir_rt);
     for j = 1 : size(instrus, 1)
         info = instrus(j, :);
-        opt = Option.Selector( ...
+        opt = Asset.Selector(product, exchange, variety, ...
             info.SYMBOL{:}, ...
-            info.EXCHANGE{:}, ...
-            info.VARIETY{:}, ...
-            info.SIZE, '5m', ...
             info.SEC_NAME{:}, ...
+            '5m', ...
+            info.SIZE, ...
             info.CALL_OR_PUT{:}, ...
             info.STRIKE, ...
             info.START_TRADE_DATE{:}, ...
@@ -52,22 +52,4 @@ for i = 1 : 2
     end
 end
 
-
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, '510050', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, '510300', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SZSE, '159919', '5m');
-
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000001', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000016', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000300', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SSE, '000905', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399001', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399005', '5m');
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399006', '5m');
-
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, EnumType.Exchange.SZSE, '159919', 'aaa', 'bbb' ,'5m', 1, 'c', 5.5, datestr(now()), datestr(now()));
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.CZCE, 'SR', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.DCE, 'M', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.INE, 'SC', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.SHFE, 'CU', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
 
