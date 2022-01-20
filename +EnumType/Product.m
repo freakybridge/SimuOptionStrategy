@@ -1,6 +1,6 @@
 classdef Product < EnumType.BaseEnum
     enumeration
-        Etf;
+        ETF;
         Future;
         Index;
         Option;
@@ -9,7 +9,7 @@ classdef Product < EnumType.BaseEnum
     
     methods (Static, Hidden)
         function ret = ToString(in_)
-            ret = upper(in_.char);
+            ret = in_.char;
         end
         function ret = ToEnum(in_)
             switch upper(in_)

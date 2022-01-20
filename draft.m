@@ -53,5 +53,7 @@ for i = 1 : 2
 end
 
 
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Etf, EnumType.Exchange.SSE, '510050', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, '510050', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SSE, '510300', '5m');
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, EnumType.Exchange.SZSE, '159919', '5m');
 

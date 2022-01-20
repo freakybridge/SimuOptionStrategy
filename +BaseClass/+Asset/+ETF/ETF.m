@@ -4,7 +4,7 @@
 classdef ETF < BaseClass.Asset.Asset
     % 父类Asset属性
     properties (Constant)
-        product EnumType.Product = EnumType.Product.Etf;
+        product EnumType.Product = EnumType.Product.ETF;
     end    
     
     % 新增属性
