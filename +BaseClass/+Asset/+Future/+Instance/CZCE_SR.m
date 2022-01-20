@@ -14,8 +14,8 @@ classdef (Sealed) CZCE_SR < BaseClass.Asset.Future.Future
     
     % ¹¹Ôìº¯Êý
     methods
-        function obj = CZCE_SR(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
-            obj = obj@BaseClass.Asset.Future.Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f);
+        function obj = CZCE_SR(varargin)
+            obj = obj@BaseClass.Asset.Future.Future(varargin{:});
         end
     end
 end

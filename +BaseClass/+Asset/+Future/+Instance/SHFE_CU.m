@@ -14,8 +14,8 @@ classdef (Sealed) SHFE_CU < BaseClass.Asset.Future.Future
     
     % ¹¹Ôìº¯Êý
     methods
-        function obj = SHFE_CU(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
-            obj = obj@BaseClass.Asset.Future.Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f);
+        function obj = SHFE_CU(varargin)
+            obj = obj@BaseClass.Asset.Future.Future(varargin{:});
         end
     end
 end

@@ -14,8 +14,8 @@ classdef (Sealed) INE_SC < BaseClass.Asset.Future.Future
     
     % ¹¹Ôìº¯Êý
     methods
-        function obj = INE_SC(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
-            obj = obj@BaseClass.Asset.Future.Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f);
+        function obj = INE_SC(varargin)
+            obj = obj@BaseClass.Asset.Future.Future(varargin{:});
         end
     end    
 end

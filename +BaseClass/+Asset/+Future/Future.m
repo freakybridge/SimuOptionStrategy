@@ -23,9 +23,8 @@ classdef Future < BaseClass.Asset.Asset
     
     methods
         % 构造函数
-        function obj = Future(symb, snm, inv, sz, ltdt, epdt, mgn, fety, f)
-            % Future 构造此类的实例
-            %   此处显示详细说明
+        function obj = Future(varargin)      
+            [symb, snm, inv, sz, ltdt, epdt, mgn, fety, f] = BaseClass.Asset.Future.Future.CheckArgument(varargin{:});          
             obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
             obj.listed = ltdt;
             obj.expire = epdt;
@@ -89,6 +88,53 @@ classdef Future < BaseClass.Asset.Asset
         % 获取到期时点
         function ret = GetDateExpire(obj)
             ret = datestr(obj.expire);
+        end
+    end
+
+    methods (Static)
+        % 检查输入
+        function [symb, snm, inv, sz, ltdt, epdt, mgn, fety, f] = CheckArgument(varargin)            
+            if (nargin ~= 9)
+                error('Intialization arguments error, need input "symbol/sec_name/interval/unit/date listed/date expired/margin ratio/fee type/ fee", please check');
+            end
+            
+            [symb, snm, inv, sz, ltdt, epdt, mgn, fety, f] = varargin{:};
+            if (~isa(symb, 'char') && ~isa(symb, 'string'))
+                error('Symbol arugument error, please check');
+            end
+            
+            if (~isa(snm, 'char') && ~isa(snm, 'string'))
+                error('Security name arugument error, please check');
+            end
+            
+            inv = EnumType.Interval.ToEnum(inv);
+            if (~isa(inv, 'EnumType.Interval'))
+                error('Interval arugument error, please check');
+            end
+            
+            if (~isa(sz, 'double'))
+                error('Unit arugument error, please check');
+            end
+                        
+            if(~isa(ltdt, 'char') && ~isa(ltdt, 'string'))
+                error('Listed date arugument error, please check');
+            end   
+            ltdt = datenum(ltdt);
+            
+            if (~isa(epdt, 'char') && ~isa(epdt, 'string'))
+                error('Expire date arugument error, please check');
+            end       
+            epdt = datenum(epdt);
+
+            if (~isa(mgn, 'double'))
+                error('Unit arugument error, please check');
+            end
+            if (~isa(fety, 'double'))
+                error('Unit arugument error, please check');
+            end
+            if (~isa(f, 'double'))
+                error('Unit arugument error, please check');
+            end
         end
     end
 end
