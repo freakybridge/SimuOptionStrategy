@@ -65,7 +65,7 @@ a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZS
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399005', '5m');
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, EnumType.Exchange.SZSE, '399006', '5m');
 
-a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.CFFEX, 'IF', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
+a = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, EnumType.Exchange.SZSE, '159919', 'aaa', 'bbb' ,'5m', 1, 'c', 5.5, datestr(now()), datestr(now()));
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.CZCE, 'SR', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.DCE, 'M', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);
 a = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, EnumType.Exchange.INE, 'SC', 'aaa', 'bbb' ,'5m', 1,datestr(now()), datestr(now()), 0.12,1,0.0003);

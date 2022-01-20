@@ -120,7 +120,7 @@ classdef Option < BaseClass.Asset.Asset
         % ¼ì²éÊäÈë
         function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)            
             if (nargin ~= 8)
-                error('Intialization arguments error, need input "symbol/sec_name/interval/unit/cop/date listed/date expired", please check');
+                error('Intialization arguments error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired", please check');
             end
             
             [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};
