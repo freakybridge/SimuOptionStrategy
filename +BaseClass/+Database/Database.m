@@ -109,7 +109,7 @@ classdef Database < handle
             OPT(Utility.ToString(Interval.min5)) = @obj.SaveBarMin;
             OPT(Utility.ToString(Interval.day))= @obj.SaveBarDayOption;
             
-            obj.map_save_func(Utility.ToString(Product.Etf)) = ETF;
+            obj.map_save_func(Utility.ToString(Product.ETF)) = ETF;
             obj.map_save_func(Utility.ToString(Product.Future)) = FUT;
             obj.map_save_func(Utility.ToString(Product.Index)) = IDX;
             obj.map_save_func(Utility.ToString(Product.Option)) = OPT;
@@ -135,7 +135,7 @@ classdef Database < handle
             OPT(Utility.ToString(Interval.min5)) = @obj.LoadBarMin;
             OPT(Utility.ToString(Interval.day))= @obj.LoadBarDayOption;
             
-            obj.map_load_func(Utility.ToString(Product.Etf)) = ETF;
+            obj.map_load_func(Utility.ToString(Product.ETF)) = ETF;
             obj.map_load_func(Utility.ToString(Product.Future)) = FUT;
             obj.map_load_func(Utility.ToString(Product.Index)) = IDX;
             obj.map_load_func(Utility.ToString(Product.Option)) = OPT;
@@ -196,7 +196,7 @@ classdef Database < handle
 
             % 分类命名
             switch asset.product
-                case EnumType.Product.Etf
+                case EnumType.Product.ETF
                     ret = sprintf("%s-%s", inv, product);
 
                 case EnumType.Product.Future
@@ -224,7 +224,7 @@ classdef Database < handle
 
                 % 分类命名
                 switch ast.product
-                    case EnumType.Product.Etf
+                    case EnumType.Product.ETF
                         ret = sprintf("%s_%s", symbol, exchange);
 
                     case EnumType.Product.Future

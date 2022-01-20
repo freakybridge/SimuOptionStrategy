@@ -30,7 +30,7 @@ function [dt_s, dt_e] = FindUpdateSE(asset)
 
 md = asset.md;
 switch asset.product
-    case {EnumType.Product.Etf, EnumType.Product.Index}
+    case {EnumType.Product.ETF, EnumType.Product.Index}
         % 类似永续
         % 设定起点
         dt_ini = datenum(asset.GetDateInit());

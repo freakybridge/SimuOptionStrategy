@@ -32,7 +32,7 @@ classdef DataSource
         function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
             fprintf(2, 'Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', symb, Utility.ToString(exc), Utility.ToString(inv), obj.name);
             switch pdt
-                case EnumType.Product.Etf
+                case EnumType.Product.ETF
                     [is_err, md] = obj.FetchMdEtf(symb, exc, inv, ts_s, ts_e);
                     
                 case EnumType.Product.Future

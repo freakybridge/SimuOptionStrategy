@@ -22,7 +22,7 @@ for i = 1 : length(dbs)
         loc = strfind(curr_db, '_');
         if (isempty(loc))
             if (strcmp(curr_db, 'Fund'))
-                pdt = EnumType.Product.Etf;
+                pdt = EnumType.Product.ETF;
                 loc = strfind(curr_tb, '.');
                 var = curr_tb(1 : loc(1) - 1);
                 exc = [];

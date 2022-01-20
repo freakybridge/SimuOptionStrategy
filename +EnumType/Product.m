@@ -14,7 +14,7 @@ classdef Product < EnumType.BaseEnum
         function ret = ToEnum(in_)
             switch upper(in_)
                 case {'ETF'}
-                    ret = EnumType.Product.Etf;
+                    ret = EnumType.Product.ETF;
                 case {'FUTURE'}
                     ret = EnumType.Product.Future;
                 case {'INDEX'}

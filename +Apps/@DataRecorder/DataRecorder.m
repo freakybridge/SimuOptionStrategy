@@ -47,7 +47,7 @@ classdef DataRecorder
                     
                 case {EnumType.Interval.day}
                     switch asset.product
-                        case EnumType.Product.Etf
+                        case EnumType.Product.ETF
                             ret = obj.SaveBar(asset, dir_, 'datetime,nav, nav_adj, open,high,low,last,turnover,volume', '%s,%.5f,%.5f,%.4f,%.4f,%.4f,%.4f,%i,%i');
                             
                         case EnumType.Product.Future
