@@ -30,7 +30,7 @@ classdef DataSource
 
         % 下载数据
         function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
-            fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', symb, Utility.ToString(exc), Utility.ToString(inv), obj.name);
+            fprintf(2, 'Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', symb, Utility.ToString(exc), Utility.ToString(inv), obj.name);
             switch pdt
                 case EnumType.Product.Etf
                     [is_err, md] = obj.FetchMdEtf(symb, exc, inv, ts_s, ts_e);
@@ -52,7 +52,7 @@ classdef DataSource
                 
         % 下载合约表
         function [is_err, ins] = FetchChain(obj, pdt, var, exc, ins_local)
-            fprintf('Loading [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
+            fprintf(2, 'Loading [%s-%s-%s]''s instruments from [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch pdt
                 case EnumType.Product.Future     
                     [is_err, ins] = FetchChainFuture(obj, [], ins_local);
