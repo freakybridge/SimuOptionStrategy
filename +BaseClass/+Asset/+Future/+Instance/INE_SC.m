@@ -7,7 +7,7 @@ classdef (Sealed) INE_SC < BaseClass.Asset.Future.Future
     properties (Constant)
         exchange EnumType.Exchange = EnumType.Exchange.INE;
         variety char = 'SC';
-        tradetimetable double = [[0, 230]; [900, 1015]; [1030, 1130]; [1330, 1500]; [2100, 2400]];
+        tradetimetable double = [[900, 1015]; [1030, 1130]; [1330, 1500]; [2100, 230]];
         tick_size double = 0.001;
         date_ini char = '2018/03/26';
     end
