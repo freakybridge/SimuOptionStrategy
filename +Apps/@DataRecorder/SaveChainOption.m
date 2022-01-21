@@ -4,10 +4,9 @@
 function ret = SaveChainOption(~, var, exc, instrus, dir_)
 
 % 预处理
-import EnumType.Exchange;
-file = fullfile(dir_, 'instruments-option.xlsx');
+dir_ = fullfile(dir_, 'INSTRUMENTS');
 Utility.CheckDirectory(dir_);
-sheet = sprintf("%s-%s", var, Utility.ToString(Exchange.ToEnum(exc)));
+file = fullfile(dir_, sprintf('%s.xlsx', BaseClass.Database.Database.GetTableName(EnumType.Product.Option, var, exc)));
 
 % 整理变量
 instrus = [instrus.Properties.VariableNames; table2cell(instrus)];
@@ -16,6 +15,6 @@ instrus(2 : end, 15) = cellfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, instrus(2 
 instrus(2 : end, 17) = cellfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, instrus(2 : end, 17));
 
 % 写入
-xlswrite(file, instrus, sheet);
+writecell(instrus, file);
 ret = true;
 end

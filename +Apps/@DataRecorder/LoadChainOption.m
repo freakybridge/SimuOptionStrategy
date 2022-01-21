@@ -4,16 +4,15 @@
 function instrus = LoadChainOption(~, var, exc, dir_)
 
 % 预处理
-file = fullfile(dir_, 'instruments-option.xlsx');
+dir_ = fullfile(dir_, 'INSTRUMENTS');
+file = fullfile(dir_, sprintf('%s.xlsx', BaseClass.Database.Database.GetTableName(EnumType.Product.Option, var, exc)));
 if (~exist(file, 'file'))
     warning("Can't find ""%s"", please check.", file);
     instrus = [];
     return;
 end
 try
-    exc = EnumType.Exchange.ToEnum(exc);
-    sheet = sprintf("%s-%s", var, Utility.ToString(exc));
-    [~, ~, instrus] = xlsread(file, sheet);
+    instrus = readtable(file);
 catch
     warning("Excel %s reading error, please check.", file);
     instrus = [];
@@ -21,7 +20,6 @@ catch
 end
 
 % 整理
-instrus = cell2table(instrus(2 : end, :), 'VariableNames', instrus(1, :));
 instrus = UnifyInstruFmt(EnumType.Product.Option, instrus);
  
 end
