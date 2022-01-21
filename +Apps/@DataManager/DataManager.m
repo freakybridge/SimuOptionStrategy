@@ -43,7 +43,7 @@ classdef DataManager < handle
         DatabaseBackup(obj, dir_rt, db_ig_lst, tb_ig_lst);
         
         % 数据库还原
-        DatabaseRestore(obj, dir_rt);
+        DatabaseRestore(obj, dir_rt, prefix);
     end
     
     methods (Access = private)
