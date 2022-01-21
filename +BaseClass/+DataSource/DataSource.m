@@ -5,7 +5,7 @@
 %      3.调整功能结构
 % v1.2.0.20220105.beta
 %       首次添加
-classdef DataSource
+classdef DataSource < handle
     % DataSource 此处显示有关此类的摘要
     %   此处显示详细说明
     properties
@@ -131,7 +131,7 @@ classdef DataSource
         
         % 输出错误信息
         function DispErr(obj, usr_ht)
-            fprintf('%s ERROR: %s, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
+            fprintf(2, '[%s] ERROR: %s, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
         end
     end
 end
