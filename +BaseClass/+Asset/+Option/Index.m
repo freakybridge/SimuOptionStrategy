@@ -1,29 +1,26 @@
-% ETF ÆÚÈ¨»ùÀà
+% INDEX æœŸæƒåŸºç±»
 % v1.3.0.20220113.beta
-%       1.¼ÓÈë³ÉÔ±ÀàĞÍÔ¼Êø
-%       2.Àà³ÉÔ±ÖØ¹¹
-% v1.2.0.20220105.beta
-%       Ê×´ÎÌí¼Ó
-classdef ETF < BaseClass.Asset.Option.Option
-    % ¸¸ÀàOptionÊôĞÔ
+%       1.é¦–æ¬¡æ·»åŠ 
+classdef Index < BaseClass.Asset.Option.Option
+    % çˆ¶ç±»Optionå±æ€§
     properties
         underlying;
     end
 
     methods
-        % ¹¹Ôìº¯Êı
-        function obj = ETF(ud_var, ud_exc, varargin)
-            [symb, snm, inv, sz, cop, k, ldt, edt] = BaseClass.Asset.Option.ETF.CheckArgument(varargin{:});
-            underlying = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, ud_var, ud_exc, inv);
+        % æ„é€ å‡½æ•°
+        function obj = Index(ud_var, ud_exc, varargin)
+            [symb, snm, inv, sz, cop, k, ldt, edt] = BaseClass.Asset.Option.Index.CheckArgument(varargin{:});
+            underlying = BaseClass.Asset.Asset.Selector(EnumType.Product.Index, ud_var, ud_exc, inv);
             obj = obj@BaseClass.Asset.Option.Option(symb, snm, inv, sz, cop, k, ldt, edt, underlying);
         end
     end    
 
     methods (Static)
-        % ²ÎÊı¼ì²é
+        % å‚æ•°æ£€æŸ¥
         function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)
             if (nargin ~= 8)
-                error('ETF option Intialization error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired", please check');
+                error('Index option Intialization error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired", please check');
             end
 
             [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};

@@ -1,32 +1,29 @@
-% ETF ÆÚÈ¨»ùÀà
+% FUTURE æœŸæƒåŸºç±»
 % v1.3.0.20220113.beta
-%       1.¼ÓÈë³ÉÔ±ÀàÐÍÔ¼Êø
-%       2.Àà³ÉÔ±ÖØ¹¹
-% v1.2.0.20220105.beta
-%       Ê×´ÎÌí¼Ó
-classdef ETF < BaseClass.Asset.Option.Option
-    % ¸¸ÀàOptionÊôÐÔ
+%       1.é¦–æ¬¡æ·»åŠ 
+classdef Future < BaseClass.Asset.Option.Option
+    % çˆ¶ç±»Optionå±žæ€§
     properties
         underlying;
     end
 
     methods
-        % ¹¹Ôìº¯Êý
-        function obj = ETF(ud_var, ud_exc, varargin)
-            [symb, snm, inv, sz, cop, k, ldt, edt] = BaseClass.Asset.Option.ETF.CheckArgument(varargin{:});
-            underlying = BaseClass.Asset.Asset.Selector(EnumType.Product.ETF, ud_var, ud_exc, inv);
+        % æž„é€ å‡½æ•°
+        function obj = Future(ud_var, ud_exc, varargin)
+            [symb, snm, inv, sz, cop, k, ldt, edt, fsymb, fsnm, fsz, fltdt, fepdt, fmgn, ffety, ff] = BaseClass.Asset.Option.Future.CheckArgument(varargin{:});
+            underlying = BaseClass.Asset.Asset.Selector(EnumType.Product.Future, ud_var, ud_exc, fsymb, fsnm, inv, fsz, fltdt, fepdt, fmgn, ffety, ff);
             obj = obj@BaseClass.Asset.Option.Option(symb, snm, inv, sz, cop, k, ldt, edt, underlying);
         end
     end    
 
     methods (Static)
-        % ²ÎÊý¼ì²é
-        function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)
-            if (nargin ~= 8)
-                error('ETF option Intialization error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired", please check');
+        % å‚æ•°æ£€æŸ¥
+        function [symb, snm, inv, sz, cop, k, ldt, edt, fsymb, fsnm, fsz, fltdt, fepdt, fmgn, ffety, ffee] = CheckArgument(varargin)
+            if (nargin ~= 16)
+                error('Future option Intialization error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired/future symbol/future sec_name/future size/future listed date/future expire date/future margin ratio/future fee type/future fee, please check');
             end
 
-            [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};
+            [symb, snm, inv, sz, cop, k, ldt, edt, fsymb, fsnm, fsz, fltdt, fepdt, fmgn, ffety, ffee] = varargin{:};
             if (~isa(symb, 'char') && ~isa(symb, 'string'))
                 error('Symbol arugument error, please check');
             end
@@ -60,6 +57,7 @@ classdef ETF < BaseClass.Asset.Option.Option
                 error('Expire date arugument error, please check');
             end
             edt = datenum(edt);
+
         end
     end
 end

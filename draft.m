@@ -58,36 +58,15 @@ for i = 1 : 2
 end
 
 
+ttt = BaseClass.Asset.Option.Instance.SHFE_AU('symbol', 'sec name', EnumType.Interval.min5, 1000, EnumType.CallOrPut.Call, 3.55, datestr(now()), datestr(now), ...
+    'future symbol', 'future sec_name', 1000, datestr(now()), datestr(now()), 0.12, 1, 3.5);
+
+ttt = BaseClass.Asset.Option.Instance.DCE_PG('symbol', 'sec name', EnumType.Interval.min5, 1000, EnumType.CallOrPut.Call, 3.55, datestr(now()), datestr(now), ...
+    'future symbol', 'future sec_name', 1000, datestr(now()), datestr(now()), 0.12, 1, 3.5);
+
+ttt = BaseClass.Asset.Option.Instance.CFFEX_IO('symbol', 'sec name', EnumType.Interval.min5, 1000, EnumType.CallOrPut.Call, 3.55, datestr(now()), datestr(now));
 
 
 
-
-% 'Future_BU_SHF'
-% 'Future_FU_SHF'
-% 'Future_HC_SHF'
-% 'Future_NI_SHF'
-% 'Future_PB_SHF'
-% 'Future_RB_SHF'
-% 'Future_RU_SHF'
-% 'Future_SN_SHF'
-% 'Future_WR_SHF'
-% 'Future_ZN_SHF'
-
-
-
-
-
-% 'Option_AU_SHF'
-% 'Option_CF_CZC'
-% 'Option_CU_SHF'
-% 'Option_C_DCE'
-% 'Option_IO_CFE'
-% 'Option_I_DCE'
-% 'Option_MA_CZC'
-% 'Option_M_DCE'
-% 'Option_RM_CZC'
-% 'Option_RU_SHF'
-% 'Option_SR_CZC'
-% 'Option_TA_CZC'
 
 
