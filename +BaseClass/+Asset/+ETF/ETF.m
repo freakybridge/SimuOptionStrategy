@@ -80,7 +80,6 @@ classdef ETF < BaseClass.Asset.Asset
                 error('Security name arugument error, please check');
             end
             
-            inv = EnumType.Interval.ToEnum(inv);
             if (~isa(inv, 'EnumType.Interval'))
                 error('Interval arugument error, please check');
             end
