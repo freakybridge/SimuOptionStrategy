@@ -152,7 +152,7 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
     %% ¾²Ì¬·½·¨
     methods (Static)
         % ·´ÉäÆ÷
-        function obj = Selector(pdt, exc, var, varargin)
+        function obj = Selector(pdt, var, exc, varargin)
             pdt = Utility.ToString(pdt);
             exc = Utility.ToString(exc);
             str = sprintf('BaseClass.Asset.%s.Instance.%s_%s(varargin{:})', pdt, exc, var);
