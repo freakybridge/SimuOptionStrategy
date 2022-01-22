@@ -20,14 +20,11 @@ classdef (Sealed) SSE_510050 < BaseClass.Asset.Option.ETF
         strike_type EnumType.OptionStrikeType = EnumType.OptionStrikeType.European;
         settle_mode EnumType.OptionSettleMode = EnumType.OptionSettleMode.Physical;
     end
-    properties
-        underlying = BaseClass.Asset.ETF.Instance.SSE_510050('5m');
-    end    
     
     % ¹¹Ôìº¯Êý
     methods
         function obj = SSE_510050(varargin)
-            obj = obj@BaseClass.Asset.Option.ETF(varargin{:});
+            obj = obj@BaseClass.Asset.Option.ETF('510050', EnumType.Exchange.SSE, varargin{:});
         end
     end
     

@@ -9,7 +9,7 @@ classdef Option < BaseClass.Asset.Asset
     properties (Constant)
         product EnumType.Product = EnumType.Product.Option;
     end
-    
+
     % 新增属性
     properties
         call_or_put EnumType.CallOrPut;
@@ -29,39 +29,38 @@ classdef Option < BaseClass.Asset.Asset
     properties (Abstract)
         underlying;
     end
-    
+
     methods
         % 初始化
-        function obj = Option(varargin)
-            [symb, snm, inv, sz, cop, k, ldt, edt] = BaseClass.Asset.Option.Option.CheckArgument(varargin{:});            
-            obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);            
+        function obj = Option(symb, snm, inv, sz, cop, k, ldt, edt, ud)
+            obj = obj@BaseClass.Asset.Asset(symb, snm, inv, sz);
             obj.call_or_put = cop;
             obj.strike = k;
             obj.listed = ldt;
             obj.expire = edt;
-            obj.underlying.interval = obj.interval;
+            obj.underlying = ud;
         end
-        
+
         % 交割月
         function ret = get.dlmonth(obj)
             ret = str2double(datestr(obj.expire, 'yymm'));
         end
-        
+
         % 获取品种起点时点
         function ret = GetDateInit(obj)
             ret = datestr(obj.date_ini);
         end
-        
+
         % 获取挂牌时点
         function ret = GetDateListed(obj)
             ret = datestr(obj.listed);
         end
-        
+
         % 获取到期时点
         function ret = GetDateExpire(obj)
             ret = datestr(obj.expire);
         end
-        
+
         % 获取标的信息
         function ret = GetUnderSymbol(obj)
             ret = obj.underlying.symbol;
@@ -115,51 +114,6 @@ classdef Option < BaseClass.Asset.Asset
             obj.md = md_new;
         end
     end
-      
-    methods (Static)
-        % 检查输入
-        function [symb, snm, inv, sz, cop, k, ldt, edt] = CheckArgument(varargin)            
-            if (nargin ~= 8)
-                error('Intialization arguments error, need input "symbol/sec_name/interval/unit/cop/strike/date listed/date expired", please check');
-            end
-            
-            [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};
-            if (~isa(symb, 'char') && ~isa(symb, 'string'))
-                error('Symbol arugument error, please check');
-            end
-            
-            if (~isa(snm, 'char') && ~isa(snm, 'string'))
-                error('Security name arugument error, please check');
-            end
-            
-            inv = EnumType.Interval.ToEnum(inv);
-            if (~isa(inv, 'EnumType.Interval'))
-                error('Interval arugument error, please check');
-            end
-            
-            if (~isa(sz, 'double'))
-                error('Unit arugument error, please check');
-            end
-            
-            cop = EnumType.CallOrPut.ToEnum(cop);
-            if (~isa(cop, 'EnumType.CallOrPut'))
-                error('CallOrPut arugument error, please check');
-            end           
-            
-            if (~isa(k, 'double'))
-                error('Strike arugument error, please check');
-            end    
-            
-            if(~isa(ldt, 'char') && ~isa(ldt, 'string'))
-                error('Listed date arugument error, please check');
-            end   
-            ldt = datenum(ldt);
-            
-            if (~isa(edt, 'char') && ~isa(edt, 'string'))
-                error('Expire date arugument error, please check');
-            end       
-            edt = datenum(edt);
-        end
-    end
-    
+
+
 end

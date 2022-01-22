@@ -58,7 +58,7 @@ classdef DataSource < handle
                     [is_err, ins] = FetchChainFuture(obj, [], ins_local);
 
                 case EnumType.Product.Option
-                    opt_s = BaseClass.Asset.Asset.Selector(pdt, exc, var, 'sample', 'sample', '5m', 10000, 'call', 888, datestr(now()), datestr(now()));
+                    opt_s = BaseClass.Asset.Asset.Selector(pdt, var, exc, 'sample', 'sample', EnumType.Interval.min5, 10000, EnumType.CallOrPut.Call, 888, datestr(now()), datestr(now()));
                     [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);
 
                 otherwise
