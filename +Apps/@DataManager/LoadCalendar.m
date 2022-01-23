@@ -1,33 +1,40 @@
 % DataManager / LoadCalendar 多种方式获取交易日历
 % v1.3.0.20220113.beta
 %      1.首次加入
-function LoadCalendar(obj, asset, dir_csv, dir_tb)
+function cal = LoadCalendar(obj)
 
 % 读取数据库 / csv
-obj.db.LoadCalendar();
-if (isempty(asset.md))
-    obj.dr.LoadMarketData(asset, dir_csv);
-    if (obj.IsMdComplete(asset))
-        obj.db.SaveMarketData(asset);
+cal = obj.db.LoadCalendar();
+if (isempty(cal))
+    cal = obj.dr.LoadCalendar(obj.dir_csv);
+    if (~NeedUpdate(cal))
+        obj.db.SaveCalendar(cal);
         return;
     end
-elseif (obj.IsMdComplete(asset))
+elseif (~NeedUpdate(cal))
     return;
 end
     
-% 读取淘宝excel
-obj.LoadMdViaTaobaoExcel(asset, dir_tb);
-if (obj.IsMdComplete(asset))    
-    obj.db.SaveMarketData(asset);
-    obj.dr.SaveMarketData(asset, dir_csv);
-end
-
 % 更新
-obj.LoadMdViaDataSource(asset);
-if (~isempty(asset.md))
-    obj.db.SaveMarketData(asset);
-    obj.dr.SaveMarketData(asset, dir_csv);
-end
+cal = obj.LoadCalViaDataSource();
+obj.db.SaveCalendar(cal);
+obj.dr.SaveCalendar(cal, obj.dir_csv);
 
 end
 
+
+% 判定是否需要更新
+function ret = NeedUpdate(cal)
+% 若当前无日历信息，必须更新
+if (isempty(cal))
+    ret = true;
+    return;
+end
+
+% 若为距离已有日历不足365天，则必须更新
+if (cal(end, 5) - now() <= 365)
+    ret = true;
+else
+    ret = false;
+end
+end

@@ -8,20 +8,20 @@ classdef DataManager < handle
         db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
         dr  Apps.DataRecorder = Apps.DataRecorder();
-    end
-    properties (Access = private)
+
         ds_pool struct;
         ds_pointer(1, 1) double;
+        dir_root char;
     end
 
     % 公开方法
     methods
         % 构造函数
-        function obj = DataManager(db_driver, db_ur, db_pwd)
-            if (~isnan(db_driver))
-                obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
-            end
-
+        function obj = DataManager(dir_, db_driver, db_ur, db_pwd)
+            % 配置数据库
+            obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
+            
+            % 配置数据源
             obj.AddDs('wind', nan, nan);
             obj.AddDs('ifind', 'merqh001', '146457');
             obj.AddDs('ifind', 'meyqh051', '266742');
@@ -29,13 +29,16 @@ classdef DataManager < handle
             obj.AddDs('ifind', 'meyqh055', '913742');
             obj.AddDs('ifind', '00256770', '30377546');
             obj.ds = obj.AutoSwitchDataSource();
+
+            % 配置根目录
+            obj.dir_root = dir_;
         end
 
         % 载入行情
-        LoadMd(obj, asset, dir_csv, dirt_tb);
+        LoadMd(obj, asset);
 
         % 载入合约列表
-        instrus = LoadChain(obj, pdt, var, exc, dir_);
+        instrus = LoadChain(obj, pdt, var, exc);
 
         % 载入日历
         cal = LoadCalendar(obj);
@@ -50,12 +53,8 @@ classdef DataManager < handle
     end
 
     methods (Access = private)
-        % 行情管理
-        LoadMdViaDataSource(obj, asset);
-        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);
-
-        % 合约列表管理
-        instrus = LoadChainViaDs(obj, pdt, var, exc, instru_local);
+        % 淘宝载入行情
+        LoadMdViaTaobaoExcel(obj, asset, dir_tb);
 
         % 添加备选数据源
         function AddDs(obj, nm, usr, pwd)
