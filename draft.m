@@ -17,8 +17,8 @@ dir_rt = "E:\OneDrive\hisdata";
 % dir_csv = "D:\OneDrive\hisdata";
 % dir_rt = "D:\OneDrive\hisdata";
 
-dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup');
-% dm.DatabaseRestore(dir_rt, '1D');
+% dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup');
+dm.DatabaseRestore(dir_rt, '1D');
 
 
 % 

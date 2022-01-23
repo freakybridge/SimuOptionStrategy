@@ -10,13 +10,13 @@ function ins = LoadChain(obj, pdt, var, exc, dir_)
 ins_local = obj.db.LoadChain(pdt, var, exc);
 if (isempty(ins_local))
     ins_local = obj.dr.LoadChain(pdt, var, exc, dir_);    
-    if (~obj.IsInstruNeedUpdate(ins_local))
+    if (~NeedUpdate(ins_local))
         ins = ins_local;
         obj.db.SaveChain(pdt, var, exc, ins);
         return;
     end
     
-elseif (~obj.IsInstruNeedUpdate(ins_local))
+elseif (~NeedUpdate(ins_local))
     ins = ins_local;
     return;    
 end
@@ -30,4 +30,23 @@ end
 obj.db.SaveChain(pdt, var, exc, ins);
 obj.dr.SaveChain(pdt, var, exc, ins, dir_);
 
+end
+
+
+% 判定是否需要更新合约表
+function ret = NeedUpdate(~, instrus)
+
+% 若当前无合约信息，必须更新
+if (isempty(instrus))
+    ret = true;
+    return;
+end
+
+% 若据上次更新已有1天，则必须更新
+last_ud_dt = max(datenum(instrus.LAST_UPDATE_DATE));
+if (now - last_ud_dt >= 1)
+    ret = true;
+else
+    ret = false;
+end
 end

@@ -8,7 +8,7 @@ classdef DataManager < handle
         db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
         dr  Apps.DataRecorder = Apps.DataRecorder();
-    end    
+    end
     properties (Access = private)
         ds_pool struct;
         ds_pointer(1, 1) double;
@@ -21,7 +21,7 @@ classdef DataManager < handle
             if (~isnan(db_driver))
                 obj.db = BaseClass.Database.Database.Selector(db_driver, db_ur, db_pwd);
             end
-            
+
             obj.AddDs('wind', nan, nan);
             obj.AddDs('ifind', 'merqh001', '146457');
             obj.AddDs('ifind', 'meyqh051', '266742');
@@ -37,32 +37,25 @@ classdef DataManager < handle
         % 载入合约列表
         instrus = LoadChain(obj, pdt, var, exc, dir_);
 
+        % 载入日历
+        cal = LoadCalendar(obj);
+
         % 更新数据
 
-        % 备份数据库（老格式）
+        % 备份数据库
         DatabaseBackupOldVer(obj, dir_rt)
-        
+
         % 数据库还原
         DatabaseRestore(obj, dir_rt, prefix);
     end
-    
+
     methods (Access = private)
         % 行情管理
         LoadMdViaDataSource(obj, asset);
-        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);               
-        ret = IsMdComplete(obj, asset);       
+        LoadMdViaTaobaoExcel(obj, asset, dirt_tb);
 
         % 合约列表管理
         instrus = LoadChainViaDs(obj, pdt, var, exc, instru_local);
-        ret = IsInstruNeedUpdate(obj, instrus);
-
-        % 日历管理
-        cal = LoadCal(obj);
-        cal = LoadCalViaDs(obj);
-        cal = LoadCalViaDb(obj);
-        cal = LoadCalViaExcel(obj, dir_);        
-        ret = SaveCal2Db(obj);
-        ret = SaveCal2Excel(obj, dir_);
 
         % 添加备选数据源
         function AddDs(obj, nm, usr, pwd)
@@ -70,14 +63,14 @@ classdef DataManager < handle
             tmp.source = nm;
             tmp.user = usr;
             tmp.password = pwd;
-            tmp.status = nan; % nan未初始化，0正常工作，-1致命错误                          
+            tmp.status = nan; % nan未初始化，0正常工作，-1致命错误
             if (isempty(obj.ds_pool))
                 obj.ds_pool = tmp;
             else
                 obj.ds_pool(end + 1) = tmp;
-            end  
+            end
         end
-        
+
         % 入选可用数据源
         function ret = AutoSwitchDataSource(obj)
             loc = find(isnan([obj.ds_pool.status]), 1, 'first');
@@ -89,14 +82,14 @@ classdef DataManager < handle
                 obj.ds_pool(loc) = this;
             else
                 error("All dataSource failure, please check.");
-            end   
+            end
         end
-        
+
         % 设置数据源故障
         function SetDsFailure(obj)
             obj.ds_pool(obj.ds_pointer).status = -1;
         end
     end
-    
+
 end
 
