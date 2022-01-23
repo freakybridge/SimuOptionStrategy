@@ -17,12 +17,7 @@ dir_rt = "E:\OneDrive\hisdata";
 % dir_csv = "D:\OneDrive\hisdata";
 % dir_rt = "D:\OneDrive\hisdata";
 
-db_ig_lst = {'1D-ETF', '1D-FUTURE-CU-SHFE', '1D-FUTURE-IF-CFFEX', '1D-FUTURE-M-DCE', '1D-FUTURE-SC-INE', '1D-FUTURE-SR-CZCE', '1D-INDEX', '1D-OPTION-510050-SSE', '1MIN-ETF', ...
-    '5MIN-OPTION-510050-SSE', '5MIN-OPTION-510300-SSE', 'Calendar', 'Interest', 'master', 'model', 'msdb',  'tempdb', 'INSTRUMENTS', 'ReportServer$BRIDGE', 'ReportServer$BRIDGETempDB', ...
-    'Tushare_calendar', 'Tushare_fund', 'Tushare_index', 'Tushare_interest', '1D-OPTION-510300-SSE', 'ReportServer$BRIDGE_DB', 'ReportServer$BRIDGE_DBTempDB', 'Future_ME_CZC', ...
-    'Future_TC_CZC', 'Future_WT_CZC', 'Future_WS_CZC'};
-tb_ig_lst = {'CodeList', '000188.SH'};
-dm.DatabaseBackup('C:\Users\freakybridge\Desktop\Backup', db_ig_lst, tb_ig_lst);
+dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup', db_ig_lst, tb_ig_lst);
 % dm.DatabaseRestore(dir_rt, '1D');
 
 

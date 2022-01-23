@@ -39,8 +39,8 @@ classdef DataManager < handle
 
         % 更新数据
 
-        % 备份数据库
-        DatabaseBackup(obj, dir_rt, db_ig_lst, tb_ig_lst);
+        % 备份数据库（老格式）
+        DatabaseBackupOldVer(obj, dir_rt)
         
         % 数据库还原
         DatabaseRestore(obj, dir_rt, prefix);
