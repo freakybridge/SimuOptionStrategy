@@ -57,7 +57,7 @@ for i = 1 : length(dbs)
                 asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, inv);
             case EnumType.Product.Option
                 switch var
-                    case {'510050', '510300', '159919'}
+                    case {'510050', '510300', '159919', 'IO'}
                         symbol = curr_tb(1 : strfind(curr_tb, '.') - 1);
                         asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, symbol, 'sec_name', inv, 10000, EnumType.CallOrPut.Call, 999, datestr(now()), datestr(now()));
                     otherwise
