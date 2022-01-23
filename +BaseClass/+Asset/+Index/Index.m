@@ -68,19 +68,19 @@ classdef Index < BaseClass.Asset.Asset
             
             [symb, snm, inv, sz] = varargin{:};
              if (~isa(symb, 'char') && ~isa(symb, 'string'))
-                error('Symbol arugument error, please check');
+                error('"Symbol" arugument error, please check');
              end
             
             if (~isa(snm, 'char') && ~isa(snm, 'string'))
-                error('Security name arugument error, please check');
+                error('"Security name" arugument error, please check');
             end
             
             if (~isa(inv, 'EnumType.Interval'))
-                error('Interval arugument error, please check');
+                error('"Interva"l arugument error, please check');
             end
             
             if (~isa(sz, 'double'))
-                error('Unit arugument error, please check');
+                error('"Size" arugument error, please check');
             end     
         end
     end

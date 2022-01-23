@@ -28,36 +28,36 @@ classdef ETF < BaseClass.Asset.Option.Option
 
             [symb, snm, inv, sz, cop, k, ldt, edt] = varargin{:};
             if (~isa(symb, 'char') && ~isa(symb, 'string'))
-                error('Symbol arugument error, please check');
+                error('"Symbol" arugument error, please check');
             end
 
             if (~isa(snm, 'char') && ~isa(snm, 'string'))
-                error('Security name arugument error, please check');
+                error('"Security name" arugument error, please check');
             end
 
             if (~isa(inv, 'EnumType.Interval'))
-                error('Interval arugument error, please check');
+                error('"Interval" arugument error, please check');
             end
 
             if (~isa(sz, 'double'))
-                error('Unit arugument error, please check');
+                error('"Size" arugument error, please check');
             end
 
             if (~isa(cop, 'EnumType.CallOrPut'))
-                error('CallOrPut arugument error, please check');
+                error('"CallOrPut" arugument error, please check');
             end
 
             if (~isa(k, 'double'))
-                error('Strike arugument error, please check');
+                error('"Strike" arugument error, please check');
             end
 
             if(~isa(ldt, 'char') && ~isa(ldt, 'string'))
-                error('Listed date arugument error, please check');
+                error('"Listed date" arugument error, please check');
             end
             ldt = datenum(ldt);
 
             if (~isa(edt, 'char') && ~isa(edt, 'string'))
-                error('Expire date arugument error, please check');
+                error('"Expire date" arugument error, please check');
             end
             edt = datenum(edt);
         end

@@ -47,10 +47,13 @@ for i = 1 : length(dbs)
         % 生成合约
         switch pdt
             case {EnumType.Product.ETF, EnumType.Product.Index}
-                asset = BaseClass.Asset.Asset.Selector(pdt, exc, var, '1d');
+                asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, '1d');
             case EnumType.Product.Option
                 symbol = curr_tb(1 : strfind(curr_tb, '.') - 1);
-                asset = BaseClass.Asset.Asset.Selector(pdt, exc, var, symbol, 'sec_name', '1d', 10000, 'c', 999, datestr(now()), datestr(now()));
+                asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, symbol, 'sec_name', '1d', 10000, 'c', 999, datestr(now()), datestr(now()));
+            case EnumType.Product.Future
+                disp(1234);
+
         end
                 
         

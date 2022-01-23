@@ -100,39 +100,39 @@ classdef Future < BaseClass.Asset.Asset
             
             [symb, snm, inv, sz, ltdt, epdt, mgn, fety, f] = varargin{:};
             if (~isa(symb, 'char') && ~isa(symb, 'string'))
-                error('Symbol arugument error, please check');
+                error('"Symbol" arugument error, please check');
             end
             
             if (~isa(snm, 'char') && ~isa(snm, 'string'))
-                error('Security name arugument error, please check');
+                error('"Security name" arugument error, please check');
             end
             
             if (~isa(inv, 'EnumType.Interval'))
-                error('Interval arugument error, please check');
+                error('"Interval" arugument error, please check');
             end
             
             if (~isa(sz, 'double'))
-                error('Unit arugument error, please check');
+                error('"Size" arugument error, please check');
             end
                         
             if(~isa(ltdt, 'char') && ~isa(ltdt, 'string'))
-                error('Listed date arugument error, please check');
+                error('"Listed date" arugument error, please check');
             end   
             ltdt = datenum(ltdt);
             
             if (~isa(epdt, 'char') && ~isa(epdt, 'string'))
-                error('Expire date arugument error, please check');
+                error('"Expire date" arugument error, please check');
             end       
             epdt = datenum(epdt);
 
             if (~isa(mgn, 'double'))
-                error('Unit arugument error, please check');
+                error('"Margin ratio" arugument error, please check');
             end
             if (~isa(fety, 'double'))
-                error('Unit arugument error, please check');
+                error('"Fee type" arugument error, please check');
             end
             if (~isa(f, 'double'))
-                error('Unit arugument error, please check');
+                error('"Fee" arugument error, please check');
             end
         end
     end
