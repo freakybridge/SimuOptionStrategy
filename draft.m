@@ -15,13 +15,11 @@ dir_tb = 'C:\Users\dell\Desktop\taobao';
 dir_rt = "D:\OneDrive\hisdata";
 dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
-dm.LoadCalendar();
 
 
 
 % dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup');
-% dm.DatabaseRestore(dir_rt, '1D');
-
+dm.DatabaseRestore(dir_rt);
 
 
 % for i = 1 : 2

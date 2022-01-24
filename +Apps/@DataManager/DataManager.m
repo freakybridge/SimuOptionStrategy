@@ -49,7 +49,7 @@ classdef DataManager < handle
         DatabaseBackupOldVer(obj, dir_rt)
 
         % 数据库还原
-        DatabaseRestore(obj, dir_rt, prefix);
+        DatabaseRestore(obj, dir_bak);
     end
 
     methods (Access = private)
