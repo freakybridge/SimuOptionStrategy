@@ -73,6 +73,30 @@ classdef DataRecorder
             fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             obj.LoadBar(asset, dir_);
         end
+        
+        % 保存交易日历
+        function ret = SaveCalendar(~, cal, dir_)
+            dir_ = fullfile(dir_, 'CALENDAR');
+            Utility.CheckDirectory(dir_);
+            
+            % 生成输出文件名
+            filename = fullfile(dir_, "Calendar.csv");
+            
+            % 整列表头 / 数据格式
+            header = 'DATETIME,TRADING,WORKING,WEEKDAY,DATENUM,LAST_UPDATE_DATE\r';
+            dat_fmt = '%i,%i,%i,%i,%i,%f\r';
+            
+            % 写入表头 / 写入数据
+            id = fopen(filename, 'w');
+            fprintf(id, header);
+            for i = 1 : size(cal, 1)
+                fprintf(id, dat_fmt, cal(i, :));
+            end
+            fclose(id);
+            ret = true;
+        end
+        
+        % 读取交易日历
     end
     
     
