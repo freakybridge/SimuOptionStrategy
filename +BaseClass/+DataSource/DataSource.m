@@ -26,7 +26,7 @@ classdef DataSource < handle
         end
         
         % 下载交易日历
-        cal = FetchCalendar(obj);
+        [is_err, cal] = FetchCalendar(obj);
 
         % 下载数据
         function [is_err, md] = FetchMarketData(obj, pdt, symb, exc, inv, ts_s, ts_e)
