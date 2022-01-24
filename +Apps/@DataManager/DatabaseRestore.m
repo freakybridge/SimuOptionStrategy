@@ -162,6 +162,7 @@ for i = 1 : length(files)
     loc = strfind(this.name, '.');
     symb = this.name(1 : loc(1) - 1);
     asset.symbol = symb;
+    asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, symb, i, length(files));
     obj.dr.LoadMarketData(asset, dir_bak);
     obj.db.SaveMarketData(asset);
@@ -190,6 +191,7 @@ end
 for i = 1 : length(files)
     this = files(i);
     asset.symbol = this.name(1 : strfind(this.name, '.') - 1);
+    asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, asset.symbol, i, length(files));
     obj.dr.LoadMarketData(asset, dir_bak);
     obj.db.SaveMarketData(asset);

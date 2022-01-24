@@ -7,19 +7,19 @@ import EnumType.Product;
 import EnumType.Exchange;
 
 
-% dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
-% dir_rt = "E:\OneDrive\hisdata";
-% dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
+dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
+dir_rt = "E:\OneDrive\hisdata";
+dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 
-dir_tb = 'C:\Users\dell\Desktop\taobao';
-dir_rt = "D:\OneDrive\hisdata";
-dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
-
-
+% dir_tb = 'C:\Users\dell\Desktop\taobao';
+% dir_rt = "D:\OneDrive\hisdata";
+% dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
 
+
+dm.DatabaseBackup('C:\Users\freakybridge\Desktop\Backup');
 % dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup');
-dm.DatabaseRestore(dir_rt);
+% dm.DatabaseRestore(dir_rt);
 
 
 % for i = 1 : 2

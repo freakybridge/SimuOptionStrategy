@@ -47,6 +47,7 @@ classdef DataManager < handle
 
         % 备份数据库
         DatabaseBackupOldVer(obj, dir_rt)
+        DatabaseBackup(obj, dir_sav);
 
         % 数据库还原
         DatabaseRestore(obj, dir_bak);
