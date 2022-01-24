@@ -38,9 +38,9 @@ classdef MSS < BaseClass.Database.Database
         function obj = Off(obj)
             close(obj.conn);
             if ~isopen(obj.conn)
-                disp(['Database ', obj.name, ' log off success. ']);
+                fprintf('Database [%s] log off success.\r', obj.name);
             else
-                disp(['Database ', obj.name, ' log off failure. ']);
+                fprintf('Database [%s] log off failure.\r', obj.name);
                 error(cThis.Conn.Message);
             end
         end
@@ -50,9 +50,9 @@ classdef MSS < BaseClass.Database.Database
             %  connect
             conn = database(db, obj.user, obj.password, obj.driver, sprintf('%s%s', obj.url, db));
             if isopen(conn)
-                fprintf("Database ""%s"" log on success.\r", db);
+                fprintf("Database [%s] log on success.\r", db);
             else
-                fprintf("Database ""%s"" log on failure.\r", db);
+                fprintf("Database [%s] log on failure.\r", db);
                 warning(conn.Message);
                 return;
             end

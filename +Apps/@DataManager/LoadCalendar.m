@@ -6,7 +6,7 @@ function cal = LoadCalendar(obj)
 % local fetching
 cal = obj.db.LoadCalendar();
 if (isempty(cal))
-    cal = obj.dr.LoadCalendar(obj.dir_csv);
+    cal = obj.dr.LoadCalendar(obj.dir_root);
     if (~NeedUpdate(cal))
         obj.db.SaveCalendar(cal);
         return;
@@ -16,9 +16,9 @@ elseif (~NeedUpdate(cal))
 end
     
 % fetch from ds / saving
-cal = obj.LoadCalViaDataSource();
+cal = LoadViaDs(obj);
 obj.db.SaveCalendar(cal);
-obj.dr.SaveCalendar(cal, obj.dir_csv);
+obj.dr.SaveCalendar(cal, obj.dir_root);
 
 end
 
@@ -36,5 +36,18 @@ if (now() - cal(end, 6) >= 20)
     ret = true;
 else
     ret = false;
+end
+end
+
+% 从数据接口获取合约列表
+function cal = LoadViaDs(obj)
+while (true)
+    [is_err, cal] = obj.ds.FetchCalendar();    
+    if (is_err)
+        obj.SetDsFailure();
+        obj.ds = obj.AutoSwitchDataSource();
+        continue;    
+    end
+    return;
 end
 end
