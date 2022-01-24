@@ -97,6 +97,20 @@ classdef DataRecorder
         end
         
         % 读取交易日历
+        function cal = LoadCalendar(~, dir_)            
+            % 预处理
+            % 检查输入目录 / 生成输出文件名
+            dir_ = fullfile(dir_, 'CALENDAR');
+            filename = fullfile(dir_, 'Calendar.csv');
+            
+            % 检查文件 / 读取
+            if (~exist(filename, 'file'))
+                warning('Please check csv file "%s", can''t find it.', filename);
+                cal = zeros(0, 6);
+            else
+                cal = table2array(readtable(filename));
+            end
+        end
     end
     
     

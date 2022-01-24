@@ -14,3 +14,4 @@ else
     dat = readtable(filename);
     asset.MergeMarketData([datenum(table2array(dat(:, 1))), table2array(dat(:, 2 : end))]);
 end
+end
