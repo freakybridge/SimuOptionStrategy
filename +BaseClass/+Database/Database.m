@@ -13,7 +13,9 @@ classdef Database < handle
         conns containers.Map;
         tables containers.Map;
         db_default char;
-        db_instru char;
+        db_instru char = 'INSTRUMENTS';
+        db_calendar char = 'CALENDAR';
+        tb_calendar char = 'Calendar';
         
         map_save_func containers.Map;
         map_load_func containers.Map;        
@@ -24,12 +26,11 @@ classdef Database < handle
 
     methods
         % 端口初始化
-        function obj = Database(user, pwd, db_dft)
+        function obj = Database(user, pwd, db_def)
             % 属性初始化
             obj.user = user;
             obj.password = pwd;
-            obj.db_default = db_dft;
-            obj.db_instru = "INSTRUMENTS";
+            obj.db_default = db_def;
             obj.conns = containers.Map();
             obj.tables = containers.Map();            
             obj.AttachFuncHandle();            
@@ -80,6 +81,12 @@ classdef Database < handle
                     error('Unexpected "product" for instruments load from database, please check.')
             end
         end
+        
+        % 保存交易日历
+        ret = SaveCalendar(obj, cal);
+        
+        % 载入交易日历
+        cal = LoadCalendar(obj);
     end
     
     
