@@ -16,10 +16,10 @@ dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 % dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
 
-
+dm.Update();
 % dm.DatabaseBackup('C:\Users\freakybridge\Desktop\Backup');
 % dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\Backup');
-dm.DatabaseRestore(dir_rt);
+% dm.DatabaseRestore(dir_rt);
 
 
 % for i = 1 : 2

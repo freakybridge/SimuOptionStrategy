@@ -10,11 +10,11 @@ function LoadMd(obj, asset)
 obj.db.LoadMarketData(asset);
 if (isempty(asset.md))
     obj.dr.LoadMarketData(asset, obj.dir_root);
-    if (~NeedUpdate(asset))
+    if (~NeedUpdate(obj, asset))
         obj.db.SaveMarketData(asset);
         return;
     end
-elseif (~NeedUpdate(asset))
+elseif (~NeedUpdate(obj, asset))
     return;
 end
     
@@ -27,26 +27,75 @@ end
 end
 
 % 判定是否需要更新
-function ret = NeedUpdate(asset)
+function ret = NeedUpdate(obj, asset)
 % 无行情数据，需要更新
 if (isempty(asset.md))
     ret = true;
     return;
 end
 
-% 期权收盘前15分钟无交易，需要更新
+% 读取交易日历 / 确定最后更新日
+persistent cal;
+if (isempty(cal))
+    cal = obj.LoadCalendar();
+end
+if hour(now()) >= 15
+    td = now();
+else
+    td = now() - 1;
+end
+last_upd_date = find(cal(:, 5) <= td, 1, 'last');
+last_upd_date = cal(last_upd_date, 5);
+
+% 根据合约选择
+if (asset.product == EnumType.ETF)
+    if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
+        last_upd_date = last_upd_date + asset.tradetimetable(end) / 100
+
+    elseif (asset.interval == EnumType.Interval.day)
+        if (asset.md(end, 1) < last_upd_date)
+            ret = true;
+        else
+            ret = false;
+        end
+        return;
+    else
+        error("Unexpected ""interval"" for market data accomplished judgement, please check.");
+    end
+
+elseif (asset.product == EnumType.Index)
+elseif (asset.product == EnumType.Future)
+elseif (asset.product == EnumType.Option)
+
+else
+    error("Unexpected ""product"" for market data accomplished judgement, please check.");
+end
+
+
 switch asset.product
+    case EnumType.Product.ETF    
+    case EnumType.Product.Index
+    case EnumType.Product.Future
     case EnumType.Product.Option
-        if (datenum(asset.GetDateExpire) - asset.md(end, 1) <= 15 / (24 * 60))
+        if (asset.interval == EnumType.Interval.day)
+
+        if (datenum(asset.GetDateExpire()) - asset.md(end, 1) <= 15 / (24 * 60))
             ret = false;
         else
             ret = true;
         end        
         
-    otherwise
-        error("Unexpected ""product"" for market data accomplished judgement, please check");
+        otherwise
 end
+
+
+% 期权收盘前15分钟无交易，需要更新
+
 end
+
+% 调整时点
+    function ret = TimeOffset(lt_upd_dt, c_timing)
+    end
 
 % 从数据接口获取行情数据
 function LoadViaDs(obj, asset)

@@ -51,6 +51,9 @@ classdef DataManager < handle
 
         % 数据库还原
         DatabaseRestore(obj, dir_bak);
+
+        % 更新程序
+        Update(obj);
     end
 
     methods (Access = private)
