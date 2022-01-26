@@ -36,6 +36,11 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
             obj.move = [];
         end
         
+        % 获取品种起点时点
+        function ret = GetDateInit(obj)
+            ret = datestr(obj.date_ini);
+        end
+        
         % 合并行情
         function MergeMarketData(obj, md_new)
             % 删除重复数据

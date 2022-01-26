@@ -17,7 +17,7 @@ if (isempty(asset.md))
 elseif (~NeedUpdate(obj, asset))
     return;
 end
-    
+
 % 更新
 LoadViaDs(obj, asset);
 if (~isempty(asset.md))
@@ -34,7 +34,7 @@ if (isempty(asset.md))
     return;
 end
 
-% 读取交易日历 / 确定最后更新日
+% 读取交易日历
 persistent cal;
 if (isempty(cal))
     cal = obj.LoadCalendar();
@@ -44,58 +44,39 @@ if hour(now()) >= 15
 else
     td = now() - 1;
 end
-last_upd_date = find(cal(:, 5) <= td, 1, 'last');
-last_upd_date = cal(last_upd_date, 5);
 
-% 根据合约选择
-if (asset.product == EnumType.ETF)
-    if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
-        last_upd_date = last_upd_date + asset.tradetimetable(end) / 100
+% 确定最后更新日
+last_td_dt = find(cal(:, 5) <= td, 1, 'last');
+last_td_dt = cal(find(cal(1 : last_td_dt, 2) == 1, 1, 'last'), 5);
+last_md_dt = asset.md(end, 1);
+if (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
+    if (last_td_dt > datenum(asset.GetDateExpire()))
+        last_td_dt = floor(datenum(asset.GetDateExpire()));
+    end
+end
 
-    elseif (asset.interval == EnumType.Interval.day)
-        if (asset.md(end, 1) < last_upd_date)
-            ret = true;
-        else
-            ret = false;
-        end
-        return;
+% 对于分钟bar，收盘前15分钟内必须有数据
+% 对于day bar，至少需要更新一天
+if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
+    last_td_dt = last_td_dt + 15 / 24;
+    if (last_td_dt - last_md_dt >= 15 / 24/ 60)
+        ret = true;
     else
-        error("Unexpected ""interval"" for market data accomplished judgement, please check.");
+        ret = false;
     end
+    return;
 
-elseif (asset.product == EnumType.Index)
-elseif (asset.product == EnumType.Future)
-elseif (asset.product == EnumType.Option)
-
+elseif (asset.interval == EnumType.Interval.day)
+    if (last_td_dt - last_md_dt >= 1)
+        ret = true;
+    else
+        ret = false;
+    end
+    return;
 else
-    error("Unexpected ""product"" for market data accomplished judgement, please check.");
+    error("Unexpected 'interval' for market data accomplished judgement, please check.");
 end
-
-
-switch asset.product
-    case EnumType.Product.ETF    
-    case EnumType.Product.Index
-    case EnumType.Product.Future
-    case EnumType.Product.Option
-        if (asset.interval == EnumType.Interval.day)
-
-        if (datenum(asset.GetDateExpire()) - asset.md(end, 1) <= 15 / (24 * 60))
-            ret = false;
-        else
-            ret = true;
-        end        
-        
-        otherwise
 end
-
-
-% 期权收盘前15分钟无交易，需要更新
-
-end
-
-% 调整时点
-    function ret = TimeOffset(lt_upd_dt, c_timing)
-    end
 
 % 从数据接口获取行情数据
 function LoadViaDs(obj, asset)
@@ -137,15 +118,15 @@ switch asset.product
             dt_md_s = md(1, 1);
             dt_md_e = md(end, 1);
             if (dt_ini - dt_md_s >= 1)
-                dt_s = dt_ini;              
+                dt_s = dt_ini;
             else
                 dt_s = dt_md_e;
             end
         end
-        
+
         % 设定终点
         dt_e = now();
-        
+
     case {EnumType.Product.Future, EnumType.Product.Option}
         % 续存期合约
         % 设定起点
@@ -162,7 +143,7 @@ switch asset.product
                 dt_s = dt_md_e;
             end
         end
-        
+
         % 设定终点
         dt_e = dt_ep;
 

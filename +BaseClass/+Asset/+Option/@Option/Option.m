@@ -46,11 +46,6 @@ classdef Option < BaseClass.Asset.Asset
             ret = str2double(datestr(obj.expire, 'yymm'));
         end
 
-        % 获取品种起点时点
-        function ret = GetDateInit(obj)
-            ret = datestr(obj.date_ini);
-        end
-
         % 获取挂牌时点
         function ret = GetDateListed(obj)
             ret = datestr(obj.listed);
