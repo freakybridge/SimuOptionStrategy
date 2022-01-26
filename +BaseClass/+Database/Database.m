@@ -39,6 +39,10 @@ classdef Database < handle
         % 保存行情
         function ret = SaveMarketData(obj, asset)
             fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
+            if (isempty(asset.md))
+                ret = false;
+                return;
+            end
             product = Utility.ToString(asset.product);
             interval = Utility.ToString(asset.interval);
             func = obj.map_save_func(product);
@@ -59,6 +63,10 @@ classdef Database < handle
         % 保存合约表
         function ret = SaveChain(obj, pdt, var, exc, instrus)
             fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
+            if (isempty(instrus))
+                ret = false;
+                return;
+            end
             switch  pdt
                 case EnumType.Product.Future
                     ret = obj.SaveChainFuture(var, exc, instrus);

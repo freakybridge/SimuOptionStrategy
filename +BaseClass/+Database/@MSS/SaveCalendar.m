@@ -2,6 +2,12 @@
 % v1.3.0.20220113.beta
 %       首次加入
 function ret = SaveCalendar(obj, cal)
+% 输入检查
+if (isempty(cal))
+    ret = false;
+    return;
+end
+
 % 确定库名 / 端口 / 表名
 db = obj.db_calendar;
 conn = obj.SelectConn(db);
