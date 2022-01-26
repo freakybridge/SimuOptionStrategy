@@ -4,9 +4,11 @@
 function ret = SaveCalendar(obj, cal)
 % 输入检查
 if (isempty(cal))
+    fprintf('Saving [Calendar] to [%s] failure, data empty, please check !\r', obj.name);
     ret = false;
     return;
 end
+fprintf('Saving [Calendar] to [%s], please wait ...\r', obj.name);
 
 % 确定库名 / 端口 / 表名
 db = obj.db_calendar;
@@ -21,7 +23,6 @@ end
 CreateTable(obj, conn, db, tb);
 
 % 入库
-fprintf('Saving [Calendar] to [%s], please wait ...\r', obj.name);
 column = {'DATETIME', 'TRADING', 'WORKING', 'WEEKDAY', 'DATENUM', 'LAST_UPDATE_DATE'};
 fastinsert(conn, tb, column, cal);
 ret = true;

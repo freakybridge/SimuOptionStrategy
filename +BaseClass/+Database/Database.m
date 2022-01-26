@@ -38,11 +38,12 @@ classdef Database < handle
              
         % 保存行情
         function ret = SaveMarketData(obj, asset)
-            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             if (isempty(asset.md))
+                fprintf(2, 'Saving [%s.%s]''s %s quetos to [%s] failure, data empty, please check !\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
                 ret = false;
                 return;
             end
+            fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             product = Utility.ToString(asset.product);
             interval = Utility.ToString(asset.interval);
             func = obj.map_save_func(product);
@@ -62,11 +63,12 @@ classdef Database < handle
 
         % 保存合约表
         function ret = SaveChain(obj, pdt, var, exc, instrus)
-            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             if (isempty(instrus))
+                fprintf(2, 'Saving [%s-%s-%s]''s instruments to [%s] failure, data empty, please check !\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
                 ret = false;
                 return;
             end
+            fprintf('Saving [%s-%s-%s]''s instruments to [%s], please wait ...\r', Utility.ToString(pdt), var, Utility.ToString(exc), obj.name);
             switch  pdt
                 case EnumType.Product.Future
                     ret = obj.SaveChainFuture(var, exc, instrus);

@@ -9,7 +9,7 @@ folder_cal = 'CALENDAR';
 folders = LocateAvailablePath(dir_bak, folder_ins, folder_cal);
 
 % ÖðÒ»Èë¿â
-for i = 62 : length(folders)
+for i = 1 : length(folders)
     fprintf(2, 'Restoring progress [%i/%i], please wait ...\r', i ,length(folders));
     this = folders(i);
     switch this.name
