@@ -62,6 +62,9 @@ if (~isempty(md))
     elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
         dt_s_o =  datenum(asset.GetDateListed());    
         dt_e_o = datenum(asset.GetDateExpire());
+        if (dt_e_o > last_trade_date)
+            dt_e_o = last_trade_date + 15 / 24;
+        end
     else
         error('Unexpected "product" for update start point determine, please check.');
     end
