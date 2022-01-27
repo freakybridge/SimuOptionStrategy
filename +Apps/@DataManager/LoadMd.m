@@ -53,7 +53,10 @@ last_trade_date = cal(find(cal(1 : last_trade_date, 2) == 1, 1, 'last'), 5);
 if (~isempty(md))
     % 有行情
     % 确定理论起点终点
-    if (asset.product == EnumType.Product.ETF || asset.product == EnumType.Product.Index)
+    if (asset.product == EnumType.Product.ETF)
+        dt_s_o = datenum(asset.GetDateInit()) + 40;
+        dt_e_o = last_trade_date + 15 / 24;
+    elseif (asset.product == EnumType.Product.Index)
         dt_s_o = datenum(asset.GetDateInit());
         dt_e_o = last_trade_date + 15 / 24;
     elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
