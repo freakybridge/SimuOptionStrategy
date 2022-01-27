@@ -164,7 +164,8 @@ for i = 1 : length(files)
     asset.symbol = symb;
     asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, symb, i, length(files));
-    obj.dr.LoadMarketData(asset, dir_bak);
+    md = obj.dr.LoadMarketData(asset, dir_bak);
+    asset.MergeMarketData(md);
     obj.db.SaveMarketData(asset);
 end
 end
@@ -193,7 +194,8 @@ for i = 1 : length(files)
     asset.symbol = this.name(1 : strfind(this.name, '.') - 1);
     asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, asset.symbol, i, length(files));
-    obj.dr.LoadMarketData(asset, dir_bak);
+    md = obj.dr.LoadMarketData(asset, dir_bak);
+    asset.MergeMarketData(md);
     obj.db.SaveMarketData(asset);
 end
 end

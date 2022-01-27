@@ -2,7 +2,7 @@
 % v1.3.0.20220113.beta
 %      1.首次加入
 function DatabaseBackup(obj, dir_sav)
-% 获取需要备份的数据库
+% 获取�?要备份的数据�?
 db_ins = 'INSTRUMENTS';
 db_calendar = 'CALENDAR';
 dbs = FetchAllDatabase(obj, db_ins, db_calendar);
@@ -25,7 +25,7 @@ end
 end
 
 
-% 获取需要备份的数据库
+% 获取�?要备份的数据�?
 function dbs = FetchAllDatabase(obj, db_ins, db_cal)
 dbs = obj.db.FetchAllDbs();
 for i = length(dbs) : -1 : 1
@@ -133,7 +133,8 @@ for i = 1 : length(tbs)
     asset.symbol = tbs{i};
     asset.md = [];
     fprintf(2, 'Backuping [%s]-[%s], [%i/%i], please wait ...\r', db, asset.symbol , i, length(tbs));
-    obj.db.LoadMarketData(asset);
+    md = obj.db.LoadMarketData(asset);
+    asset.MergeMarketData(md);
     obj.dr.SaveMarketData(asset, dir_sav);
 end
 end
@@ -161,7 +162,8 @@ for i = 1 : length(tbs)
     asset.symbol = tbs{i};
     asset.md = [];
     fprintf(2, 'Backuping [%s]-[%s], [%i/%i], please wait ...\r', db, asset.symbol, i, length(tbs));
-    obj.db.LoadMarketData(asset);
+    md = obj.db.LoadMarketData(asset);
+    asset.MergeMarketData(md);
     obj.dr.SaveMarketData(asset, dir_sav);
 end
 end
