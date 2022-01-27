@@ -37,8 +37,8 @@ classdef Database < handle
         end
              
         % 保存行情
-        function ret = SaveMarketData(obj, asset)
-            if (isempty(asset.md))
+        function ret = SaveMarketData(obj, asset, md)
+            if (isempty(md))
                 fprintf(2, 'Saving [%s.%s]''s %s quetos to [%s] failure, data empty, please check !\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
                 ret = false;
                 return;
@@ -48,17 +48,17 @@ classdef Database < handle
             interval = Utility.ToString(asset.interval);
             func = obj.map_save_func(product);
             func = func(interval);
-            ret = func(asset);
+            ret = func(asset, md);
         end
 
         % 读取行情
-        function LoadMarketData(obj, asset)
+        function md = LoadMarketData(obj, asset)
             fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             product =Utility.ToString(asset.product);
             interval = Utility.ToString(asset.interval);
             func = obj.map_load_func(product);
             func = func(interval);
-            func(asset);
+            md = func(asset);
         end
 
         % 保存合约表
@@ -171,18 +171,18 @@ classdef Database < handle
         instru = LoadChainFuture(obj, var, exc); 
         
         % 保存K线行情
-        ret = SaveBarMin(obj, asset);
-        ret = SaveBarDayEtf(obj, asset);
-        ret = SaveBarDayFuture(obj, asset);
-        ret = SaveBarDayIndex(obj, asset);
-        ret = SaveBarDayOption(obj, asset);
+        ret = SaveBarMin(obj, asset, md);
+        ret = SaveBarDayEtf(obj, asset, md);
+        ret = SaveBarDayFuture(obj, asset, md);
+        ret = SaveBarDayIndex(obj, asset, md);
+        ret = SaveBarDayOption(obj, asset, md);
 
         % 读取K线行情
-        LoadBarMin(obj, asset);
-        LoadBarDayEtf(obj, asset);
-        LoadBarDayFuture(obj, asset);
-        LoadBarDayIndex(obj, asset);
-        LoadBarDayOption(obj, asset);
+        md = LoadBarMin(obj, asset);
+        md = LoadBarDayEtf(obj, asset);
+        md = LoadBarDayFuture(obj, asset);
+        md = LoadBarDayIndex(obj, asset);
+        md = LoadBarDayOption(obj, asset);
         
         % 读取 全部数据库 / 当前库所有表 / 获取原始数据
         ret = FetchAllDbs(obj);

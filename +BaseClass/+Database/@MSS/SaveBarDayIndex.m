@@ -1,7 +1,7 @@
 % Microsoft Sql Server / SaveBarDayIndex
 % v1.3.0.20220113.beta
 %       首次加入
-function ret = SaveBarDayIndex(obj, asset)
+function ret = SaveBarDayIndex(obj, asset, md)
 % 确定库名 / 端口 / 表名
 db = obj.GetDbName(asset);
 conn = obj.SelectConn(db);
@@ -11,7 +11,6 @@ if (~CheckTable(obj, db, tb))
 end
 
 % 行情预处理
-md = asset.md;
 md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 4 : end))];
 tbs = repmat({tb}, size(md, 1), 1);
 md = [tbs, md(:, 1), tbs, md(:, 2 : end), md(:, 1), tbs, md]';

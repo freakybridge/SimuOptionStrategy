@@ -139,11 +139,11 @@ classdef MSS < BaseClass.Database.Database
         ret = SaveBarDayOption(obj, asset);
 
         % 读取K线行情
-        LoadBarMin(obj, asset);
-        LoadBarDayEtf(obj, asset);
-        LoadBarDayFuture(obj, asset);
-        LoadBarDayIndex(obj, asset);
-        LoadBarDayOption(obj, asset);
+        md = LoadBarMin(obj, asset);
+        md = LoadBarDayEtf(obj, asset);
+        md = LoadBarDayFuture(obj, asset);
+        md = LoadBarDayIndex(obj, asset);
+        md = LoadBarDayOption(obj, asset);
                 
         % 读取 全部数据库 / 当前库所有表 / 获取原始数据
         ret = FetchAllDbs(obj);

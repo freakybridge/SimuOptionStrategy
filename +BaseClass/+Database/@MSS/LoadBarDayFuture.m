@@ -1,7 +1,7 @@
 % Microsoft Sql Server / LoadBarDayFuture
 % v1.3.0.20220113.beta
 %       首次加入
-function LoadBarDayFuture(obj, asset)
+function md = LoadBarDayFuture(obj, asset)
 % 库名 / 表名
 db = obj.GetDbName(asset);
 tb = obj.GetTableName(asset);
@@ -13,8 +13,7 @@ try
     setdbprefs('DataReturnFormat', 'numeric');
     md = fetch(conn, sql);
     md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
-    asset.MergeMarketData(md);
 catch
-    asset.md = [];
+    md = [];
 end
 end
