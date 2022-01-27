@@ -141,8 +141,8 @@ for i = 1 : length(files)
     exchange = EnumType.Exchange.ToEnum(this.name(loc1 + 1 : loc2 - 1));
     asset = BaseClass.Asset.Asset.Selector(product, variety, exchange, inv);
     fprintf(2, 'Restoring [%s]-[%s-%s], [%i/%i], please wait ...\r', folder, asset.symbol, Utility.ToString(asset.exchange), i, length(files));
-    obj.dr.LoadMarketData(asset, dir_bak);
-    obj.db.SaveMarketData(asset);
+    md = obj.dr.LoadMarketData(asset, dir_bak);
+    obj.db.SaveMarketData(asset, md);
 end
 end
 
@@ -165,8 +165,7 @@ for i = 1 : length(files)
     asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, symb, i, length(files));
     md = obj.dr.LoadMarketData(asset, dir_bak);
-    asset.MergeMarketData(md);
-    obj.db.SaveMarketData(asset);
+    obj.db.SaveMarketData(asset, md);
 end
 end
 
@@ -192,11 +191,9 @@ end
 for i = 1 : length(files)
     this = files(i);
     asset.symbol = this.name(1 : strfind(this.name, '.') - 1);
-    asset.md = [];
     fprintf(2, 'Restoring [%s]-[%s], [%i/%i], please wait ...\r', folder, asset.symbol, i, length(files));
     md = obj.dr.LoadMarketData(asset, dir_bak);
-    asset.MergeMarketData(md);
-    obj.db.SaveMarketData(asset);
+    obj.db.SaveMarketData(asset, md);
 end
 end
 

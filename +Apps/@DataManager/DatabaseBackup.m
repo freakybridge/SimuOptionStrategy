@@ -113,7 +113,8 @@ for i = 1 : length(tbs)
     exchange = EnumType.Exchange.ToEnum(this(loc + 1 : end));
     asset = BaseClass.Asset.Asset.Selector(product, variety, exchange, inv);
     fprintf(2, 'Backuping [%s]-[%s], [%i/%i], please wait ...\r', db, this, i, length(tbs));
-    obj.db.LoadMarketData(asset);
+    md = obj.db.LoadMarketData(asset);
+    asset.MergeMarketData(md);
     obj.dr.SaveMarketData(asset, dir_sav);
 end
 end
