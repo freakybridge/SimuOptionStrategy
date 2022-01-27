@@ -69,9 +69,9 @@ classdef DataRecorder
         end
         
         % 读取行情
-        function LoadMarketData(obj, asset, dir_)
+        function md = LoadMarketData(obj, asset, dir_)
             fprintf('Loading [%s.%s]''s %s quetos from [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
-            obj.LoadBar(asset, dir_);
+            md = obj.LoadBar(asset, dir_);
         end
         
         % 保存交易日历
