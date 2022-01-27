@@ -7,30 +7,34 @@
 function LoadMd(obj, asset)
 
 % 读取数据库
-obj.db.LoadMarketData(asset);
-if (~NeedUpdate(obj, asset))
+md_local = obj.db.LoadMarketData(asset);
+if (~NeedUpdate(obj, asset, md_local))
+    asset.MergeMarketData(md_local);
     return;
 end
 
 % 读取本地 csv
-obj.dr.LoadMarketData(asset, obj.dir_root);
+md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
 if (~NeedUpdate(obj, asset))
-    obj.db.SaveMarketData(asset);
+    asset.MergeMarketData(md_local);
+    obj.db.SaveMarketData(asset, md_local);
     return;
 end
+asset.MergeMarketData(md_local);
 
 % 更新
-LoadViaDs(obj, asset);
-if (~isempty(asset.md))
-    obj.db.SaveMarketData(asset);
+md = LoadViaDs(obj, asset);
+if (~isempty(md))
+    asset.MergeMarketData(md);
+    obj.db.SaveMarketData(asset, md);
     obj.dr.SaveMarketData(asset, obj.dir_root);
 end
 end
 
 % 判定是否需要更新
-function ret = NeedUpdate(obj, asset)
+function ret = NeedUpdate(obj, asset, md)
 % 无行情数据，需要更新
-if (isempty(asset.md))
+if (isempty(md))
     ret = true;
     return;
 end
@@ -49,7 +53,7 @@ end
 % 确定最后更新日
 last_td_dt = find(cal(:, 5) <= td, 1, 'last');
 last_td_dt = cal(find(cal(1 : last_td_dt, 2) == 1, 1, 'last'), 5);
-last_md_dt = asset.md(end, 1);
+last_md_dt = md(end, 1);
 if (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
     if (last_td_dt > datenum(asset.GetDateExpire()))
         last_td_dt = floor(datenum(asset.GetDateExpire()));
@@ -80,7 +84,7 @@ end
 end
 
 % 从数据接口获取行情数据
-function LoadViaDs(obj, asset)
+function md = LoadViaDs(obj, asset)
 
 % 确定更新起点终点
 [dt_s, dt_e] = FindUpdateSE(asset);
@@ -93,14 +97,8 @@ while (true)
         obj.ds.LogOut();
         obj.ds = obj.AutoSwitchDataSource();
         continue;
-    else
-        break;
     end
-end
-
-% 合并
-if (~isempty(md))
-    asset.MergeMarketData(md);
+    return;
 end
 end
 
