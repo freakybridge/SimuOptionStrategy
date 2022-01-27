@@ -84,8 +84,8 @@ for i = 1 : length(upd_lst)
         obj.LoadMd(asset);      
         asset.md = [];
         
-%         asset.interval = EnumType.Interval.min5;
-%         obj.LoadMd(asset);        
+        asset.interval = EnumType.Interval.min5;
+        obj.LoadMd(asset);        
     end
 end
 end
