@@ -3,9 +3,9 @@
 %      1.First Commit
 function Update(obj)
 
-% UpdateCalendar(obj);
-% UpdateIndex(obj);
-% UpdateETF(obj);
+UpdateCalendar(obj);
+UpdateIndex(obj);
+UpdateETF(obj);
 UpdateOption(obj);
 end
 
