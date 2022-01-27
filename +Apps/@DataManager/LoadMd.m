@@ -8,14 +8,16 @@ function LoadMd(obj, asset)
 
 % 读取数据库
 md_local = obj.db.LoadMarketData(asset);
-if (~NeedUpdate(obj, asset, md_local))
+[mark, ~, ~] = NeedUpdate(obj, asset, md_local);
+if (~mark)
     asset.MergeMarketData(md_local);
     return;
 end
 
 % 读取本地 csv
 md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
-if (~NeedUpdate(obj, asset))
+[mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
+if (~mark)
     asset.MergeMarketData(md_local);
     obj.db.SaveMarketData(asset, md_local);
     return;
@@ -23,7 +25,7 @@ end
 asset.MergeMarketData(md_local);
 
 % 更新
-md = LoadViaDs(obj, asset);
+md = LoadViaDs(obj, asset, dt_s, dt_e);
 if (~isempty(md))
     asset.MergeMarketData(md);
     obj.db.SaveMarketData(asset, md);
@@ -32,14 +34,9 @@ end
 end
 
 % 判定是否需要更新
-function ret = NeedUpdate(obj, asset, md)
-% 无行情数据，需要更新
-if (isempty(md))
-    ret = true;
-    return;
-end
+function [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md)
 
-% 读取交易日历
+% 读取交易日历 / 获取最后交易日
 persistent cal;
 if (isempty(cal))
     cal = obj.LoadCalendar();
@@ -49,47 +46,79 @@ if hour(now()) >= 15
 else
     td = now() - 1;
 end
+last_trade_date = find(cal(:, 5) <= td, 1, 'last');
+last_trade_date = cal(find(cal(1 : last_trade_date, 2) == 1, 1, 'last'), 5);
 
-% 确定最后更新日
-last_td_dt = find(cal(:, 5) <= td, 1, 'last');
-last_td_dt = cal(find(cal(1 : last_td_dt, 2) == 1, 1, 'last'), 5);
-last_md_dt = md(end, 1);
-if (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
-    if (last_td_dt > datenum(asset.GetDateExpire()))
-        last_td_dt = floor(datenum(asset.GetDateExpire()));
-    end
-end
 
-% 对于分钟bar，收盘前15分钟内必须有数据
-% 对于day bar，至少需要更新一天
-if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
-    last_td_dt = last_td_dt + 15 / 24;
-    if (last_td_dt - last_md_dt >= 15 / 24/ 60)
-        ret = true;
+if (~isempty(md))
+    % 有行情
+    % 确定理论起点终点
+    if (asset.product == EnumType.Product.ETF || asset.product == EnumType.Product.Index)
+        dt_s_o = datenum(asset.GetDateInit());
+        dt_e_o = last_trade_date + 15 / 24;
+    elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
+        dt_s_o =  datenum(asset.GetDateListed());    
+        dt_e_o = datenum(asset.GetDateExpire());
     else
-        ret = false;
+        error('Unexpected "product" for update start point determine, please check.');
     end
-    return;
 
-elseif (asset.interval == EnumType.Interval.day)
-    if (last_td_dt - last_md_dt >= 1)
-        ret = true;
+    % 定位已有起点终点
+    md_s = md(1, 1);
+    md_e = md(end, 1);
+
+    %  判定起点
+    if (md_s - dt_s_o >= 1)
+        dt_s = dt_s_o;
     else
-        ret = false;
+        dt_s = md_e;
     end
-    return;
+
+    % 判定终点
+    if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
+        if (dt_e_o - md_e < 15 / 60 / 24)
+            dt_e = md_e;
+        else
+            dt_e = dt_e_o;
+        end
+
+    elseif (asset.interval == EnumType.Interval.day)
+        dt_e_o = floor(dt_e_o);
+        if (dt_e_o - md_e < 1)
+            dt_e = md_e;
+        else
+            dt_e = dt_e_o;
+        end
+    else
+        error("Unexpected 'interval' for market data accomplished judgement, please check.");
+    end
+
+    % 判定是否更新
+    if (dt_s == dt_e && dt_e == md_e)
+        mark = false;
+    else
+        mark = true;
+    end
+
 else
-    error("Unexpected 'interval' for market data accomplished judgement, please check.");
+    % 无行情
+    % 确定更新起点
+    if (asset.product == EnumType.Product.ETF || asset.product == EnumType.Product.Index)
+        dt_s = datenum(asset.GetDateInit());
+    elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
+        dt_s =  datenum(asset.GetDateListed());    
+    else
+        error('Unexpected "product" for update start point determine, please check.');
+    end
+
+    % 确定更新终点    
+    dt_e = last_trade_date + 15 / 24;
+    mark = true;
 end
 end
 
 % 从数据接口获取行情数据
-function md = LoadViaDs(obj, asset)
-
-% 确定更新起点终点
-[dt_s, dt_e] = FindUpdateSE(asset);
-
-% 下载
+function md = LoadViaDs(obj, asset, dt_s, dt_e)
 while (true)
     [is_err, md] = obj.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, dt_s, dt_e);
     if (is_err)
@@ -102,52 +131,3 @@ while (true)
 end
 end
 
-% 确定更新起点终点
-function [dt_s, dt_e] = FindUpdateSE(asset)
-
-md = asset.md;
-switch asset.product
-    case {EnumType.Product.ETF, EnumType.Product.Index}
-        % 类似永续
-        % 设定起点
-        dt_ini = datenum(asset.GetDateInit());
-        if (isempty(md))
-            dt_s = dt_ini;
-        else
-            dt_md_s = md(1, 1);
-            dt_md_e = md(end, 1);
-            if (dt_ini - dt_md_s >= 1)
-                dt_s = dt_ini;
-            else
-                dt_s = dt_md_e;
-            end
-        end
-
-        % 设定终点
-        dt_e = now();
-
-    case {EnumType.Product.Future, EnumType.Product.Option}
-        % 续存期合约
-        % 设定起点
-        dt_lt = datenum(asset.GetDateListed());
-        dt_ep = datenum(asset.GetDateExpire());
-        if (isempty(md))
-            dt_s = dt_lt;
-        else
-            dt_md_s = md(1, 1);
-            dt_md_e = md(end, 1);
-            if (dt_lt - dt_md_s > 1)
-                dt_s = dt_lt;
-            else
-                dt_s = dt_md_e;
-            end
-        end
-
-        % 设定终点
-        dt_e = dt_ep;
-
-    otherwise
-        error('Unexpected "product" for update start & end point determine, please check.');
-
-end
-end

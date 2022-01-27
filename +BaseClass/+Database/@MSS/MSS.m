@@ -132,11 +132,11 @@ classdef MSS < BaseClass.Database.Database
         
         
         % 保存K线行情
-        ret = SaveBarMin(obj, asset);
-        ret = SaveBarDayEtf(obj, asset);
-        ret = SaveBarDayFuture(obj, asset);
-        ret = SaveBarDayIndex(obj, asset);
-        ret = SaveBarDayOption(obj, asset);
+        ret = SaveBarMin(obj, asset, md);
+        ret = SaveBarDayEtf(obj, asset, md);
+        ret = SaveBarDayFuture(obj, asset, md);
+        ret = SaveBarDayIndex(obj, asset, md);
+        ret = SaveBarDayOption(obj, asset, md);
 
         % 读取K线行情
         md = LoadBarMin(obj, asset);

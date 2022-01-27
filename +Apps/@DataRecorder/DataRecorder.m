@@ -128,6 +128,6 @@ classdef DataRecorder
         ret = SaveBar(obj, asset, dir_, header, dat_fmt);
         
         % 读取K线行情
-        LoadBar(obj, asset, dir_);
+        md = LoadBar(obj, asset, dir_);
     end
 end

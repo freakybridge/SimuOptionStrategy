@@ -11,7 +11,7 @@ if (~CheckTable(obj, db, tb))
 end
 
 % 行情预处理
-md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 4 : end))];
+md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))];
 tbs = repmat({tb}, size(md, 1), 1);
 md = [tbs, md(:, 1), tbs, md(:, 2 : end), md(:, 1), tbs, md]';
 
