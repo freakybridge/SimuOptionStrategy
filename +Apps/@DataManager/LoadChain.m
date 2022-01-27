@@ -6,19 +6,19 @@
 %      1.首次加入
 function ins = LoadChain(obj, pdt, var, exc)
 
-% 从数据库 / excel获取
+% 读取数据库
 ins_local = obj.db.LoadChain(pdt, var, exc);
-if (isempty(ins_local))
-    ins_local = obj.dr.LoadChain(pdt, var, exc, obj.dir_root);    
-    if (~NeedUpdate(ins_local))
-        ins = ins_local;
-        obj.db.SaveChain(pdt, var, exc, ins);
-        return;
-    end
-    
-elseif (~NeedUpdate(ins_local))
+if (~NeedUpdate(ins_local))
     ins = ins_local;
     return;    
+end
+
+% 读取本地EXCEL
+ins_local = obj.dr.LoadChain(pdt, var, exc, obj.dir_root);
+if (~NeedUpdate(ins_local))
+    ins = ins_local;
+    obj.db.SaveChain(pdt, var, exc, ins);
+    return;
 end
 
 % 从数据源获取

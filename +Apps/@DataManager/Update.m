@@ -1,12 +1,12 @@
-% DataManager
+% DataManager / Update
 % v1.3.0.20220113.beta
-%      1.首次加入
+%      1.First Commit
 function Update(obj)
 
-% 更新日历
+% Calendar
 obj.LoadCalendar();
 
-% 更新 INDEX
+% INDEX
 inv = EnumType.Interval.day;
 upd_lst = struct;
 upd_lst.product = EnumType.Product.Index;                      upd_lst.variety = '000001';             upd_lst.exchange = EnumType.Exchange.SSE;
@@ -23,10 +23,10 @@ for i = 1 : length(upd_lst)
     obj.LoadMd(asset);
 end
 
-% 更新 ETF
+% ETF
 inv = EnumType.Interval.day;
 upd_lst = struct;
-upd_lst.product = EnumType.Product.ETF;                      upd_lst.variety = '159919';             upd_lst.exchange = EnumType.Exchange.SZSE;
+upd_lst.product = EnumType.Product.ETF;                      upd_lst.variety = '159919';            upd_lst.exchange = EnumType.Exchange.SZSE;
 upd_lst(end + 1).product = EnumType.Product.ETF;       upd_lst(end).variety = '510050';     upd_lst(end).exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.ETF;       upd_lst(end).variety = '510300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
 for i = 1 : length(upd_lst)

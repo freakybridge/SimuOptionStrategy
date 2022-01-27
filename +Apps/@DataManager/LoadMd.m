@@ -6,15 +6,16 @@
 %      1.首次加入
 function LoadMd(obj, asset)
 
-% 读取数据库 / csv
+% 读取数据库
 obj.db.LoadMarketData(asset);
-if (isempty(asset.md))
-    obj.dr.LoadMarketData(asset, obj.dir_root);
-    if (~NeedUpdate(obj, asset))
-        obj.db.SaveMarketData(asset);
-        return;
-    end
-elseif (~NeedUpdate(obj, asset))
+if (~NeedUpdate(obj, asset))
+    return;
+end
+
+% 读取本地 csv
+obj.dr.LoadMarketData(asset, obj.dir_root);
+if (~NeedUpdate(obj, asset))
+    obj.db.SaveMarketData(asset);
     return;
 end
 
