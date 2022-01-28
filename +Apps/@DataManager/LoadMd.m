@@ -42,7 +42,6 @@ end
 
 % 判定是否需要更新
 function [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md)
-
 % 读取交易日历 / 获取最后交易日
 persistent cal;
 if (isempty(cal))
