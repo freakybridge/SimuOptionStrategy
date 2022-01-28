@@ -35,7 +35,7 @@ classdef DataManager < handle
         end
 
         % 载入行情
-        LoadMd(obj, asset);
+        LoadMd(obj, asset, sw_csv);
 
         % 载入合约列表
         instrus = LoadChain(obj, pdt, var, exc);
@@ -46,7 +46,6 @@ classdef DataManager < handle
         % 更新数据
 
         % 备份数据库
-        DatabaseBackupOldVer(obj, dir_rt)
         DatabaseBackup(obj, dir_sav);
 
         % 数据库还原

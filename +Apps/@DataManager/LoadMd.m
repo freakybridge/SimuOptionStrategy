@@ -2,27 +2,34 @@
 % v1.3.0.20220113.beta
 %      1.修改逻辑，提升效率
 %      2.加入更新逻辑
+%      3.加入载入csv开关
 % v1.2.0.20220105.beta
 %      1.首次加入
-function LoadMd(obj, asset)
+function LoadMd(obj, asset, sw_csv)
 
 % 读取数据库
 md_local = obj.db.LoadMarketData(asset);
-[mark, ~, ~] = NeedUpdate(obj, asset, md_local);
+[mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
 if (~mark)
     asset.MergeMarketData(md_local);
     return;
 end
 
 % 读取本地 csv
-md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
-[mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
-if (~mark)
-    asset.MergeMarketData(md_local);
-    obj.db.SaveMarketData(asset, md_local);
-    return;
+if (sw_csv)
+    md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
+    [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
+    if (~mark)
+        asset.MergeMarketData(md_local);
+        obj.db.SaveMarketData(asset, md_local);
+        return;
+    end
 end
-asset.MergeMarketData(md_local);
+
+% 写入本地行情
+if (~isempty(md_local))
+    asset.MergeMarketData(md_local);
+end
 
 % 更新
 md = LoadViaDs(obj, asset, dt_s, dt_e);
@@ -60,7 +67,7 @@ if (~isempty(md))
         dt_s_o = datenum(asset.GetDateInit());
         dt_e_o = last_trade_date + 15 / 24;
     elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
-        dt_s_o =  datenum(asset.GetDateListed());    
+        dt_s_o =  datenum(asset.GetDateListed());
         dt_e_o = datenum(asset.GetDateExpire());
         if (dt_e_o > last_trade_date)
             dt_e_o = last_trade_date + 15 / 24;
@@ -112,12 +119,12 @@ else
     if (asset.product == EnumType.Product.ETF || asset.product == EnumType.Product.Index)
         dt_s = datenum(asset.GetDateInit());
     elseif (asset.product == EnumType.Product.Future || asset.product == EnumType.Product.Option)
-        dt_s =  datenum(asset.GetDateListed());    
+        dt_s =  datenum(asset.GetDateListed());
     else
         error('Unexpected "product" for update start point determine, please check.');
     end
 
-    % 确定更新终点    
+    % 确定更新终点
     dt_e = last_trade_date + 15 / 24;
     mark = true;
 end
