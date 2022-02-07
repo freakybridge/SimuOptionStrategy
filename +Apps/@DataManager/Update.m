@@ -8,7 +8,9 @@ function Update(obj)
 % UpdateETF(obj);
 % UpdateOption(obj);
 
-InsertOptionMin(obj);
+% InsertOptionMin(obj);
+FixLocalQuote(obj);
+
 end
 
 % Calendar
@@ -159,27 +161,19 @@ else
 end
 
 
-datefmt = 'yyyy-mm-dd HH:MM';
-id = fopen('C:\Users\freakybridge\Desktop\err_record.txt', 'a+');
-fprintf(id, '[Counter:%d]-[Interval:%s]-[Symbol:%s]\t\rListed:%s\tExpire:%s\rMdStart:%s\tMdEnd:%s\rUpdStart:%s\tUpdEnd:%s\r\r', ...
-    counter, ...
-    Utility.ToString(asset.interval), asset.symbol, ...
-    datestr(asset.GetDateListed(), datefmt), ...
-    datestr(asset.GetDateExpire(), datefmt), ...
-    datestr(md_local(1, 1), datefmt), ...
-    datestr(md_local(end, 1), datefmt), ...
-    datestr(dt_s, datefmt), ...
-    datestr(dt_e, datefmt));
-fclose(id);
-
-% % ¶ÁÈ¡±¾µØ csv
-% md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
-% [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
-% if (~mark)
-%     obj.db.SaveMarketData(asset, md_local);
-%     return;
-% end
-
+% datefmt = 'yyyy-mm-dd HH:MM';
+% id = fopen('C:\Users\freakybridge\Desktop\err_record.txt', 'a+');
+% fprintf(id, '[Counter:%d]-[Interval:%s]-[Symbol:%s]\t\rListed:%s\tExpire:%s\rMdStart:%s\tMdEnd:%s\rUpdStart:%s\tUpdEnd:%s\r\r', ...
+%     counter, ...
+%     Utility.ToString(asset.interval), asset.symbol, ...
+%     datestr(asset.GetDateListed(), datefmt), ...
+%     datestr(asset.GetDateExpire(), datefmt), ...
+%     datestr(md_local(1, 1), datefmt), ...
+%     datestr(md_local(end, 1), datefmt), ...
+%     datestr(dt_s, datefmt), ...
+%     datestr(dt_e, datefmt));
+% fclose(id);
+asset.MergeMarketData(md_local);
 end
 
 % Debug Function
@@ -272,25 +266,114 @@ end
 end
 
 % Fix Local Quetos
-function FixLocalQuote()
-dir_loc
+function FixLocalQuote(obj)
+%% preprocess
+dir_udt = 'D:\OneDrive\hisdata\update';
+dir_out = 'D:\OneDrive\hisdata\update\fixed';
 
-% symb_mis_pre = {'10000041', '10000042', }
-% 41~48
-% 65~72
-% 615~626
-% 629~640
-% 945~946
-% 949~952
-% 1021~1022
-% 1051~1070
-
+% symb_mis_pre
+% 41~48             8
+% 65~72             8
+% 615~626       12
+% 629~640       12
+% 945~946       12
+% 949~952        4
+% 1021~1022    2
+% 1051~1070    20
+tmp = (10000041 : 10000048)';
+tmp = [tmp; (10000065 : 10000072)'];
+tmp = [tmp; (10000615 : 10000626)'];
+tmp = [tmp; (10000629 : 10000640)'];
+tmp = [tmp; (10000945 : 10000946)'];
+tmp = [tmp; (10000949 : 10000952)'];
+tmp = [tmp; (10001021 : 10001022)'];
+tmp = [tmp; (10001051 : 10001070)'];
+symb_mis_pre = arrayfun(@(x) {num2str(x)}, tmp);
 
 % symb_mis_post
-% 933~944
-% 955, 956, 963, 964, 979, 980
+% 933~944       12
+% 955, 956, 963, 964, 979, 980      6
+tmp = (10000933 : 10000944)';
+tmp = [tmp; [10000955, 10000956, 10000963, 10000964, 10000979, 10000980]'];
+symb_mis_post = arrayfun(@(x) {num2str(x)}, tmp);
 
 % symb_mis_both
-% 947, 948, 
+% 947, 948,         2
+tmp = (10000947 : 10000948)';
+symb_mis_both = arrayfun(@(x) {num2str(x)}, tmp);
 
+% load instrus & calendar
+ins = obj.LoadChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE);
+cal = LoadCalendar(obj);
+
+%% fix pre
+for i = 1 : length(symb_mis_pre)
+    symb = symb_mis_pre(i);
+    info = ins(ismember(ins.SYMBOL, symb), :);    
+    asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, ...
+        info.SYMBOL{:}, ...
+        info.SEC_NAME{:}, ...
+        EnumType.Interval.day, ...
+        info.SIZE, ...
+        EnumType.CallOrPut.ToEnum(info.CALL_OR_PUT{:}), ...
+        info.STRIKE, ...
+        info.START_TRADE_DATE{:}, ...
+        info.END_TRADE_DATE{:}...
+        );
+    
+    % fetch local queto
+    asset.interval = EnumType.Interval.min5;
+    LoadMd(obj, asset);
+    
+    % fetch update queto
+    md_upd = LoadUpdateMd(dir_udt, symb{:});
+        
+    % confirm missing date / Generate TimeAxis
+    dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
+    dt_fix_e = asset.md(1, 2);
+    dt_missing = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
+    axis = [];
+    for j = 1 : size(dt_missing, 1)
+        axis = [axis; GenSseTimeAxis(dt_missing(j))];
+    end
+    
+    % find missing queto
+    md_missing = zeros(size(axis, 1), 8);
+    for j = 1 : size(axis)
+        loc = find(md_upd(:, 1) <= axis(j), 1, 'last');
+    end
+    
+end
+
+
+end
+
+% debug function £º gen sse time axis
+function axis = GenSseTimeAxis(dt_dm)
+am = [935, 940, 945, 950, 955, 1000, 1005, 1010, 1015, 1020, 1025, 1030, 1035, 1040, 1045, 1050, 1055, 1100, 1105, 1110 , 1115 , 1120 , 1125, 1130];
+pm = [1305, 1310, 1315, 1320, 1325, 1330, 1335, 1340, 1345, 1350, 1355, 1400, 1405, 1410, 1415, 1420, 1425, 1430, 1435, 1440, 1445, 1450, 1455, 1500];
+axis = [am, pm]';
+
+date = datevec(dt_dm);
+date = repmat(date, length(axis), 1);
+hour = floor(axis / 100);
+date(:, 4) = hour;
+date(:, 5) = axis - hour * 100;
+
+axis = datenum(date);
+end
+
+% debug function £º load update maketdata
+function md = LoadUpdateMd(dir_upd, symb)
+md = readtable(fullfile(dir_upd, [symb, '.xlsx']), 'PreserveVariableNames', 1);
+if (~isequal(md{1, 1}{:}(1 : 8), symb))
+    error('symbol error %s', symb);
+end
+md = table2cell(md);
+md(:, 1 : 2) = [];
+md(:, 1) = cellfun(@(x) {datenum(x)}, md(:, 1));
+md = cell2mat(md);
+md(isnan(md(:, 1)), :) = [];
+md(:, 6) = md(:, 6) * 1000000;
+md(:, 8) = 0;
 end
