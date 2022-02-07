@@ -97,7 +97,7 @@ classdef DataRecorder
         end
         
         % 读取交易日历
-        function cal = LoadCalendar(~, dir_)            
+        function cal = LoadCalendar(~, dir_)
             % 预处理
             % 检查输入目录 / 生成输出文件名
             dir_ = fullfile(dir_, 'CALENDAR');

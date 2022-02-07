@@ -94,7 +94,7 @@ for i = 1 : length(upd_lst)
 end
 end
 
-% Debug Function 
+% Debug Function：Check Option Min Md Data
 function InsertOptionMin(obj)
 upd_lst = struct;
 upd_lst.product = EnumType.Product.Option;                     upd_lst.variety = '510050';            upd_lst.exchange = EnumType.Exchange.SSE;
@@ -136,7 +136,7 @@ for i = 1 : length(upd_lst)
 end
 end
 
-% Debug Function
+% Debug Function: Load Data without datasource
 function LoadMd(obj, asset)
 % 读取数据库
 md_local = obj.db.LoadMarketData(asset);
@@ -176,7 +176,7 @@ end
 asset.MergeMarketData(md_local);
 end
 
-% Debug Function
+% Debug Function: Judge whether need update
 function [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md)
 % 读取交易日历 / 获取最后交易日
 persistent cal;
@@ -268,8 +268,8 @@ end
 % Fix Local Quetos
 function FixLocalQuote(obj)
 %% preprocess
-dir_udt = 'D:\OneDrive\hisdata\update';
-dir_out = 'D:\OneDrive\hisdata\update\fixed';
+dir_udt = 'E:\OneDrive\hisdata\update';
+dir_out = 'E:\OneDrive\hisdata\update\fixed';
 
 % symb_mis_pre
 % 41~48             8
@@ -308,41 +308,38 @@ cal = LoadCalendar(obj);
 
 %% fix pre
 for i = 1 : length(symb_mis_pre)
+    % fetch local queto
     symb = symb_mis_pre(i);
     info = ins(ismember(ins.SYMBOL, symb), :);    
     asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, ...
         info.SYMBOL{:}, ...
         info.SEC_NAME{:}, ...
-        EnumType.Interval.day, ...
+        EnumType.Interval.min5, ...
         info.SIZE, ...
         EnumType.CallOrPut.ToEnum(info.CALL_OR_PUT{:}), ...
         info.STRIKE, ...
         info.START_TRADE_DATE{:}, ...
         info.END_TRADE_DATE{:}...
-        );
-    
-    % fetch local queto
-    asset.interval = EnumType.Interval.min5;
+        );    
     LoadMd(obj, asset);
     
     % fetch update queto
     md_upd = LoadUpdateMd(dir_udt, symb{:});
         
-    % confirm missing date / Generate TimeAxis
+    % confirm missing date 
     dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
     dt_fix_e = asset.md(1, 2);
     dt_missing = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
-    axis = [];
+
+    % fix
     for j = 1 : size(dt_missing, 1)
-        axis = [axis; GenSseTimeAxis(dt_missing(j))];
+        md_fix = FixMarketData(dt_missing(j), md_upd);
+        asset.MergeMarketData(md_fix);
     end
-    
-    % find missing queto
-    md_missing = zeros(size(axis, 1), 8);
-    for j = 1 : size(axis)
-        loc = find(md_upd(:, 1) <= axis(j), 1, 'last');
-    end
-    
+
+    % save data
+    SaveBar(asset, dir_out);
+
 end
 
 
@@ -350,7 +347,7 @@ end
 
 % debug function ： gen sse time axis
 function axis = GenSseTimeAxis(dt_dm)
-am = [935, 940, 945, 950, 955, 1000, 1005, 1010, 1015, 1020, 1025, 1030, 1035, 1040, 1045, 1050, 1055, 1100, 1105, 1110 , 1115 , 1120 , 1125, 1130];
+am = [930, 935, 940, 945, 950, 955, 1000, 1005, 1010, 1015, 1020, 1025, 1030, 1035, 1040, 1045, 1050, 1055, 1100, 1105, 1110 , 1115 , 1120 , 1125, 1130];
 pm = [1305, 1310, 1315, 1320, 1325, 1330, 1335, 1340, 1345, 1350, 1355, 1400, 1405, 1410, 1415, 1420, 1425, 1430, 1435, 1440, 1445, 1450, 1455, 1500];
 axis = [am, pm]';
 
@@ -376,4 +373,56 @@ md = cell2mat(md);
 md(isnan(md(:, 1)), :) = [];
 md(:, 6) = md(:, 6) * 1000000;
 md(:, 8) = 0;
+end
+
+% debug function:  fix market data
+function md_fix = FixMarketData(date_mis, md_upd)
+axis = GenSseTimeAxis(date_mis);
+md_fix = [];
+for k = 2 : size(axis, 1)
+    s = axis(k - 1);
+    e = axis(k);
+    if (k ~= 2)
+        tmp_md = md_upd(md_upd(:, 1) > s & md_upd(:, 1) <= e, :);
+    else
+        tmp_md = md_upd(md_upd(:, 1) >= s & md_upd(:, 1) <= e, :);
+    end
+    dt = e;
+    if (~isempty(tmp_md))
+        open = tmp_md(1, 2);
+        high = max(max(tmp_md(:, 2 : 5)));
+        low = min(min(tmp_md(:, 2 : 5)));
+        close = tmp_md(end, 5);
+        turnover = sum(tmp_md(:, 6));
+        volume = sum(tmp_md(:, 7));
+        oi = 0;
+        md_fix = [md_fix; [dt, open, high, low, close, turnover, volume, oi]];
+    else
+        md_fix = [md_fix; [dt, zeros(1, 7)]];
+    end
+end
+end
+
+% debug func: save bar
+function SaveBar(asset, dir_)
+% 预处理
+% 生成输出目录
+dir_ = fullfile(dir_, BaseClass.Database.Database.GetDbName(asset));
+Utility.CheckDirectory(dir_);
+
+% 生成输出文件名
+filename = fullfile(dir_, BaseClass.Database.Database.GetTableName(asset) +  ".csv");
+
+% 整列表头 / 数据格式
+header = 'datetime,open,high,low,last,turnover,volume,oi\r';
+dat_fmt = '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i\r';
+
+% 写入表头 / 写入数据
+id = fopen(filename, 'w');
+fprintf(id, header);
+for i = 1 : size(asset.md, 1)
+    this = asset.md(i, :);
+    fprintf(id, dat_fmt, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4 : end));      
+end
+fclose(id);
 end
