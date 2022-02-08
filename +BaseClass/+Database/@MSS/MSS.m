@@ -113,6 +113,9 @@ classdef MSS < BaseClass.Database.Database
     end
     
     % 抽象方法实现
+    methods
+        views = LoadOverviews(obj, asset);
+    end
     methods (Hidden)
         % 保存期权 / 期货合约列表
         ret = SaveChainOption(obj, var, exc, instrus);
@@ -149,6 +152,10 @@ classdef MSS < BaseClass.Database.Database
         ret = FetchAllDbs(obj);
         ret = FetchAllTables(obj, db);
         ret = FetchRawData(obj, db, tb);
+
+        % Create Overviews / Overviews Trigger
+        CreateTableOverviews(obj, conn, db);
+        CreateTriggerOverviews(obj, conn, tb);
     end
 end
 

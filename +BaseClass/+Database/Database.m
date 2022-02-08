@@ -16,6 +16,7 @@ classdef Database < handle
         db_instru char = 'INSTRUMENTS';
         db_calendar char = 'CALENDAR';
         tb_calendar char = 'Calendar';
+        tb_overviews char = 'Overviews';
         
         map_save_func containers.Map;
         map_load_func containers.Map;        
@@ -97,6 +98,9 @@ classdef Database < handle
         
         % 载入交易日历
         cal = LoadCalendar(obj);
+    end
+    methods (Abstract)
+        views = LoadOverviews(obj, asset);
     end
     
     
@@ -189,6 +193,10 @@ classdef Database < handle
         ret = FetchAllTables(obj, db);
         ret = FetchRawData(obj, db, tb);
         
+        % Create Overviews / Overviews Trigger
+        CreateTableOverviews(obj, conn, db);
+        CreateTriggerOverviews(obj, conn, tb);
+
     end
 
     methods (Static)
