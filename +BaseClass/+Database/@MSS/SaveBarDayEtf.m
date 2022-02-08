@@ -50,4 +50,5 @@ else
     ret = false;
 end
 obj.CreateTbResDisp(ret, db, tb, res.Message);
+obj.CreateTriggerOverviews(db, tb);
 end

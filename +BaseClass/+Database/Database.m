@@ -195,7 +195,7 @@ classdef Database < handle
         
         % Create Overviews / Overviews Trigger
         ret = CreateTableOverviews(obj, db);
-        ret = CreateTriggerOverviews(obj, conn, tb);
+        ret = CreateTriggerOverviews(obj, db, tb);
 
     end
 
