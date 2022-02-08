@@ -139,8 +139,17 @@ end
 function LoadMd(obj, asset)
 % 读取数据库
 md_local = obj.db.LoadMarketData(asset);
+[mark, ~, ~] = NeedUpdate(obj, asset, md_local);
+if (~mark)
+    return;
+end
+
+% 读取本地 csv
+md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
 [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
 if (~mark)
+    asset.MergeMarketData(md_local);
+    obj.db.SaveMarketData(asset, md_local);
     return;
 end
 
