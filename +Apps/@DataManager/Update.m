@@ -8,8 +8,7 @@ function Update(obj)
 % UpdateETF(obj);
 % UpdateOption(obj);
 
-% InsertOptionMin(obj);
-FixLocalQuote(obj);
+InsertOptionMin(obj);
 
 end
 
@@ -160,20 +159,18 @@ else
     counter = 0;
 end
 
-
-% datefmt = 'yyyy-mm-dd HH:MM';
-% id = fopen('C:\Users\freakybridge\Desktop\err_record.txt', 'a+');
-% fprintf(id, '[Counter:%d]-[Interval:%s]-[Symbol:%s]\t\rListed:%s\tExpire:%s\rMdStart:%s\tMdEnd:%s\rUpdStart:%s\tUpdEnd:%s\r\r', ...
-%     counter, ...
-%     Utility.ToString(asset.interval), asset.symbol, ...
-%     datestr(asset.GetDateListed(), datefmt), ...
-%     datestr(asset.GetDateExpire(), datefmt), ...
-%     datestr(md_local(1, 1), datefmt), ...
-%     datestr(md_local(end, 1), datefmt), ...
-%     datestr(dt_s, datefmt), ...
-%     datestr(dt_e, datefmt));
-% fclose(id);
-asset.MergeMarketData(md_local);
+datefmt = 'yyyy-mm-dd HH:MM';
+id = fopen('C:\Users\dell\Desktop\err_record.txt', 'a+');
+fprintf(id, '[Counter:%d]-[Interval:%s]-[Symbol:%s]\t\rListed:%s\tExpire:%s\rMdStart:%s\tMdEnd:%s\rUpdStart:%s\tUpdEnd:%s\r\r', ...
+    counter, ...
+    Utility.ToString(asset.interval), asset.symbol, ...
+    datestr(asset.GetDateListed(), datefmt), ...
+    datestr(asset.GetDateExpire(), datefmt), ...
+    datestr(md_local(1, 1), datefmt), ...
+    datestr(md_local(end, 1), datefmt), ...
+    datestr(dt_s, datefmt), ...
+    datestr(dt_e, datefmt));
+fclose(id);
 end
 
 % Debug Function: Judge whether need update
@@ -265,13 +262,14 @@ else
 end
 end
 
-% Fix Local Quetos
+
+%% Fix Local Quetos
 function FixLocalQuote(obj)
 %% preprocess
-dir_udt = 'E:\OneDrive\hisdata\update';
-dir_out = 'E:\OneDrive\hisdata\update\fixed';
+dir_udt = 'D:\OneDrive\hisdata\update';
+dir_out = 'D:\OneDrive\hisdata\update\fixed';
 
-% symb_mis_pre
+% symb_mis_front
 % 41~48             8
 % 65~72             8
 % 615~626       12
@@ -279,7 +277,7 @@ dir_out = 'E:\OneDrive\hisdata\update\fixed';
 % 945~946       12
 % 949~952        4
 % 1021~1022    2
-% 1051~1070    20
+% 1151~1170    20
 tmp = (10000041 : 10000048)';
 tmp = [tmp; (10000065 : 10000072)'];
 tmp = [tmp; (10000615 : 10000626)'];
@@ -287,29 +285,31 @@ tmp = [tmp; (10000629 : 10000640)'];
 tmp = [tmp; (10000945 : 10000946)'];
 tmp = [tmp; (10000949 : 10000952)'];
 tmp = [tmp; (10001021 : 10001022)'];
-tmp = [tmp; (10001051 : 10001070)'];
-symb_mis_pre = arrayfun(@(x) {num2str(x)}, tmp);
+tmp = [tmp; (10001151 : 10001170)'];
+symb_mis_front = arrayfun(@(x) {num2str(x)}, tmp);
 
-% symb_mis_post
+% symb_mis_rear
 % 933~944       12
 % 955, 956, 963, 964, 979, 980      6
 tmp = (10000933 : 10000944)';
 tmp = [tmp; [10000955, 10000956, 10000963, 10000964, 10000979, 10000980]'];
-symb_mis_post = arrayfun(@(x) {num2str(x)}, tmp);
+symb_mis_rear = arrayfun(@(x) {num2str(x)}, tmp);
 
 % symb_mis_both
 % 947, 948,         2
 tmp = (10000947 : 10000948)';
 symb_mis_both = arrayfun(@(x) {num2str(x)}, tmp);
 
-% load instrus & calendar
+% load instrus & calendar & symbol pool
 ins = obj.LoadChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE);
 cal = LoadCalendar(obj);
+symbols = union(union(symb_mis_front, symb_mis_rear), symb_mis_both);
 
-%% fix pre
-for i = 1 : length(symb_mis_pre)
+
+%% fix operation
+for i = 1 : length(symbols)
     % fetch local queto
-    symb = symb_mis_pre(i);
+    symb = symbols(i);
     info = ins(ismember(ins.SYMBOL, symb), :);    
     asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, ...
         info.SYMBOL{:}, ...
@@ -325,12 +325,41 @@ for i = 1 : length(symb_mis_pre)
     
     % fetch update queto
     md_upd = LoadUpdateMd(dir_udt, symb{:});
+            
+    if (ismember(symb, symb_mis_front))
+        % missing front
+        dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
+        dt_fix_e = asset.md(1, 2);
+        dt_missing = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
+        fprintf(2, '%s missing [front], %i day(s), total progress %i/%i,, please wait ...\r', symb{:}, length(dt_missing), i, length(symbols));
+        disp(datestr(dt_missing));
+        fprintf('\r');
         
-    % confirm missing date 
-    dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
-    dt_fix_e = asset.md(1, 2);
-    dt_missing = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
-
+    elseif (ismember(symb, symb_mis_rear))
+        % missing rear
+        dt_fix_s = asset.md(end, 2);
+        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));       
+        dt_missing = cal(cal(:, 1) > dt_fix_s & cal(:, 1) <= dt_fix_e & cal(:, 2), 5);
+        fprintf(2, '%s missing [rear], %i day(s), total progress %i/%i,, please wait ...\r', symb{:}, length(dt_missing), i, length(symbols));
+        disp(datestr(dt_missing));
+        fprintf('\r');
+        
+    elseif (ismember(symb, symb_mis_both))
+        % missing both        
+        dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
+        dt_fix_e = asset.md(1, 2);
+        mis_1 = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
+        
+        dt_fix_s = asset.md(end, 2);
+        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));       
+        mis_2 = cal(cal(:, 1) > dt_fix_s & cal(:, 1) <= dt_fix_e & cal(:, 2), 5);
+        dt_missing = union(mis_1, mis_2)';
+        fprintf(2, '%s missing [both], %i day(s), total progress %i/%i,, please wait ...\r', symb{:}, length(dt_missing), i, length(symbols));
+        disp(datestr(dt_missing));
+        fprintf('\r');
+        
+    end    
+    
     % fix
     for j = 1 : size(dt_missing, 1)
         md_fix = FixMarketData(dt_missing(j), md_upd);
@@ -341,8 +370,6 @@ for i = 1 : length(symb_mis_pre)
     SaveBar(asset, dir_out);
 
 end
-
-
 end
 
 % debug function £º gen sse time axis
