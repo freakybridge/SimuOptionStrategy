@@ -84,6 +84,7 @@ classdef MSS < BaseClass.Database.Database
                 ret = false;
                 error("Create database %s error, msg: %, please check!", db, res.Message);
             end
+            obj.CreateTableOverviews(db);
         end
 
         % 检查表
@@ -123,16 +124,7 @@ classdef MSS < BaseClass.Database.Database
 
         % 获取期权 / 期货合约列表
         instru = LoadChainOption(obj, var, exc);
-        instru = LoadChainFuture(obj, var, exc);
-        
-        % 建表
-        ret = CreateTableInstru(obj, product);
-        ret = CreateTableBarMin(obj, asset);
-        ret = CreateTableBarDayEtf(obj, asset);
-        ret = CreateTableBarDayFuture(obj, asset);
-        ret = CreateTableBarDayIndex(obj, asset);
-        ret = CreateTableBarDayOption(obj, asset);
-        
+        instru = LoadChainFuture(obj, var, exc);              
         
         % 保存K线行情
         ret = SaveBarMin(obj, asset, md);
@@ -153,9 +145,37 @@ classdef MSS < BaseClass.Database.Database
         ret = FetchAllTables(obj, db);
         ret = FetchRawData(obj, db, tb);
 
-        % Create Overviews / Overviews Trigger
-        CreateTableOverviews(obj, conn, db);
-        CreateTriggerOverviews(obj, conn, tb);
+        % Create Overviews
+        function ret = CreateTableOverviews(obj, db)
+             % no need to create
+            if (strcmpi(db, obj.db_default) || strcmpi(db, obj.db_instru))
+                ret = false;
+                return;
+            end
+
+            % create
+            conn = obj.SelectConn(db);
+            tb = obj.tb_overviews;
+            sql = sprintf("CREATE TABLE [%s](" ...
+                + "[SYMBOL] [varchar](128) NOT NULL PRIMARY KEY, " ...
+                + "[TS_START] [datetime] NULL, " ...
+                + "[TS_END] [datetime] NULL, " ...
+                + "[COUNTS] [int] NULL " ...
+                + ")ON [PRIMARY];" ...
+                + "CREATE INDEX [%s] ON [%s] ([SYMBOL] ASC);" ...
+                , tb, obj.TableIndex(db, tb), tb);
+            res = exec(conn, sql);
+
+            if (~isempty(res.Cursor))
+                ret = true;
+            else
+                ret = false;
+            end
+            obj.CreateTbResDisp(ret, db, tb, res.Message);
+        end
+
+        % Overviews Trigger
+        ret = CreateTriggerOverviews(obj, conn, tb);
     end
 end
 

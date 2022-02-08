@@ -194,8 +194,8 @@ classdef Database < handle
         ret = FetchRawData(obj, db, tb);
         
         % Create Overviews / Overviews Trigger
-        CreateTableOverviews(obj, conn, db);
-        CreateTriggerOverviews(obj, conn, tb);
+        ret = CreateTableOverviews(obj, db);
+        ret = CreateTriggerOverviews(obj, conn, tb);
 
     end
 
