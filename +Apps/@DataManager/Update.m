@@ -6,9 +6,7 @@ function Update(obj)
 Calendar(obj);
 Index(obj);
 ETF(obj);
-% Option(obj);
-% 
-% InsertOptionMin(obj);
+Option(obj);
 
 end
 
@@ -22,7 +20,7 @@ function Index(obj)
 % 预处理
 inv = EnumType.Interval.day;
 upd_lst = struct;
-upd_lst.product = EnumType.Product.Index;                      upd_lst.variety = '000001';             upd_lst.exchange = EnumType.Exchange.SSE;
+upd_lst.product = EnumType.Product.Index;                     upd_lst.variety = '000001';             upd_lst.exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '000016';     upd_lst(end).exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '000300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '000905';     upd_lst(end).exchange = EnumType.Exchange.SSE;
@@ -46,74 +44,130 @@ for i = 1 : length(upd_lst)
     tb = BaseClass.Database.Database.GetTableName(asset);
     loc = ismember(views.TABLENAME, tb);
     if (sum(loc))
-        view_tmp = views(loc, :);
-        [mark, ~, ~] = obj.NeedUpdate(asset, datenum(view_tmp.TS_START), datenum(view_tmp.TS_END));        
+        [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views(loc, :).TS_START), datenum(views(loc, :).TS_END));
     else
         mark = true;
     end
     
     % 载入
     if (mark)
-        obj.LoadMd(asset, true);
+        obj.LoadMd(asset, false);
     end
 end
 end
 
 % ETF
 function ETF(obj)
+% 预处理
 inv = EnumType.Interval.day;
 upd_lst = struct;
 upd_lst.product = EnumType.Product.ETF;                      upd_lst.variety = '159919';            upd_lst.exchange = EnumType.Exchange.SZSE;
 upd_lst(end + 1).product = EnumType.Product.ETF;       upd_lst(end).variety = '510050';     upd_lst(end).exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.ETF;       upd_lst(end).variety = '510300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
+
+% 载入行情摘要
+this = upd_lst(1);
+sample = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, inv);
+views = obj.db.LoadOverviews(sample);
+
 for i = 1 : length(upd_lst)
+    % 生成资产
     this = upd_lst(i);
     fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     asset = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, inv);
-    obj.LoadMd(asset);
+    
+    % 判定
+    tb = BaseClass.Database.Database.GetTableName(asset);
+    loc = ismember(views.TABLENAME, tb);
+    if (sum(loc))
+        [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views(loc, :).TS_START), datenum(views(loc, :).TS_END));
+    else
+        mark = true;
+    end
+    
+    % 载入
+    if (mark)
+        obj.LoadMd(asset, false);
+    end
 end
 end
 
 % Option
 function Option(obj)
+% 预处理
 upd_lst = struct;
-upd_lst.product = EnumType.Product.Option;                upd_lst.variety = '510050';            upd_lst.exchange = EnumType.Exchange.SSE;
+upd_lst.product = EnumType.Product.Option;                     upd_lst.variety = '510050';             upd_lst.exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.Option;       upd_lst(end).variety = '510300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
+
 for i = 1 : length(upd_lst)
     % 读取所有合约
     this = upd_lst(i);
-    fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));    
+    fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     ins = obj.LoadChain(this.product, this.variety, this.exchange);
+    
+    % 载入行情摘要
+    this = upd_lst(1);
+    info = ins(1, :);
+    sample = SampleOption(info, this.product, this.variety, this.exchange);
+    sample.interval = EnumType.Interval.day;
+    views_d = obj.db.LoadOverviews(sample);
+    sample.interval = EnumType.Interval.min5;
+    views_5m = obj.db.LoadOverviews(sample);
     
     % 更新
     for j = 1 : height(ins)
-        info = ins(j, :);        
-        switch this.variety
-            case {'159919', '510050', '510300'}
-                asset = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, ...
-                    info.SYMBOL{:}, ...
-                    info.SEC_NAME{:}, ...
-                    EnumType.Interval.day, ...
-                    info.SIZE, ...
-                    EnumType.CallOrPut.ToEnum(info.CALL_OR_PUT{:}), ...
-                    info.STRIKE, ...
-                    info.START_TRADE_DATE{:}, ...
-                    info.END_TRADE_DATE{:}...
-                    );
-                    
-            otherwise
-                error('Unsupported variety for updating, please check !');
-        end        
+        % 生成资产
+        info = ins(j, :);
+        asset = SampleOption(info, this.product, this.variety, this.exchange);
         fprintf('Updating [%s-%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), asset.symbol, j, height(ins));
-
-        asset.interval = EnumType.Interval.day;
-        obj.LoadMd(asset);      
-        asset.md = [];
         
+        % 日行情更新
+        asset.interval = EnumType.Interval.day;
+        tb = BaseClass.Database.Database.GetTableName(asset);
+        loc = ismember(views_d.TABLENAME, tb);
+        if (sum(loc))
+            [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views_d(loc, :).TS_START), datenum(views_d(loc, :).TS_END));
+        else
+            mark = true;
+        end
+        if (mark)
+            obj.LoadMd(asset, true);
+        end
+        
+        % 5min行情更新
+        asset.md = [];
         asset.interval = EnumType.Interval.min5;
-        obj.LoadMd(asset);        
+        tb = BaseClass.Database.Database.GetTableName(asset);
+        loc = ismember(views_5m.TABLENAME, tb);
+        if (sum(loc))
+            [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views_5m(loc, :).TS_START), datenum(views_5m(loc, :).TS_END));
+        else
+            mark = true;
+        end
+        if (mark)
+            obj.LoadMd(asset, true);
+        end
     end
 end
+
+    function asset_ = SampleOption(info_, pdt_, var_, exc_)
+        switch var_
+            case {'159919', '510050', '510300'}
+                asset_ = BaseClass.Asset.Asset.Selector(pdt_, var_, exc_, ...
+                    info_.SYMBOL{:}, ...
+                    info_.SEC_NAME{:}, ...
+                    EnumType.Interval.day, ...
+                    info_.SIZE, ...
+                    EnumType.CallOrPut.ToEnum(info_.CALL_OR_PUT{:}), ...
+                    info_.STRIKE, ...
+                    info_.START_TRADE_DATE{:}, ...
+                    info_.END_TRADE_DATE{:}...
+                    );
+                
+            otherwise
+                error('Unsupported variety for updating, please check !');
+        end
+    end
 end
 
 % Debug Function：Check Option Min Md Data
@@ -124,12 +178,12 @@ upd_lst(end + 1).product = EnumType.Product.Option;       upd_lst(end).variety =
 for i = 1 : length(upd_lst)
     % 读取所有合约
     this = upd_lst(i);
-    fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));    
+    fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     ins = obj.LoadChain(this.product, this.variety, this.exchange);
     
     % 更新
     for j = 1 : height(ins)
-        info = ins(j, :);        
+        info = ins(j, :);
         switch this.variety
             case {'159919', '510050', '510300'}
                 asset = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, ...
@@ -142,18 +196,18 @@ for i = 1 : length(upd_lst)
                     info.START_TRADE_DATE{:}, ...
                     info.END_TRADE_DATE{:}...
                     );
-                    
+                
             otherwise
                 error('Unsupported variety for updating, please check !');
-        end        
+        end
         fprintf('Updating [%s-%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), asset.symbol, j, height(ins));
-
+        
         asset.interval = EnumType.Interval.day;
-        LoadMd(obj, asset);      
+        LoadMd(obj, asset);
         asset.md = [];
         
         asset.interval = EnumType.Interval.min5;
-        LoadMd(obj, asset);      
+        LoadMd(obj, asset);
     end
 end
 end
@@ -239,18 +293,18 @@ if (~isempty(md))
     else
         error('Unexpected "product" for update start point determine, please check.');
     end
-
+    
     % 定位已有起点终点
     md_s = md(1, 1);
     md_e = md(end, 1);
-
+    
     %  判定起点
     if (md_s - dt_s_o >= 1)
         dt_s = dt_s_o;
     else
         dt_s = md_e;
     end
-
+    
     % 判定终点
     if (asset.interval == EnumType.Interval.min1 || asset.interval == EnumType.Interval.min5)
         if (dt_e_o - md_e < 15 / 60 / 24)
@@ -258,7 +312,7 @@ if (~isempty(md))
         else
             dt_e = dt_e_o;
         end
-
+        
     elseif (asset.interval == EnumType.Interval.day)
         dt_e_o = floor(dt_e_o);
         if (dt_e_o - md_e < 1)
@@ -269,14 +323,14 @@ if (~isempty(md))
     else
         error("Unexpected 'interval' for market data accomplished judgement, please check.");
     end
-
+    
     % 判定是否更新
     if (dt_s == dt_e && dt_e == md_e)
         mark = false;
     else
         mark = true;
     end
-
+    
 else
     % 无行情
     % 确定更新起点
@@ -287,7 +341,7 @@ else
     else
         error('Unexpected "product" for update start point determine, please check.');
     end
-
+    
     % 确定更新终点
     dt_e = last_trade_date + 15 / 24;
     mark = true;
@@ -342,7 +396,7 @@ symbols = union(union(symb_mis_front, symb_mis_rear), symb_mis_both);
 for i = 1 : length(symbols)
     % fetch local queto
     symb = symbols(i);
-    info = ins(ismember(ins.SYMBOL, symb), :);    
+    info = ins(ismember(ins.SYMBOL, symb), :);
     asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, ...
         info.SYMBOL{:}, ...
         info.SEC_NAME{:}, ...
@@ -352,12 +406,12 @@ for i = 1 : length(symbols)
         info.STRIKE, ...
         info.START_TRADE_DATE{:}, ...
         info.END_TRADE_DATE{:}...
-        );    
+        );
     LoadMd(obj, asset);
     
     % fetch update queto
     md_upd = LoadUpdateMd(dir_udt, symb{:});
-            
+    
     if (ismember(symb, symb_mis_front))
         % missing front
         dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
@@ -370,37 +424,37 @@ for i = 1 : length(symbols)
     elseif (ismember(symb, symb_mis_rear))
         % missing rear
         dt_fix_s = asset.md(end, 2);
-        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));       
+        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));
         dt_missing = cal(cal(:, 1) > dt_fix_s & cal(:, 1) <= dt_fix_e & cal(:, 2), 5);
         fprintf(2, '%s missing [rear], %i day(s), total progress %i/%i,, please wait ...\r', symb{:}, length(dt_missing), i, length(symbols));
         disp(datestr(dt_missing));
         fprintf('\r');
         
     elseif (ismember(symb, symb_mis_both))
-        % missing both        
+        % missing both
         dt_fix_s = str2double(datestr(asset.GetDateListed(), 'yyyymmdd'));
         dt_fix_e = asset.md(1, 2);
         mis_1 = cal(cal(:, 1) >= dt_fix_s & cal(:, 1) < dt_fix_e & cal(:, 2), 5);
         
         dt_fix_s = asset.md(end, 2);
-        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));       
+        dt_fix_e = str2double(datestr(asset.GetDateExpire(), 'yyyymmdd'));
         mis_2 = cal(cal(:, 1) > dt_fix_s & cal(:, 1) <= dt_fix_e & cal(:, 2), 5);
         dt_missing = union(mis_1, mis_2)';
         fprintf(2, '%s missing [both], %i day(s), total progress %i/%i,, please wait ...\r', symb{:}, length(dt_missing), i, length(symbols));
         disp(datestr(dt_missing));
         fprintf('\r');
         
-    end    
+    end
     
     % fix
     for j = 1 : size(dt_missing, 1)
         md_fix = FixMarketData(dt_missing(j), md_upd);
         asset.MergeMarketData(md_fix);
     end
-
+    
     % save data
     SaveBar(asset, dir_out);
-
+    
 end
 end
 
@@ -481,7 +535,7 @@ id = fopen(filename, 'w');
 fprintf(id, header);
 for i = 1 : size(asset.md, 1)
     this = asset.md(i, :);
-    fprintf(id, dat_fmt, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4 : end));      
+    fprintf(id, dat_fmt, datestr(this(1), 'yyyy-mm-dd HH:MM'), this(4 : end));
 end
 fclose(id);
 end
