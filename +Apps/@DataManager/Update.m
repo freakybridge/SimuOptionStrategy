@@ -4,11 +4,11 @@
 function Update(obj)
 
 % UpdateCalendar(obj);
-% UpdateIndex(obj);
+UpdateIndex(obj);
 % UpdateETF(obj);
 % UpdateOption(obj);
-
-InsertOptionMin(obj);
+% 
+% InsertOptionMin(obj);
 
 end
 
@@ -32,6 +32,7 @@ for i = 1 : length(upd_lst)
     this = upd_lst(i);
     fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     asset = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, inv);
+    view = obj.db.LoadOverviews(asset);
     obj.LoadMd(asset);
 end
 end

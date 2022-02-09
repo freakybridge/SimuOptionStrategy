@@ -115,7 +115,18 @@ classdef MSS < BaseClass.Database.Database
     
     % 抽象方法实现
     methods
-        views = LoadOverviews(obj, asset);
+        % fetch sample asset overviews
+        function views = LoadOverviews(obj, asset)
+            try
+                db = obj.GetDbName(asset);
+                tb = obj.tb_overviews;
+                conn = obj.SelectConn(db);
+                sql = sprintf("SELECT [TABLENAME],[TS_START],[TS_END],[COUNTS] FROM [%s].[dbo].[%s] ORDER BY [TABLENAME]", db, tb);
+                views = fetch(conn, sql);
+            catch
+                views = table(categorical([]), [], [], [], 'VariableNames', {'TABLENAME', 'TS_START', 'TS_END', 'COUNTS'});
+            end
+        end
     end
     methods (Hidden)
         % 保存期权 / 期货合约列表
@@ -202,6 +213,7 @@ classdef MSS < BaseClass.Database.Database
                 ret = false;
             end
         end
+        
     end
 end
 
