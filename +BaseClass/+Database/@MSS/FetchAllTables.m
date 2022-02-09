@@ -12,6 +12,7 @@ try
     setdbprefs('DataReturnFormat', 'numeric');
     ret = fetch(conn, sql);
     ret = table2array(ret);
+    ret = setdiff(ret, obj.tb_overviews);
 catch
     ret = cell(0);
 end
