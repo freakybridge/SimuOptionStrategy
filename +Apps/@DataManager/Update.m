@@ -3,22 +3,23 @@
 %      1.First Commit
 function Update(obj)
 
-% UpdateCalendar(obj);
-UpdateIndex(obj);
-% UpdateETF(obj);
-% UpdateOption(obj);
+Calendar(obj);
+Index(obj);
+ETF(obj);
+% Option(obj);
 % 
 % InsertOptionMin(obj);
 
 end
 
 % Calendar
-function UpdateCalendar(obj)
+function Calendar(obj)
 obj.LoadCalendar();
 end
 
 % Index
-function UpdateIndex(obj)
+function Index(obj)
+% 预处理
 inv = EnumType.Interval.day;
 upd_lst = struct;
 upd_lst.product = EnumType.Product.Index;                      upd_lst.variety = '000001';             upd_lst.exchange = EnumType.Exchange.SSE;
@@ -28,17 +29,38 @@ upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = 
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '399001';     upd_lst(end).exchange = EnumType.Exchange.SZSE;
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '399005';     upd_lst(end).exchange = EnumType.Exchange.SZSE;
 upd_lst(end + 1).product = EnumType.Product.Index;       upd_lst(end).variety = '399006';     upd_lst(end).exchange = EnumType.Exchange.SZSE;
+
+% 载入行情摘要
+this = upd_lst(1);
+sample = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, inv);
+views = obj.db.LoadOverviews(sample);
+
+% 更新
 for i = 1 : length(upd_lst)
+    % 生成资产
     this = upd_lst(i);
     fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     asset = BaseClass.Asset.Asset.Selector(this.product, this.variety, this.exchange, inv);
-%     view = obj.db.LoadOverviews(asset);
-    obj.LoadMd(asset);
+    
+    % 判定
+    tb = BaseClass.Database.Database.GetTableName(asset);
+    loc = ismember(views.TABLENAME, tb);
+    if (sum(loc))
+        view_tmp = views(loc, :);
+        [mark, ~, ~] = obj.NeedUpdate(asset, datenum(view_tmp.TS_START), datenum(view_tmp.TS_END));        
+    else
+        mark = true;
+    end
+    
+    % 载入
+    if (mark)
+        obj.LoadMd(asset, true);
+    end
 end
 end
 
 % ETF
-function UpdateETF(obj)
+function ETF(obj)
 inv = EnumType.Interval.day;
 upd_lst = struct;
 upd_lst.product = EnumType.Product.ETF;                      upd_lst.variety = '159919';            upd_lst.exchange = EnumType.Exchange.SZSE;
@@ -53,7 +75,7 @@ end
 end
 
 % Option
-function UpdateOption(obj)
+function Option(obj)
 upd_lst = struct;
 upd_lst.product = EnumType.Product.Option;                upd_lst.variety = '510050';            upd_lst.exchange = EnumType.Exchange.SSE;
 upd_lst(end + 1).product = EnumType.Product.Option;       upd_lst(end).variety = '510300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
