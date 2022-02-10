@@ -10,6 +10,9 @@ classdef MSS < BaseClass.Database.Database
     properties (Constant)
         name char = 'Mss';
     end
+    properties (Constant)
+        lmt_insert int16 = 1000;
+    end
     
     methods
         % ¹¹Ôìº¯Êý
@@ -190,7 +193,7 @@ classdef MSS < BaseClass.Database.Database
             conn = obj.SelectConn(db);
             tb_ov = obj.tb_overviews;
             tb_ins = tb;
-            sql = sprintf("CREATE TRIGGER [dbo].[TriggerOverview_%s] ON [%s] FOR UPDATE, INSERT " ...
+            sql = sprintf("CREATE TRIGGER [dbo].[TriggerOverview_%s] ON [%s] FOR UPDATE, INSERT, DELETE " ...
                 + " AS" ...
                 + " BEGIN" ...
                 + "     DECLARE @s datetime;" ...

@@ -11,17 +11,28 @@ if (~CheckTable(obj, db, tb))
 end
 
 % 行情预处理
-md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))];
-tbs = repmat({tb}, size(md, 1), 1);
-md = [tbs, md(:, 1), tbs, md(:, 2 : end), md(:, 1), tbs, md]';
+md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))]';
+steps = 1 : obj.lmt_insert : size(md, 2);
 
-% 准备sql
-sql = " IF EXISTS (SELECT * FROM [%s] WHERE [DATETIME] = '%s') UPDATE [%s] SET [OPEN] = %f, [HIGH] = %f, [LOW] = %f, [LAST] = %f, [TURNOVER] = %f, [VOLUME] = %f, [OI] = %f WHERE [DATETIME] = '%s' ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f)";
-sql = repmat(sql, 1, size(md, 2));
-sql = [sql{:}];
-sql = sprintf(sql, md{:});
+% 生成sql
+sql = [];
+for i = 1 : length(steps)
+    % 提取行情
+    loc_s = steps(i);
+    if (i ~= length(steps))
+        loc_e = steps(i) + obj.lmt_insert - 1;
+    else
+        loc_e = size(md, 2);
+    end
+    md_in = md(:, loc_s : loc_e);
 
-% 入库
+    % 入库
+    tmp = '(''%s'', %f, %f, %f, %f, %f, %f, %f),';
+    tmp = repmat(tmp, 1, size(md_in, 2));
+    tmp(end) = ';';
+    tmp = ['INSERT INTO [%s] ([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI]) VALUES', tmp];
+    sql = [sql, sprintf(tmp, tb, md_in{:})];
+end
 exec(conn, sql);
 ret = true;
 
