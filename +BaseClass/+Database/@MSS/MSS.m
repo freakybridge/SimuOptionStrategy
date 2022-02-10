@@ -65,7 +65,7 @@ classdef MSS < BaseClass.Database.Database
             obj.tables(db) = obj.FetchAllTables(db);
 
             % views buffer
-            obj.view_buffer = obj.LoadOverviews(db);
+            obj.view_buff(db) = obj.LoadOverviews(db);
         end
         function conn = SelectConn(obj, db)
             if (~CheckDatabase(obj, db))

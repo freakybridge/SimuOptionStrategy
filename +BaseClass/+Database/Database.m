@@ -12,7 +12,7 @@ classdef Database < handle
         url char;
         conns containers.Map;
         tables containers.Map;
-        view_buffer containers.Map;
+        view_buff containers.Map;
         db_default char;
         db_instru char = 'INSTRUMENTS';
         db_calendar char = 'CALENDAR';
