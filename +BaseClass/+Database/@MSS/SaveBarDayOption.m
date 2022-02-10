@@ -10,21 +10,35 @@ if (~CheckTable(obj, db, tb))
     CreateTable(obj, conn, db, tb);
 end
 
+% 删除行情
+sql = sprintf("DELETE FROM [%s] WHERE [DATETIME] >= '%s';", tb, datestr(md(1, 1), 'yyyy-mm-dd HH:MM:SS'));
+exec(conn, sql);
+
 % 行情预处理
-md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))];
-tbs = repmat({tb}, size(md, 1), 1);
-md = [tbs, md(:, 1), tbs, md(:, 2 : end), md(:, 1), tbs, md]';
+md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))]';
+steps = 1 : obj.lmt_insert : size(md, 2);
 
-% 准备sql
-sql = " IF EXISTS (SELECT * FROM [%s] WHERE [DATETIME] = '%s') UPDATE [%s] SET [OPEN] = %f, [HIGH] = %f, [LOW] = %f, [LAST] = %f, [TURNOVER] = %f, [VOLUME] = %f, [OI] = %f, [PRE_SETTLE] = %f, [SETTLE] = %f, [REM_N] = %i, [REM_T] = %i WHERE [DATETIME] = '%s' ELSE INSERT [%s]([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [PRE_SETTLE], [SETTLE], [REM_N], [REM_T]) VALUES ('%s', %f, %f, %f, %f, %f, %f, %f, %f, %f, %i, %i)";
-sql = repmat(sql, 1, size(md, 2));
-sql = [sql{:}];
-sql = sprintf(sql, md{:});
+% 生成sql
+sql = [];
+for i = 1 : length(steps)
+    % 提取行情
+    loc_s = steps(i);
+    if (i ~= length(steps))
+        loc_e = steps(i) + obj.lmt_insert - 1;
+    else
+        loc_e = size(md, 2);
+    end
+    md_in = md(:, loc_s : loc_e);
 
-% 入库
+    % 入库
+    tmp = '("%s", %f, %f, %f, %f, %f, %f, %f, %f, %f, %i, %i),';
+    tmp = repmat(tmp, 1, size(md_in, 2));
+    tmp(end) = ';';
+    tmp = ['INSERT INTO [%s] ([DATETIME], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME], [OI], [PRE_SETTLE], [SETTLE], [REM_N], [REM_T]) VALUES', tmp];
+    sql = [sql, sprintf(tmp, tb, md_in{:})];
+end
 exec(conn, sql);
 ret = true;
-
 end
 
 % 建表 Option 日线数据

@@ -11,7 +11,7 @@ if (~CheckTable(obj, db, tb))
 end
 
 % 删除行情
-sql = sprintf("DELETE FROM [%s] WHERE [DATETIME] > '%s';", tb, datestr(md(1, 1), 'yyyy-mm-dd HH:MM:SS'));
+sql = sprintf("DELETE FROM [%s] WHERE [DATETIME] >= '%s';", tb, datestr(md(1, 1), 'yyyy-mm-dd HH:MM:SS'));
 exec(conn, sql);
 
 % 行情预处理
