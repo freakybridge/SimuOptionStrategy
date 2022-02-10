@@ -1,5 +1,6 @@
 clear;
 clc;
+tic;
 
 import Apps.DataManager;
 import BaseClass.Asset.Asset;
@@ -18,6 +19,5 @@ dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 
 % dm.Update();
 % dm.DatabaseBackup('C:\Users\freakybridge\Desktop\Backup');
-% dm.DatabaseRestore(dir_rt);
-
-dm.DatabaseRestore('C:\Users\freakybridge\Desktop\todb');
+dm.DatabaseRestore(dir_rt);
+toc;
