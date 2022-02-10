@@ -10,16 +10,9 @@ if (~CheckTable(obj, db, tb))
     CreateTable(obj, conn, db, tb);
 end
 
-% 读取已有view
-
-% 判定需要删除的行情
-
 % 删除行情
-
-% 插入
-
-% 更新view
-
+sql = sprintf("DELETE FROM [%s] WHERE [DATETIME] > '%s';", tb, datestr(md(1, 1), 'yyyy-mm-dd HH:MM:SS'));
+exec(conn, sql);
 
 % 行情预处理
 md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))]';
@@ -46,7 +39,6 @@ for i = 1 : length(steps)
 end
 exec(conn, sql);
 ret = true;
-
 end
 
 % 建表分钟K线数据
