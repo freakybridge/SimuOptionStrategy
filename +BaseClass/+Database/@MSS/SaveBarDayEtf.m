@@ -31,7 +31,7 @@ for i = 1 : length(steps)
     md_in = md(:, loc_s : loc_e);
 
     % Èë¿â
-    tmp = '("%s", %f, %f, %f, %f, %f, %f, %f, %f),';
+    tmp = '(''%s'', %f, %f, %f, %f, %f, %f, %f, %f),';
     tmp = repmat(tmp, 1, size(md_in, 2));
     tmp(end) = ';';
     tmp = ['INSERT INTO [%s] ([DATETIME], [NAV], [NAV_ADJ], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME]) VALUES', tmp];

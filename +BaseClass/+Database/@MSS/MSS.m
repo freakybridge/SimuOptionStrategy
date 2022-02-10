@@ -11,7 +11,7 @@ classdef MSS < BaseClass.Database.Database
         name char = 'Mss';
     end
     properties (Constant)
-        lmt_insert int16 = 1000;
+        lmt_insert int64 = 1000;
     end
     
     methods
