@@ -12,6 +12,7 @@ classdef Database < handle
         url char;
         conns containers.Map;
         tables containers.Map;
+        view_buffer containers.Map;
         db_default char;
         db_instru char = 'INSTRUMENTS';
         db_calendar char = 'CALENDAR';
@@ -101,8 +102,7 @@ classdef Database < handle
     end
     methods (Abstract)
         views = LoadOverviews(obj, asset);
-    end
-    
+    end   
     
     methods (Hidden)
         function AttachFuncHandle(obj)

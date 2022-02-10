@@ -63,6 +63,9 @@ classdef MSS < BaseClass.Database.Database
 
             % tables buffer
             obj.tables(db) = obj.FetchAllTables(db);
+
+            % views buffer
+            obj.view_buffer = obj.LoadOverviews(db);
         end
         function conn = SelectConn(obj, db)
             if (~CheckDatabase(obj, db))
@@ -119,9 +122,18 @@ classdef MSS < BaseClass.Database.Database
     % 抽象方法实现
     methods
         % fetch sample asset overviews
-        function views = LoadOverviews(obj, asset)
+        function views = LoadOverviews(obj, para)
+            % generate db;
+            if (isa(para, 'char') || isa(para, 'string'))
+                db = char(para);
+            elseif ismember('BaseClass.Asset.Asset', superclasses(para))
+                db = obj.GetDbName(para);
+            else
+                error('Input error, please check.');
+            end
+
+            % fetch
             try
-                db = obj.GetDbName(asset);
                 tb = obj.tb_overviews;
                 conn = obj.SelectConn(db);
                 sql = sprintf("SELECT [TABLENAME],[TS_START],[TS_END],[COUNTS] FROM [%s].[dbo].[%s] ORDER BY [TABLENAME]", db, tb);
