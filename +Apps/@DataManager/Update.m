@@ -104,59 +104,77 @@ for i = 1 : length(upd_lst)
     this = upd_lst(i);
     fprintf('Updating [%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), i, length(upd_lst));
     ins = obj.LoadChain(this.product, this.variety, this.exchange);
-    
+        
+    % 日行情更新
     % 载入行情摘要
     this = upd_lst(1);
     info = ins(1, :);
-    sample = SampleOption(info, this.product, this.variety, this.exchange);
-    sample.interval = EnumType.Interval.day;
+    sample = SampleOption(info, this.product, this.variety, this.exchange, EnumType.Interval.day);
     views_d = obj.db.LoadOverviews(sample);
-    sample.interval = EnumType.Interval.min5;
-    views_5m = obj.db.LoadOverviews(sample);
     
     % 更新
     for j = 1 : height(ins)
-        % 生成资产
+        % 提取摘要
         info = ins(j, :);
-        asset = SampleOption(info, this.product, this.variety, this.exchange);
-        fprintf('Updating [%s-%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), asset.symbol, j, height(ins));
+        fprintf('Updating [1D-%s-%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), info.SYMBOL{:}, j, height(ins));
+        view =  views_d(ismember(views_d.TABLENAME, info.SYMBOL{:}), :);
         
-        % 日行情更新
-        asset.interval = EnumType.Interval.day;
-        tb = BaseClass.Database.Database.GetTableName(asset);
-        loc = ismember(views_d.TABLENAME, tb);
-        if (sum(loc))
-            [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views_d(loc, :).TS_START), datenum(views_d(loc, :).TS_END));
+        % 判定
+        if (~isempty(view) && view.COUNTS)
+            if (datenum(view.TS_END) < datenum(info.END_TRADE_DATE{:}, 'yyyy-mm-dd'))
+                asset = SampleOption(info, this.product, this.variety, this.exchange, EnumType.Interval.day);
+                [mark, ~, ~] = obj.NeedUpdate(asset, datenum(view.TS_START), datenum(view.TS_END));
+            else
+                mark = false;
+            end
         else
             mark = true;
         end
-        if (mark)
-            obj.LoadMd(asset, true);
-        end
         
-        % 5min行情更新
-        asset.md = [];
-        asset.interval = EnumType.Interval.min5;
-        tb = BaseClass.Database.Database.GetTableName(asset);
-        loc = ismember(views_5m.TABLENAME, tb);
-        if (sum(loc))
-            [mark, ~, ~] = obj.NeedUpdate(asset, datenum(views_5m(loc, :).TS_START), datenum(views_5m(loc, :).TS_END));
+        % 载入
+        if (mark)
+            obj.LoadMd(asset, false);
+        end
+    end
+    
+    % 5min行情更新
+    % 载入行情摘要
+    sample = SampleOption(info, this.product, this.variety, this.exchange, EnumType.Interval.min5);
+    views_5m = obj.db.LoadOverviews(sample);
+    
+    % 更新
+    for j = 1 : height(ins)        
+        % 提取摘要
+        info = ins(j, :);
+        fprintf('Updating [5MIN-%s-%s-%s-%s], [%i/%i], please wait ...\r', Utility.ToString(this.product), this.variety, Utility.ToString(this.exchange), info.SYMBOL{:}, j, height(ins));
+        view =  views_5m(ismember(views_5m.TABLENAME, info.SYMBOL{:}), :);
+        
+        % 判定
+        if (~isempty(view) && view.COUNTS)
+            if (datenum(view.TS_END) < datenum(info.END_TRADE_DATE{:}, 'yyyy-mm-dd HH:MM'))
+                asset = SampleOption(info, this.product, this.variety, this.exchange, EnumType.Interval.day);
+                [mark, ~, ~] = obj.NeedUpdate(asset, datenum(view.TS_START), datenum(view.TS_END));
+            else
+                mark = false;
+            end
         else
             mark = true;
         end
+        
+        % 载入
         if (mark)
-            obj.LoadMd(asset, true);
+            obj.LoadMd(asset, false);
         end
     end
 end
 
-    function asset_ = SampleOption(info_, pdt_, var_, exc_)
+    function asset_ = SampleOption(info_, pdt_, var_, exc_, inv_)
         switch var_
             case {'159919', '510050', '510300'}
                 asset_ = BaseClass.Asset.Asset.Selector(pdt_, var_, exc_, ...
                     info_.SYMBOL{:}, ...
                     info_.SEC_NAME{:}, ...
-                    EnumType.Interval.day, ...
+                    inv_, ...
                     info_.SIZE, ...
                     EnumType.CallOrPut.ToEnum(info_.CALL_OR_PUT{:}), ...
                     info_.STRIKE, ...
