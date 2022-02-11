@@ -38,7 +38,11 @@ classdef DataManager < handle
         LoadMd(obj, asset, sw_csv);
         function [md, mk_upd, dt_s, dt_e] = LoadMdViaCsv(obj, asset)
             md = obj.dr.LoadMarketData(asset, obj.dir_root);
-            [mk_upd, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
+            if (~isempty(md))
+                [mk_upd, dt_s, dt_e] = obj.NeedUpdate(asset, md(1, 1), md(end, 1));
+            else
+                [mk_upd, dt_s, dt_e] = obj.NeedUpdate(asset, nan, nan);
+            end
         end
         function md = LoadViaDs(obj, asset, dt_s, dt_e)
             while (true)

@@ -25,12 +25,8 @@ if (sw_csv)
     end
 end
 
-% 写入本地行情
-if (~isempty(md_local))
-    asset.MergeMarketData(md_local);
-end
-
 % 更新
+asset.MergeMarketData(md_local);
 md = LoadViaDs(obj, asset, dt_s, dt_e);
 if (~isempty(md))
     asset.MergeMarketData(md);

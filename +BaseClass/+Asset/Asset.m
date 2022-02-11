@@ -43,6 +43,10 @@ classdef Asset < handle & matlab.mixin.Heterogeneous
         
         % 合并行情
         function MergeMarketData(obj, md_new)
+            if (isempty(md_new))
+                return;
+            end
+
             % 删除重复数据
             if (~isempty(obj.md))                
                 [~, loc_old, ~] = intersect(obj.md(:, 1), md_new(:, 1));
