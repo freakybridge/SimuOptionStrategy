@@ -17,8 +17,7 @@ end
 
 % 读取本地 csv
 if (sw_csv)
-    md_local = obj.dr.LoadMarketData(asset, obj.dir_root);
-    [mark, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
+    [md_local, mark, dt_s, dt_e] = obj.LoadMdViaCsv(asset);
     if (~mark)
         asset.MergeMarketData(md_local);
         obj.db.SaveMarketData(asset, md_local);
@@ -46,20 +45,6 @@ if (~isempty(md))
     [mark, dt_s, dt_e] = obj.NeedUpdate(asset, md(1, 1), md(end, 1));
 else
     [mark, dt_s, dt_e] = obj.NeedUpdate(asset, nan, nan);
-end
-end
-
-% 从数据接口获取行情数据
-function md = LoadViaDs(obj, asset, dt_s, dt_e)
-while (true)
-    [is_err, md] = obj.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, dt_s, dt_e);
-    if (is_err)
-        obj.SetDsFailure();
-        obj.ds.LogOut();
-        obj.ds = obj.AutoSwitchDataSource();
-        continue;
-    end
-    return;
 end
 end
 

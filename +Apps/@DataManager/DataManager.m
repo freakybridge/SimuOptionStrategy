@@ -34,8 +34,24 @@ classdef DataManager < handle
             obj.dir_root = dir_;
         end
 
-        % 载入行情
+        % 载入行情 / 载入本地Csv行情 / 载入在线行情
         LoadMd(obj, asset, sw_csv);
+        function [md, mk_upd, dt_s, dt_e] = LoadMdViaCsv(obj, asset)
+            md = obj.dr.LoadMarketData(asset, obj.dir_root);
+            [mk_upd, dt_s, dt_e] = NeedUpdate(obj, asset, md_local);
+        end
+        function md = LoadViaDs(obj, asset, dt_s, dt_e)
+            while (true)
+                [is_err, md] = obj.ds.FetchMarketData(asset.product, asset.symbol, asset.exchange, asset.interval, dt_s, dt_e);
+                if (is_err)
+                    obj.SetDsFailure();
+                    obj.ds.LogOut();
+                    obj.ds = obj.AutoSwitchDataSource();
+                    continue;
+                end
+                return;
+            end
+        end
 
         % 载入合约列表
         instrus = LoadChain(obj, pdt, var, exc);
