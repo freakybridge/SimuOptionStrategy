@@ -566,3 +566,38 @@ end
 % end
 % fclose(id);
 % end
+
+
+%% check data
+function Check(obj, inv)
+upd_lst = struct;
+upd_lst.product = EnumType.Product.Option;                     upd_lst.variety = '510050';             upd_lst.exchange = EnumType.Exchange.SSE;
+upd_lst(end + 1).product = EnumType.Product.Option;       upd_lst(end).variety = '510300';     upd_lst(end).exchange = EnumType.Exchange.SSE;
+
+for i = 1 : length(upd_lst)
+    % 读取所有合约
+    this = upd_lst(i);
+    ins = obj.LoadChain(this.product, this.variety, this.exchange);
+
+    % 载入行情摘要
+    this = upd_lst(i);
+    info = ins(1, :);
+    sample = SampleOption(info, this.product, this.variety, this.exchange, inv);
+    views = obj.db.LoadOverviews(sample);
+
+    % 更新
+    for j = 1 : height(ins)
+        % 提取摘要
+        info = ins(j, :);
+        view = views(ismember(views.TABLENAME, info.SYMBOL{:}), :);
+
+        s_ins = datenum(info.START_TRADE_DATE, 'yyyy-mm-dd');
+        e_ins = datenum(info.END_TRADE_DATE, 'yyyy-mm-dd');
+        s_view = datenum(view.TS_START, 'yyyy-mm-dd');
+        e_view = datenum(view.TS_END, 'yyyy-mm-dd');
+        if (s_view < s_ins || e_ins < e_view)
+            disp(info.SYMBOL);
+        end
+    end
+end
+end
