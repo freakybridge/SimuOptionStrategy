@@ -1,8 +1,7 @@
-% Wind 获取交易日历
+% iFinD 获取交易日历
 % v1.3.0.20220113.beta
 %       1.首次加入
 function [is_err, cal] = FetchCalendar(obj)
-
 try
     % 获取起点终点
     date.start = datestr(datenum('1988-09-10') - 365, 'yyyy-mm-dd');
