@@ -29,3 +29,9 @@ ds = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue');
 asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, 'Symbol', 'SECNAME', ...
     EnumType.Interval.day, 100, EnumType.CallOrPut.Call, 1000, datestr(now()),  datestr(now()));
 ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
+
+addpath('E:\Quant\SimuOptionStrategy\tushare_matlab_sdk');
+token = 'c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b'; % replace your token here
+api = pro_api(token);
+df_basic = api.query('option_basic');
+disp(df_basic(1:10,:));
