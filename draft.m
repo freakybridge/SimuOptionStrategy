@@ -25,4 +25,7 @@
 
 ds = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue');
 
-cal = ds.FetchCalendar();
+
+asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, 'Symbol', 'SECNAME', ...
+    EnumType.Interval.day, 100, EnumType.CallOrPut.Call, 1000, datestr(now()),  datestr(now()));
+ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);

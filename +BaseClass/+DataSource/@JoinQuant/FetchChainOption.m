@@ -1,32 +1,102 @@
-% Wind 获取期权合约列表
+% JoinQuant 获取期权合约列表
 % v1.3.0.20220113.beta
 %       1.首次加入
 function [is_err, ins] = FetchChainOption(obj, opt_s, ins_local)
+
 % 获取下载起点终点
 [date_s, date_e] = obj.GetChainUpdateSE(opt_s, ins_local);
 
-% 下载
-exc_ud = obj.exchanges(opt_s.GetUnderExchange());
-exc_opt = lower(Utility.ToString(opt_s.exchange));
-str = sprintf('startdate=%s;enddate=%s;exchange=%s;windcode=%s.%s;status=all;field=wind_code,sec_name,call_or_put,exercise_price,contract_unit,listed_date,expire_date', ...
-    date_s, date_e, exc_opt, opt_s.variety, exc_ud);
-[ins, ~, ~, ~, obj.err.code, ~] = obj.api.wset('optioncontractbasicinfo', str);
 
-% 整理输出
+
+    body = struct(...
+        'method', 'run_query', ...
+        'token', obj.token, ...
+        'table', 'opt.OPT_CONTRACT_INFO',  ...
+        'columns', 'code,underlying_symbol', ...
+        'conditions', 'opt.OPT_CONTRACT_INFO.list_date#=#2015-02-09', ...
+        'counts', 23 ...
+        );
+    options = weboptions('RequestMethod', 'post', 'ContentReader', @readtable, 'MediaType', 'application/json');
+    dt_trading = webwrite(obj.url, body, options);
+
+
+    body = struct(...
+        "method", "run_query", ...
+        "token", obj.token, ...
+        "table", "finance.STK_XR_XD", ...
+        "columns", "company_id,company_name,code,report_date", ...
+        "conditions", "report_date#=#2006-12-01", ...
+        "count", 10 ...
+    );
+    options = weboptions('RequestMethod', 'post', 'ContentReader', @readtable, 'MediaType', 'application/json');
+    dt_trading = webwrite(obj.url, body, options);
+
+    body = struct(...
+        "method", "run_query", ...
+        "token", obj.token, ...
+        "table", "opt.OPT_DAILY_PREOPEN", ...
+        "columns", "code,trading_code,name,exercise_date", ...
+        "conditions", "code#=#10001313.XSHG", ...
+        "count", 10 ...
+    );
+    options = weboptions('RequestMethod', 'post', 'ContentReader', @readtable, 'MediaType', 'application/json');
+    dt_trading = webwrite(obj.url, body, options);
+
+
+% 获取参数
+if (isa(opt_s, 'BaseClass.Asset.Option.Instance.SSE_510050'))
+    param = '171002001';
+elseif (isa(opt_s, 'BaseClass.Asset.Option.Instance.SSE_510300'))
+    param = '171002002';
+elseif (isa(opt_s, 'BaseClass.Asset.Option.Instance.SZSE_159919'))
+    param = '171003006';
+else
+    error("Unexpected option class type, please check!");
+end
+
+% 下载合约代码
+symbols = [];
+for i = datenum(date_s) : 15 : datenum(date_e)
+    str = sprintf('%s;%s', datestr(i, 'yyyy-mm-dd'), param);
+    [data, obj.err.code, errmsg, ~, ~, ~]=THS_DP('block', str,'thscode:Y','format:array');
+    if (obj.err.code)
+        obj.err.msg = errmsg{:};
+        obj.DispErr('Fetching option chain error when loading symbols');
+        ins = ins_local;
+        is_err = true;
+        return;
+    end
+    symbols = union(symbols, data);
+end
+symbols = cellfun(@(x) {[x, ',']}, symbols');
+symbols = [symbols{:}];
+symbols(end) = [];
+
+% 提取数据
+[data, obj.err.code, ~,thscode, errmsg, ~, ~, ~] = THS_BD(symbols,'ths_option_short_name_option;ths_contract_type_option;ths_strike_price_option;ths_contract_multiplier_option;ths_listed_date_option;ths_maturity_date_option', ...
+    sprintf(';;%s;;;', datestr(now(), 'yyyy-mm-dd')),'format:array');
+
+% 输出
 if (obj.err.code)
-    obj.err.msg = ins{:};
+    obj.err.msg = errmsg{:};
     obj.DispErr('Fetching option chain failure');
     ins = ins_local;
     is_err = true;
     
 else
-    if isa(ins, 'cell')
-        % 存在新合约，合并本地合约
+    % 整理数据
+    ins = [thscode, data];
+    if (~isempty(ins))
         % 修正新信息
-        ins(strcmpi(ins(:, 3), '认购'), 3) = deal({'Call'});
-        ins(strcmpi(ins(:, 3), '认沽'), 3) = deal({'Put'});
-        ins(:, 6) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(ins(:, 6), opt_s.tradetimetable(1)));
-        ins(:, 7) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(ins(:, 7), opt_s.tradetimetable(end)));
+        for i = 1 : size(ins, 1)
+            tmp = ins{i, 1};
+            loc = strfind(tmp, '.');
+            ins{i, 1} = tmp(1 : loc - 1);
+        end
+        ins(strcmpi(ins(:, 3), '看涨期权'), 3) = deal({'Call'});
+        ins(strcmpi(ins(:, 3), '看跌期权'), 3) = deal({'Put'});
+        ins(:, 6) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(1)), 'yyyy-mm-dd HH:MM')}, ins(:, 6));
+        ins(:, 7) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(end)), 'yyyy-mm-dd HH:MM')}, ins(:, 7));
         ins(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), ins(:, 7)));
         
         % 补全信息
@@ -54,9 +124,9 @@ else
         ins = sortrows(ins, 1);
         
     else
-        % 无最新合约
         ins = ins_local;
     end
     is_err = false;
+    
 end
 end
