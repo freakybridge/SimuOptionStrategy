@@ -32,6 +32,12 @@ classdef Tushare < BaseClass.DataSource.DataSource
             obj.exchanges(Utility.ToString(Exchange.SZSE)) = '.SZ';
             
             % µÇÂ¼
+
+            addpath('.\resource\tushare_matlab_sdk');
+            token = 'c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b'; % replace your token here
+            api = pro_api(token);
+            df_basic = api.query('option_basic');
+            disp(df_basic(1:10,:));
             obj.user = ur;
             obj.password = pwd;
             obj.err.code = THS_iFinDLogin(ur, pwd);
