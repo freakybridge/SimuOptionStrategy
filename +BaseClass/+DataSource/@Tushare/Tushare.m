@@ -61,7 +61,7 @@ classdef Tushare < BaseClass.DataSource.DataSource
         
         % 获取分钟 / 日级数据
         [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
-        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, params, err_fmt);
+        [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, func, fields, err_fmt);
         
         % 获取行情数据
         [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);

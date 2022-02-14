@@ -1,28 +1,26 @@
-% Wind 获取日数据
+% Tushare 获取日数据
 % v1.3.0.20220113.beta
 %       1.首次加入
-function [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, params, err_fmt)
+function [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, func, fields, err_fmt)
 
 % 下载
-[md, obj.err.code, dt, ~, ~, obj.err.msg, ~] = THS_DS([symb, '.', exc], fields, params, ...
-    'block:latest', ...
-    datestr(ts_s, 'yyyy-mm-dd'), ...
-    datestr(ts_e, 'yyyy-mm-dd'), ...
-    'format:array' ...
-    );
+res = obj.api.query(func, 'ts_code', sprintf('%s%s', symb, exc), 'start_date', datestr(ts_s, 'yyyymmdd'), 'end_date', datestr(ts_e, 'yyyymmdd'));
 
 % 输出
-if (obj.err.code)
-    obj.err.msg = obj.err.msg{:};
+if (isempty(res))
+    obj.err.msg = 'Index dailiy queto fetching error';
     obj.DispErr(sprintf(err_fmt, symb, exc));
     md = [];
     is_err = true;
 else
-    if (isa(md, 'cell'))
-        md = cell2mat(md);
+    md = zeros(height(res), length(fields));
+    for i = 1 : length(fields)
+        if (i ~= 1)
+            md(:, i) = res.(fields{i});
+        else
+            md(:, i) = datenum(res.(fields{i}), 'yyyymmdd');
+        end
     end
-    md(isnan(md)) = 0;
-    md = [datenum(dt), md];
     is_err = false;
 end
 end

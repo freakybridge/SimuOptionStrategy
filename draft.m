@@ -31,8 +31,15 @@ asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumTy
 ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
 ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
-[a, b] = ts.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
+
+pdt = EnumType.Product.ETF;
+symb = '510050';
+exc = EnumType.Exchange.SSE;
+inv = EnumType.Interval.day;
+ts_s = now() - 10;
+ts_e = now();
+[a, b] = ts.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
 
             
 %             token = 'c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b'; % replace your token here
