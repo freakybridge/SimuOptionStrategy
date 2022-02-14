@@ -4,24 +4,19 @@
 function [is_err, cal] = FetchCalendar(obj)
 try
     % 获取起点终点
-    date.start = datestr(datenum('1988-09-10') - 365, 'yyyy-mm-dd');
-    date.end = datestr(now + 365, 'yyyy-mm-dd');
+    date.start = datestr(datenum('1988-09-10') - 365, 'yyyymmdd');
+    date.end = datestr(now + 365, 'yyyymmdd');
     
     % 获取日历日 / 交易日
-    [~, obj.err.code, dt_natural, obj.err.msg] = THS_Date_Query('212001', 'mode:1,dateType:1,period:D,dateFormat:0', date.start, date.end);
-    if (obj.err.code)
-        obj.err.msg = obj.err.msg{:};
-        fprintf('%s ERROR: Fetching calendar natural day error, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
-    else
-        dt_natural = datenum(dt_natural);
+    res = obj.api.query('trade_cal', 'start_date', date.start, 'end_date', date.end);
+    if (isempty(res))
+        obj.err.msg = 'fetch calendar error';
+        fprintf('%s ERROR: Fetching calendar natural/trade day error, [code: %d] [msg: %s], please check. \r', obj.name, obj.err.code, obj.err.msg);
     end
-    [~, obj.err.code, dt_trading, obj.err.msg] = THS_Date_Query('212001', 'mode:1,dateType:0,period:D,dateFormat:0', date.start, date.end);
-    if (obj.err.code)
-        obj.err.msg = obj.err.msg{:};
-        fprintf('%s ERROR: Fetching calendar trading day error, [code: %d] [msg: %s], please check. \r', obj.name, usr_ht, obj.err.code, obj.err.msg);
-    else
-        dt_trading = datenum(dt_trading);
-    end
+    
+    % 整理
+    dt_natural = cellfun(@(x) datenum(x, 'yyyymmdd'), res.cal_date);
+    dt_trading = dt_natural(logical(res.is_open));
     
     % 合并
     cal = arrayfun(@(x) str2double(datestr(x, 'yyyymmdd')), dt_natural);
