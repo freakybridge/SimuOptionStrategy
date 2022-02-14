@@ -3,12 +3,11 @@
 %       首次添加
 classdef Tushare < BaseClass.DataSource.DataSource
     properties (Access = private)
-        user char;
-        password char;
+        token char;
         api;
     end
     properties (Constant)
-        name char = 'iFinD';
+        name char = 'Tushare';
     end
     properties (Hidden)
         exchanges containers.Map;
@@ -16,8 +15,8 @@ classdef Tushare < BaseClass.DataSource.DataSource
     
     methods
         % 构造函数
-        function obj = Tushare(ur, pwd)
-            % iFinD 构造此类的实例
+        function obj = Tushare(tkn)
+            % Tushare 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.DataSource.DataSource();
             
@@ -32,37 +31,29 @@ classdef Tushare < BaseClass.DataSource.DataSource
             obj.exchanges(Utility.ToString(Exchange.SZSE)) = '.SZ';
             
             % 登录
-
             addpath('.\resource\tushare_matlab_sdk');
-            token = 'c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b'; % replace your token here
-            api = pro_api(token);
-            df_basic = api.query('option_basic');
-            disp(df_basic(1:10,:));
-            obj.user = ur;
-            obj.password = pwd;
-            obj.err.code = THS_iFinDLogin(ur, pwd);
-            if (obj.err.code == 0 || obj.err.code == -201)
-                fprintf('DataSource [%s]@[User:%s] Ready.\r', obj.name, obj.user);
-            end
+            obj.token = tkn;
+            obj.api = pro_api(tkn);
+            fprintf('DataSource [%s] Ready.\r', obj.name);
+            
         end
 
         % 登出
         function LogOut(~)
-            THS_iFinDLogout();
         end
     end
     
     methods (Static, Hidden)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
-            ret = 1 * 365;
+            ret = 3 * 365;
         end
     end
     
     methods (Hidden)
         % 是否为致命错误
         function ret= IsErrFatal(obj)
-            if (obj.err.code && obj.err.code ~= -201)
+            if (obj.err.code)
                 ret = true;
             else
                 ret = false;

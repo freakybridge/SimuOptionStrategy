@@ -265,7 +265,7 @@ inputStream.close;
 byteArrayOutputStream.close;     
 
 if in.CAST_OUTPUT
-    charset = '';
+    charset = 'UTF-8';
     
     %Extraction of character set from Content-Type header if possible
     if isfield(firstHeaders,'Content_Type')
