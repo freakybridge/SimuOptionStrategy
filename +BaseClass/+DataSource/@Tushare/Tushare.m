@@ -35,7 +35,6 @@ classdef Tushare < BaseClass.DataSource.DataSource
             obj.token = tkn;
             obj.api = pro_api(tkn);
             fprintf('DataSource [%s] Ready.\r', obj.name);
-            
         end
 
         % µÇ³ö

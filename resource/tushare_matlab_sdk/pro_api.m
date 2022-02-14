@@ -90,7 +90,7 @@ classdef pro_api
             if ~isempty(results.msg)
                 disp(results.msg);
             end
-            if ~isempty(results.data)               
+            if (~isempty(results.data) && ~isempty(results.data.items))
                 index = results.data.fields;
                 data = cat(2, results.data.items{:})';
                 data = cell2table(data, 'VariableNames', index);

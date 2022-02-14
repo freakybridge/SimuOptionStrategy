@@ -271,7 +271,9 @@ if in.CAST_OUTPUT
     if isfield(firstHeaders,'Content_Type')
         text = firstHeaders.Content_Type;
         %Always open to regexp improvements
-        charset = regexp(text,'(?<=charset=)[^\s]*','match','once');
+        if (~strcmpi(text, 'application/json'))
+            charset = regexp(text,'(?<=charset=)[^\s]*','match','once');
+        end
     end
 
     if ~isempty(charset)
