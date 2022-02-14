@@ -31,7 +31,7 @@ asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumTy
 ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
 ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
-[a, b] = ts.FetchCalendar();
+[a, b] = ts.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
 
             
