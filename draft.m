@@ -33,13 +33,17 @@ ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []
 ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
 
 
-pdt = EnumType.Product.Future;
-symb = 'AU2206';
-exc = EnumType.Exchange.SHFE;
+pdt = EnumType.Product.Option;
+symb = '10003852';
+exc = EnumType.Exchange.SSE;
 inv = EnumType.Interval.day;
 ts_s = now() - 10;
 ts_e = now();
 [a, b] = ts.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
+
+
+wind = BaseClass.DataSource.Wind();
+[a, b] = wind.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
 
             
 %             token = 'c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b'; % replace your token here
