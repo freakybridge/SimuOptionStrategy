@@ -21,6 +21,7 @@ else
             md(:, i) = datenum(res.(fields{i}), 'yyyymmdd');
         end
     end
+    md = sortrows(md, 1);
     is_err = false;
 end
 end

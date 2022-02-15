@@ -33,9 +33,9 @@ ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []
 ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
 
 
-pdt = EnumType.Product.ETF;
-symb = '510050';
-exc = EnumType.Exchange.SSE;
+pdt = EnumType.Product.Future;
+symb = 'AU2206';
+exc = EnumType.Exchange.SHFE;
 inv = EnumType.Interval.day;
 ts_s = now() - 10;
 ts_e = now();
