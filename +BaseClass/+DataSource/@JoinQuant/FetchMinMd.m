@@ -1,4 +1,4 @@
-% Wind 获取分钟数据
+% JoinQuant 获取分钟数据
 % v1.3.0.20220113.beta
 %       1.首次加入
 function [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt)

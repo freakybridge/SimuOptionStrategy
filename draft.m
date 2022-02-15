@@ -23,7 +23,7 @@
 % toc;
 
 
-ds = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue');
+jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue');
 
 
 asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, 'Symbol', 'SECNAME', ...

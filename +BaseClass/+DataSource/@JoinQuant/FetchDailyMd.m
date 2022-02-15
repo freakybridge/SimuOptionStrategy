@@ -1,4 +1,4 @@
-% Wind 获取日数据
+% JoinQuant 获取日数据
 % v1.3.0.20220113.beta
 %       1.首次加入
 function [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, err_fmt)
