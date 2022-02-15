@@ -36,8 +36,8 @@ ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f7184
 pdt = EnumType.Product.Index;
 symb = '000016';
 exc = EnumType.Exchange.SSE;
-inv = EnumType.Interval.min5;
-ts_s = '2022-02-14 13:00';
+inv = EnumType.Interval.day;
+ts_s = datenum('2022-02-14 13:00') - 10;
 ts_e = '2022-02-14 14:00';
 [a, b] = ts.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
 
