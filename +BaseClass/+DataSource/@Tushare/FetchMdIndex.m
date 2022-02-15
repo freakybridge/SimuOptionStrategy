@@ -6,10 +6,10 @@ function [is_err, md] = FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e)
 exc = obj.exchanges(Utility.ToString(exc));
 switch inv
     case EnumType.Interval.min1
-        [is_err, md] = obj.FetchMinMd(symb, exc, 1, ts_s, ts_e,  'Fetching index [%s.%s] minitue market data');
+        [is_err, md] = obj.FetchMinMd(symb, exc, 1, ts_s, ts_e,  'Fetching index [%s%s] minitue market data');
         
     case EnumType.Interval.min5
-        [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching index [%s.%s] minitue market data');
+        [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching index [%s%s] minitue market data');
         
     case EnumType.Interval.day        
         [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'index_daily', {'trade_date', 'open', 'high', 'low', 'close', 'amount', 'vol'}, 'Fetching index [%s%s] daily market data');
