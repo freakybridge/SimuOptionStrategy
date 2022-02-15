@@ -23,14 +23,11 @@
 % toc;
 
 
+ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
 jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue');
 
 
-asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, 'Symbol', 'SECNAME', ...
-    EnumType.Interval.day, 100, EnumType.CallOrPut.Call, 1000, datestr(now()),  datestr(now()));
-ins = ds.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
-ts = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
 
 
 pdt = EnumType.Product.Index;
@@ -39,6 +36,7 @@ exc = EnumType.Exchange.SSE;
 inv = EnumType.Interval.day;
 ts_s = datenum('2022-02-14 13:00') - 10;
 ts_e = '2022-02-14 14:00';
+[a, b] = jq.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
 [a, b] = ts.FetchMarketData(pdt, symb, exc, inv, ts_s, ts_e);
 
 
