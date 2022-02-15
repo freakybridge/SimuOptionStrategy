@@ -8,7 +8,7 @@ res = obj.api.query(func, 'ts_code', sprintf('%s%s', symb, exc), 'start_date', d
 
 % Êä³ö
 if (isempty(res))
-    obj.err.msg = 'Index dailiy queto fetching error';
+    obj.err.msg = 'dailiy queto fetching error';
     obj.DispErr(sprintf(err_fmt, symb, exc));
     md = [];
     is_err = true;

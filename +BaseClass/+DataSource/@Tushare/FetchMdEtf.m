@@ -16,7 +16,9 @@ switch inv
         [is_err_b, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'fund_daily', {'trade_date', 'open', 'high', 'low', 'close', 'amount', 'vol'}, 'Fetching eft [%s%s] net value data');
         if (~isempty(nv) && ~isempty(md))
             is_err = is_err_a | is_err_b;
-            md = [nv, md(:, 2 : end)];
+            [~, loc1, loc2] = intersect(nv(:, 1), md(:, 1));
+            md = [md(loc2, 1), nv(loc1, 2 : 3), md(loc2, 2 : end)];
+            md = sortrows(md, 1);         
         end
         
     otherwise
