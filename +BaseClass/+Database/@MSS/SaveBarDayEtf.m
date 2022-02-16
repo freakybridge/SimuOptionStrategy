@@ -15,7 +15,8 @@ sql = sprintf("DELETE FROM [%s] WHERE [DATETIME] >= '%s';", tb, datestr(md(1, 1)
 exec(conn, sql);
 
 % 行情预处理
-md = [arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM:SS')}, md(:, 1)), num2cell(md(:, 2 : end))]';
+[str, dm, dt, tm] = Utility.ConvertTimeStamp(md(:, 1));
+md = [str, num2cell([dm, dt, tm, md(:, 2 : end)])]';
 steps = 1 : obj.lmt_insert : size(md, 2);
 
 % 生成sql
@@ -31,10 +32,10 @@ for i = 1 : length(steps)
     md_in = md(:, loc_s : loc_e);
 
     % 入库
-    tmp = '(''%s'', %f, %f, %f, %f, %f, %f, %f, %f),';
+    tmp = '(''%s'', %f, %i, %i, %f, %f, %f, %f, %f, %f, %f, %f),';
     tmp = repmat(tmp, 1, size(md_in, 2));
     tmp(end) = ';';
-    tmp = ['INSERT INTO [%s] ([DATETIME], [NAV], [NAV_ADJ], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME]) VALUES', tmp];
+    tmp = ['INSERT INTO [%s] ([TIMESTAMP], [DATENUM], [DATE], [TIME], [NAV], [NAV_ADJ], [OPEN], [HIGH], [LOW], [LAST], [TURNOVER], [VOLUME]) VALUES', tmp];
     sql = [sql, sprintf(tmp, tb, md_in{:})];
 end
 exec(conn, sql);
@@ -45,7 +46,10 @@ end
 % 建表 ETF 日线数据
 function ret = CreateTable(obj, conn, db, tb)
 sql = sprintf("CREATE TABLE [%s](" ...
-    + "[DATETIME] [datetime] NOT NULL PRIMARY KEY, " ...
+    + "[TIMESTAMP] [datetime] NOT NULL PRIMARY KEY, " ...
+    + "[DATENUM] [float] NULL, " ...
+    + "[DATE] [int] NULL, " ...
+    + "[TIME] [int] NULL, " ...
     + "[NAV] [numeric](18, 4) NULL, " ...
     + "[NAV_ADJ] [numeric](18, 4) NULL, " ...
     + "[OPEN] [numeric](18, 4) NULL, " ...

@@ -17,7 +17,7 @@ dir_rt = "D:\OneDrive\hisdata";
 dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
 
-dm.Update();
-% dm.DatabaseBackup('C:\Users\freakybridge\Desktop\Backup');
-% dm.DatabaseRestore(dir_rt);
+% dm.Update();
+% dm.DatabaseBackup('C:\Users\dell\Desktop\backup');
+dm.DatabaseRestore('C:\Users\dell\Desktop\test_input');
 toc;
