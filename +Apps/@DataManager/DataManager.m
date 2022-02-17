@@ -50,6 +50,7 @@ classdef DataManager < handle
                 if (is_err)
                     obj.SetDsFailure();
                     obj.ds.LogOut();
+                    obj.ds = [];
                     obj.ds = obj.AutoSwitchDataSource();
                     continue;
                 end

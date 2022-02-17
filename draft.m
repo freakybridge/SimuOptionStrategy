@@ -23,19 +23,31 @@
 % toc;
 
 
+pdt = EnumType.Product.Option;
+symb = '10003853';
+exc = EnumType.Exchange.SSE;
+inv = EnumType.Interval.min5;
+ts = '2022-02-07 09:30';
+te = '2022-02-07 15:00';
 % wd = BaseClass.DataSource.Wind();
-% ifd = BaseClass.DataSource.iFinD('meyqh055', '913742');
-% tsh = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
-% 
-% 
-% pdt = EnumType.Product.Option;
-% symb = '10003853';
-% exc = EnumType.Exchange.SSE;
-% inv = EnumType.Interval.min5;
-% ts = '2022-02-07 09:30';
-% te = '2022-02-07 15:00';
+% ifd_01 = BaseClass.DataSource.iFinD('merqh001', '146457');
+% ifd_51 = BaseClass.DataSource.iFinD('meyqh051', '266742');
+% ifd_55 = BaseClass.DataSource.iFinD('meyqh055', '913742');
+% % tsh = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
+ifd_51 = BaseClass.DataSource.iFinD('meyqh051', '266742');
+[~, md_i51] = ifd_51.FetchMarketData(pdt, symb, exc, inv, ts, te);
+ifd_51.LogOut();
+ifd_51 = [];
+
+ifd_55 = BaseClass.DataSource.iFinD('meyqh055', '913742');
+[~, md_i55] = ifd_55.FetchMarketData(pdt, symb, exc, inv, ts, te);
+ifd_55.LogOut();
+
+
 % 
 % [~, md_w] = wd.FetchMarketData(pdt, symb, exc, inv, ts, te);
-% [~, md_i] = ifd.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_i_01] = ifd_01.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_i51] = ifd_51.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_i55] = ifd_55.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % [~, md_t] = tsh.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % 
