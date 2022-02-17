@@ -9,10 +9,9 @@ conn = SelectConn(obj, db);
 
 % ‘ÿ»Î
 try
-    sql = sprintf("SELECT [TIMESTAMP], [OPEN], [HIGH], [LOW], [LAST], [AMOUNT], [VOLUME], [OI], [PRE_SETTLE], [SETTLE], [ST_STOCK] FROM [%s].[dbo].[%s] ORDER BY [TIMESTAMP]", db, tb);
+    sql = sprintf("SELECT [DATENUM], [OPEN], [HIGH], [LOW], [LAST], [VOLUME], [AMOUNT], [OI], [PRE_SETTLE], [SETTLE], [ST_STOCK] FROM [%s].[dbo].[%s] ORDER BY [DATENUM]", db, tb);
     setdbprefs('DataReturnFormat', 'numeric');
-    md = fetch(conn, sql);
-    md = [datenum(md.DATETIME), table2array(md(:, 2 : end))];
+    md = table2array(fetch(conn, sql));
 catch
     md = [];
 end

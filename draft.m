@@ -18,6 +18,6 @@ dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 
 
 % dm.Update();
-% dm.DatabaseBackup('C:\Users\dell\Desktop\backup');
-dm.DatabaseRestore(dir_rt);
+dm.DatabaseBackup('C:\Users\freakybridge\Desktop\test');
+% dm.DatabaseRestore();
 toc;

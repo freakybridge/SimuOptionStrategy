@@ -43,21 +43,21 @@ classdef DataRecorder
             fprintf('Saving [%s.%s]''s %s quetos to [%s], please wait ...\r', asset.symbol, Utility.ToString(asset.exchange), Utility.ToString(asset.interval), obj.name);
             switch asset.interval
                 case {EnumType.Interval.min1, EnumType.Interval.min5}
-                    ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i');
+                    ret = obj.SaveBar(asset, dir_, 'timestamp,open,high,low,last,volume,amount,oi', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i');
                     
                 case {EnumType.Interval.day}
                     switch asset.product
                         case EnumType.Product.ETF
-                            ret = obj.SaveBar(asset, dir_, 'datetime,nav, nav_adj, open,high,low,last,turnover,volume', '%s,%.5f,%.5f,%.4f,%.4f,%.4f,%.4f,%i,%i');
+                            ret = obj.SaveBar(asset, dir_, 'timestamp,nav,nav_adj,open,high,low,last,volume,amount', '%s,%.5f,%.5f,%.4f,%.4f,%.4f,%.4f,%i,%i');
                             
                         case EnumType.Product.Future
-                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi,presettle,settle,st_stock', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i');
+                            ret = obj.SaveBar(asset, dir_, 'timestamp,open,high,low,last,volume,amount,oi,presettle,settle,st_stock', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i');
                             
                         case EnumType.Product.Index
-                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i');
+                            ret = obj.SaveBar(asset, dir_, 'timestamp,open,high,low,last,volume,amount', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i');
                             
                         case EnumType.Product.Option
-                            ret = obj.SaveBar(asset, dir_, 'datetime,open,high,low,last,turnover,volume,oi,presettle,settle,remain_n, remain_t', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i,%i');
+                            ret = obj.SaveBar(asset, dir_, 'timestamp,open,high,low,last,volume,amount,oi,presettle,settle,remain_n,remain_t', '%s,%.4f,%.4f,%.4f,%.4f,%i,%i,%i,%.4f,%.4f,%i,%i');
                             
                         otherwise
                             error('Unexpected "product" for market data csv saving, please check');

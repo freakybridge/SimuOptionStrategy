@@ -1,13 +1,13 @@
 % DataManager / DatabaseBackup
 % v1.3.0.20220113.beta
-%      1.棣栨鍔犲叆
+%      1.首次加入
 function DatabaseBackup(obj, dir_sav)
-% 鑾峰彇闇?瑕佸浠界殑鏁版嵁搴?
+% fetch all database
 db_ins = 'INSTRUMENTS';
 db_calendar = 'CALENDAR';
 dbs = FetchAllDatabase(obj, db_ins, db_calendar);
 
-% 閫愪竴璇诲彇鏁版嵁
+% backup by database
 for i = 1 : length(dbs)
     fprintf(2, 'Backuping progress [%i/%i], please wait ...\r', i ,length(dbs));
     tbs = obj.db.FetchAllTables(dbs{i});
@@ -24,8 +24,7 @@ for i = 1 : length(dbs)
 end
 end
 
-
-% 鑾峰彇闇?瑕佸浠界殑鏁版嵁搴?
+% fetch call database
 function dbs = FetchAllDatabase(obj, db_ins, db_cal)
 dbs = obj.db.FetchAllDbs();
 for i = length(dbs) : -1 : 1
@@ -147,7 +146,6 @@ loc = strfind(db, '-');
 variety = db(loc(2) + 1 : loc(3) - 1);
 exchange = EnumType.Exchange.ToEnum(db(loc(3) + 1 : end));
 
-
 % gen sample
 switch upper(variety)
     case {'159919', '510050', '510300', 'IO'}
@@ -179,21 +177,21 @@ end
 %     'Tushare_calendar', 'Tushare_fund', 'Tushare_index', 'Tushare_interest', '1D-OPTION-510300-SSE', 'ReportServer$BRIDGE_DB', 'ReportServer$BRIDGE_DBTempDB', 'Future_ME_CZC', ...
 %     'Future_TC_CZC', 'Future_WT_CZC', 'Future_WS_CZC', 'Future_IM_SHF'};
 % tb_ig_lst = {'CodeList', '000188.SH', 'sysdiagrams'};
-% 
+%
 % % 读取所有数据库
 % dbs = obj.db.FetchAllDbs();
 % dbs = setdiff(dbs, db_ig_lst);
-% 
+%
 % % 逐一读取数据
 % for i = 1 : length(dbs)
 %     tbs = obj.db.FetchAllTables(dbs{i});
 %     tbs = setdiff(tbs, tb_ig_lst);
-%     
+%
 %     for j = 1 : length(tbs)
 %         % 读取数据
 %         curr_db = dbs{i};
 %         curr_tb = tbs{j};
-%         
+%
 %         % 生成资产 / 品种 / 交易所
 %         loc = strfind(curr_db, '_');
 %         if (isempty(loc))
@@ -221,7 +219,7 @@ end
 %             exc = EnumType.Exchange.ToEnum(curr_db(loc(2) + 1 : end));
 %         end
 %         inv = EnumType.Interval.day;
-%         
+%
 %         % 生成合约
 %         switch pdt
 %             case {EnumType.Product.ETF, EnumType.Product.Index}
@@ -236,13 +234,13 @@ end
 %                         asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, symbol, 'sec_name', inv, 10000, EnumType.CallOrPut.Call, 999, datestr(now()), datestr(now()), ...
 %                             'future symbol', 'future sec name', 10000, datestr(now()), datestr(now()), 0.12, 1, 0.5);
 %                 end
-%                         
+%
 %             case EnumType.Product.Future
 %                 symbol = curr_tb(1 : strfind(curr_tb, '.') - 1);
 %                 asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, symbol, 'sec_name', inv, 10000, datestr(now()), datestr(now()), 0.12, 1, 0.5);
 %         end
-%                 
-%         
+%
+%
 %         % 读取数据 / 整理数据
 %         md = obj.db.FetchRawData(curr_db, curr_tb);
 %         md(:, 1) = [];
@@ -251,16 +249,16 @@ end
 %                 loc = logical(sum(isnan(md), 2));
 %                 md(loc, :) = [];
 %                 md(:, 8 : 9) = md(:, [9, 8]);
-%                 
+%
 %             case EnumType.Product.Index
 %                 loc = logical(sum(isnan(md), 2));
 %                 md(loc, :) = [];
 %                 md(:, 6 : 7) = md(:, [7, 6]);
-%                 
+%
 %             case EnumType.Product.Option
 %                 md = md(:, [1 : 10, 20 : 21]);
 %                 md(:, 6 : 7) = md(:, [7, 6]);
-% 
+%
 %             case EnumType.Product.Future
 %                 md(:, [8, 13]) = [];
 %                 md(:, 6 : 7) = md(:, [7, 6]);
@@ -268,13 +266,13 @@ end
 %             otherwise
 %                 error('unexpected condition');
 %         end
-%         
+%
 %         % 保存
 %         fprintf('Saving [%s]@[%s], table [%i/%i], database [%i/%i], please wait ...\r', curr_tb, curr_db, j, length(tbs), i, length(dbs));
-%         asset.MergeMarketData(md);        
+%         asset.MergeMarketData(md);
 %         obj.dr.SaveMarketData(asset, dir_rt);
 %     end
-%     
+%
 % end
-% 
+%
 % end
