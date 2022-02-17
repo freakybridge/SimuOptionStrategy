@@ -44,6 +44,8 @@ ifd_55 = BaseClass.DataSource.iFinD('meyqh055', '913742');
 ifd_55.LogOut();
 
 
+
+
 % 
 % [~, md_w] = wd.FetchMarketData(pdt, symb, exc, inv, ts, te);
 [~, md_i_01] = ifd_01.FetchMarketData(pdt, symb, exc, inv, ts, te);
@@ -51,3 +53,10 @@ ifd_55.LogOut();
 [~, md_i55] = ifd_55.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % [~, md_t] = tsh.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % 
+pe = pyenv('Version', 'D:\Python\DeepLearn\Scripts\python.exe'); 
+import '.\resource\jqdata_matlab_sdk\main.py' .*
+
+if count(py.sys.path,'') == 0
+    insert(py.sys.path,int32(0),'');
+end
+
