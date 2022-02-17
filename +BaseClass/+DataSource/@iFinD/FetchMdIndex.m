@@ -13,12 +13,10 @@ switch inv
         
     case EnumType.Interval.day
         [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...
-            'ths_open_price_index;ths_high_price_index;ths_low_index;ths_close_price_index;ths_trans_amt_index;ths_vol_index', ...            
+            'ths_open_price_index;ths_high_price_index;ths_low_index;ths_close_price_index;ths_vol_index;ths_trans_amt_index', ...            
             ';;;;;', ...
             'Fetching index [%s.%s] daily market data');
-        
-        
-        
+                
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);
 end

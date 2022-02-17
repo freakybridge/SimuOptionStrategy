@@ -63,8 +63,6 @@ classdef DataManager < handle
         % 载入日历
         cal = LoadCalendar(obj);
 
-        % 更新数据
-
         % 备份数据库
         DatabaseBackup(obj, dir_sav);
 

@@ -12,14 +12,19 @@ switch inv
         [is_err, md] = obj.FetchMinMd(symb, exc_tmp, 5, ts_s, ts_e, 'Fetching future [%s.%s] minitue market data');
         
     case EnumType.Interval.day
-        [is_err, md] = obj.FetchDailyMd(symb, exc_tmp, ts_s, ts_e, 'fut_daily', {'trade_date', 'open', 'high', 'low', 'close', 'amount', 'vol', 'oi', 'pre_settle', 'settle'}, 'Fetching future [%s%s] daily market data');
+        [is_err, md] = obj.FetchDailyMd(symb, exc_tmp, ts_s, ts_e, 'fut_daily', {'trade_date', 'open', 'high', 'low', 'close', 'vol', 'amount', 'oi', 'pre_settle', 'settle'}, 'Fetching future [%s%s] daily market data');
         if (~isempty(md) && exc_i ~= EnumType.Exchange.CFFEX)            
             symb = regexp(symb, '\D*', 'match');
             symb = symb{:};
             for i = 1 : size(md, 1)
                 res = obj.api.query('fut_wsr', 'trade_date', datestr(md(i, 1), 'yyyymmdd'), 'symbol', symb);
                 md(i, 11) = res.vol;
-            end            
+            end     
+        end        
+        
+        % ÐÞÕý³É½»¶î
+        if (~is_err)
+            md(:, 7) = md(:, 7) * 10000;
         end
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);

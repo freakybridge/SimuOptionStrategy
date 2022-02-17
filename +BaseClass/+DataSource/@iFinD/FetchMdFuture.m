@@ -13,9 +13,14 @@ switch inv
         
     case EnumType.Interval.day        
         [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...
-            'ths_open_price_future;ths_high_price_future;ths_low_future;ths_close_price_future;ths_amt_future;ths_vol_future;ths_open_interest_future;ths_pre_settle_future;ths_settle_future;ths_reg_warehouse_receipts_num_future', ...
+            'ths_open_price_future;ths_high_price_future;ths_low_future;ths_close_price_future;ths_vol_future;ths_amt_future;ths_open_interest_future;ths_pre_settle_future;ths_settle_future;ths_reg_warehouse_receipts_num_future', ...
             ';;;;;;;;;', ...
             'Fetching future [%s.%s] daily market data');
+        
+        % ÐÞÕý³É½»¶î
+        if (~is_err)
+            md(:, 7) = md(:, 7) * 10000;
+        end
         
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);

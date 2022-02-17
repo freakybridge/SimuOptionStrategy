@@ -14,7 +14,7 @@ switch inv
         
     case EnumType.Interval.day
         % 下载行情
-        [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'opt_daily', {'trade_date', 'open', 'high', 'low', 'close', 'amount', 'vol', 'oi', 'pre_settle', 'settle'}, 'Fetching option [%s%s] daily market data');
+        [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'opt_daily', {'trade_date', 'open', 'high', 'low', 'close', 'vol', 'amount', 'oi', 'pre_settle', 'settle'}, 'Fetching option [%s%s] daily market data');
         
         % 补全到期日信息
         if (~isempty(md))
@@ -30,7 +30,10 @@ switch inv
                 rem_n = e - s + 1;
                 rem_t = sum(calendar(s : e, 2));
                 md(i, 11 : 12) = [rem_n, rem_t];
-            end            
+            end 
+            
+        % 修正成交额
+            md(:, 7) = md(:, 7) * 10000;
         end
         
     otherwise

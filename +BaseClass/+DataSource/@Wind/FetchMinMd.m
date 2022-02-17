@@ -12,7 +12,7 @@ end
 
 % ÏÂÔØ
 exc = obj.exchanges(Utility.ToString(exc));
-[md, ~, ~, dt, obj.err.code, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,amt,volume,oi', ...
+[md, ~, ~, dt, obj.err.code, ~] = obj.api.wsi([symb, '.', exc], 'open,high,low,close,volume,amt,oi', ...
     datestr(ts_s, 'yyyy-mm-dd HH:MM:SS'), datestr(ts_e, 'yyyy-mm-dd HH:MM:SS'), sprintf('BarSize=%i',  inv));
 
 % Êä³ö¼ì²é
