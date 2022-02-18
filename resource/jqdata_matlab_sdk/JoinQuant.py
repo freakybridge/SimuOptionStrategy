@@ -9,7 +9,7 @@ class JoinQuant:
         self.__password = pwd
 
     def __del__(self):
-        self.LogOut()
+        self.logout()
 
     def logout(self):
         logout()

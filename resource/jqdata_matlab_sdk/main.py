@@ -12,7 +12,7 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     jq = JoinQuant('18162753893', '1101BXue')
-    [a, b, c] = jq.FetchCalendar()
+    [a, b, c] = jq.fetch_calendar()
     print_hi(b)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

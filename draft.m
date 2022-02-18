@@ -53,10 +53,22 @@ ifd_55.LogOut();
 [~, md_i55] = ifd_55.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % [~, md_t] = tsh.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % 
-pe = pyenv('Version', 'D:\Python\DeepLearn\Scripts\python.exe'); 
-import '.\resource\jqdata_matlab_sdk\main.py' .*
+pe = pyenv('Version', 'D:\Python\Env\MachineLearn\Scripts\python.exe'); 
+addpath('E:\Quant\SimuOptionStrategy\resource\jqdata_matlab_sdk');
+insert(py.sys.path, 'E:\Quant\SimuOptionStrategy\resource\jqdata_matlab_sdk', '')
+
 
 if count(py.sys.path,'') == 0
     insert(py.sys.path,int32(0),'');
 end
+
+
+import py.test.*;
+dir_home = cd;
+cd('E:\Quant\SimuOptionStrategy\resource\jqdata_matlab_sdk');
+import py.main.*;
+cd(dir_home);
+res = py.test.sum(5, 7);
+res = py.main.print_hi('hello python');
+
 
