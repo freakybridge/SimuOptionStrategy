@@ -2,6 +2,7 @@
 from jqdatasdk import *
 from datetime import datetime
 import numpy as np
+import pandas as pd
 
 
 # 获取日历
@@ -101,7 +102,7 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
             skip_paused=True,
             fq='pre',
             count=None,
-            panel=True,
+            panel=False,
             fill_paused=True)
         logout()
 
@@ -118,12 +119,12 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
     except Exception as err:
         return True, err.args[0], None
 
+
 # 获取每日ETF行情
 def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
     try:
-        # 行情
         auth(usr, pwd)
-        res = get_price(
+        md = get_price(
             symb,
             start_date=dt_s,
             end_date=dt_e,
@@ -132,35 +133,125 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
             skip_paused=True,
             fq='pre',
             count=None,
-            panel=True,
+            panel=False,
             fill_paused=True)
-        dt = tuple(TransDatetime2Str(res.index, '%Y-%m-%d'))
-        open = tuple(res.open)
-        high = tuple(res.high)
-        low = tuple(res.low)
-        close = tuple(res.close)
-        vol = tuple(res.volume)
-        amt = tuple(res.money)
-
-        res = get_extras('unit_net_value', symb, start_date=dt_s, end_date=dt_e, df=True, count=None)
-        res = get_extras('unit_net_value', symb, start_date=dt_s, end_date=dt_e, df=True, count=None)
+        nv = get_extras(
+            'unit_net_value',
+            symb,
+            start_date=dt_s,
+            end_date=dt_e,
+            df=True,
+            count=None)
+        nv_adj = get_extras(
+            'acc_net_value',
+            symb,
+            start_date=dt_s,
+            end_date=dt_e,
+            df=True,
+            count=None)
         logout()
 
-        return False, "False", [dt, open, high, low, close, vol, amt]
+        nv.columns = ['nv']
+        nv_adj.columns = ['nv_adj']
+        md = md.join(nv)
+        md = md.join(nv_adj)
+
+        dt = tuple(TransDatetime2Str(md.index, '%Y-%m-%d'))
+        nv = tuple(md.nv)
+        nv_adj = tuple(md.nv_adj)
+        open = tuple(md.open)
+        high = tuple(md.high)
+        low = tuple(md.low)
+        close = tuple(md.close)
+        vol = tuple(md.volume)
+        amt = tuple(md.money)
+
+        return False, "False", [
+            dt, nv, nv_adj, open, high, low, close, vol, amt]
 
     except Exception as err:
         return True, err.args[0], None
 
+
+# 获取每日期货行情
+def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
+    try:
+        auth(usr, pwd)
+        md = get_price(
+            symb,
+            start_date=dt_s,
+            end_date=dt_e,
+            frequency='daily',
+            fields=[
+                'open',
+                'high',
+                'low',
+                'close',
+                'volume',
+                'money',
+                'open_interest',
+                'pre_close'],
+            skip_paused=True,
+            fq='pre',
+            count=None,
+            panel=False,
+            fill_paused=True)
+        md['st_stock'] = 0
+        for i in range(md.iloc[:, 0].size):
+            q = query(
+                finance.FUT_WAREHOUSE_RECEIPT.warehouse_receipt_number).filter(
+                finance.FUT_WAREHOUSE_RECEIPT.underlying_code == var,
+                finance.FUT_WAREHOUSE_RECEIPT.day == datetime.strftime(
+                    md.index[i],
+                    '%Y-%m-%d')).order_by(
+                finance.FUT_WAREHOUSE_RECEIPT.warehouse_receipt_number.desc())
+            md.iloc[i, 8] = finance.run_query(
+                q).sum()['warehouse_receipt_number']
+        settle = get_extras(
+            'futures_sett_price',
+            symb,
+            start_date=dt_s,
+            end_date=dt_e,
+            df=True,
+            count=None)
+        logout()
+
+        settle.columns = ['settle']
+        md = md.join(settle)
+        dt = tuple(TransDatetime2Str(md.index, '%Y-%m-%d'))
+        open = tuple(md.open)
+        high = tuple(md.high)
+        low = tuple(md.low)
+        close = tuple(md.close)
+        vol = tuple(md.volume)
+        amt = tuple(md.money)
+        oi = tuple(md.open_interest)
+        pre_settle = tuple(md.pre_close)
+        settle = tuple(settle.settle)
+        st_stock = tuple(md.st_stock)
+
+        return False, "False", [dt, open, high, low, close,
+                                vol, amt, oi, pre_settle, settle, st_stock]
+
+    except Exception as err:
+        return True, err.args[0], None
+
+# 获取每日期权行情
+
 # 日期转换
+
+
 def TransDatetime2Str(in_, fmt):
     return [datetime.strftime(in_[i], fmt) for i in range(np.size(in_))]
 
 
 if __name__ == '__main__':
-    a1, b1, c1 = fetch_day_index_bar(
-        '18162753893', '1101BXue', '000300.XSHG', '2022-01-02', '2022-01-15')
-    a2, b2, c3 = fetch_day_etf_bar(
-        '18162753893', '1101BXue', '510050.XSHG', '2022-01-02', '2022-01-15')
+    # a1, b1, c1 = fetch_day_index_bar(
+    #    '18162753893', '1101BXue', '000300.XSHG', '2022-01-02', '2022-01-15')
+    # a2, b2, c2 = fetch_day_etf_bar(
+    #    '18162753893', '1101BXue', '510050.XSHG', '2022-01-02', '2022-01-15')
+    a3, b3, c3 = fetch_day_future_bar(
+        '18162753893', '1101BXue', 'AU2206.XSGE', 'au', '2022-01-02', '2022-01-10')
     pass
     # fetch_min_bar('18162753893', '1101BXue', '510050.XSHG', ['date', 'open', 'high', 'low', 'close', 'volume', 'money'], '5m', '2022-02-17 15:30:00', 50)
     # fetch_min_bar('18162753893',
