@@ -25,9 +25,9 @@ else
         % 修正新信息
         ins(strcmpi(ins(:, 3), '认购'), 3) = deal({'Call'});
         ins(strcmpi(ins(:, 3), '认沽'), 3) = deal({'Put'});
-        ins(:, 6) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(ins(:, 6), opt_s.tradetimetable(1)));
-        ins(:, 7) = arrayfun(@(x) {datestr(x, 'yyyy-mm-dd HH:MM')}, Utility.DatetimeOffset(ins(:, 7), opt_s.tradetimetable(end)));
-        ins(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), ins(:, 7)));
+        ins(:, 6) = cellstr(datestr(Utility.DatetimeOffset(datenum(ins(:, 6)), opt_s.tradetimetable(1)), 'yyyy-mm-dd HH:MM'));
+        ins(:, 7) = cellstr(datestr(Utility.DatetimeOffset(datenum(ins(:, 7)), opt_s.tradetimetable(end)), 'yyyy-mm-dd HH:MM'));
+        ins(:, 8) = num2cell(str2double(cellstr(datestr(ins(:, 7), 'yyyymm'))));
         
         % 补全信息
         exc = upper(Utility.ToString(opt_s.exchange));

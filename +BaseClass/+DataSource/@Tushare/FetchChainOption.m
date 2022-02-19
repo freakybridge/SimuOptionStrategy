@@ -4,7 +4,7 @@
 function [is_err, ins] = FetchChainOption(obj, opt_s, ins_local)
 
 % 获取下载起点终点
-[date_s, date_e] = obj.GetChainUpdateSE(opt_s, ins_local);
+% [date_s, date_e] = obj.GetChainUpdateSE(opt_s, ins_local);
 
 % 下载全部合约
 res = obj.api.query('opt_basic', 'exchange', Utility.ToString(opt_s.exchange));
@@ -27,9 +27,9 @@ ins(strcmpi(ins(:, 3), 'C'), 3) = deal({'Call'});
 ins(strcmpi(ins(:, 3), 'P'), 3) = deal({'Put'});
 ins(:, 4) = num2cell(res.exercise_price);
 ins(:, 5) = num2cell(res.per_unit);
-ins(:, 6) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(1)), 'yyyy-mm-dd HH:MM')}, res.list_date);
-ins(:, 7) = cellfun(@(x) {datestr(Utility.DatetimeOffset(datenum(num2str(x), 'yyyymmdd'), opt_s.tradetimetable(end)), 'yyyy-mm-dd HH:MM')}, res.delist_date);
-ins(:, 8) = num2cell(cellfun(@(x) str2double(datestr(x, 'yyyymm')), ins(:, 7)));
+ins(:, 6) = cellstr(datestr(Utility.DatetimeOffset(datenum(res.list_date, 'yyyymmdd'), opt_s.tradetimetable(1)), 'yyyy-mm-dd HH:MM'));
+ins(:, 7) = cellstr(datestr(Utility.DatetimeOffset(datenum(res.delist_date, 'yyyymmdd'), opt_s.tradetimetable(end)), 'yyyy-mm-dd HH:MM'));
+ins(:, 8) = num2cell(str2double(cellstr(datestr(ins(:, 7), 'yyyymm'))));
 
 % 补全信息
 exc = upper(Utility.ToString(opt_s.exchange));

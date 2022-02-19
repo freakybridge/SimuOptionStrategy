@@ -48,6 +48,9 @@ jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue', 'D:\Python\Env\Ma
 [is_err, cale] = jq.FetchCalendar();
 [is_err, ins] = jq.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
+ifd_51 = BaseClass.DataSource.iFinD('meyqh051', '266742');
+[is_err, ins] = ifd_51.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
+
 % 
 % [~, md_w] = wd.FetchMarketData(pdt, symb, exc, inv, ts, te);
 [~, md_i_01] = ifd_01.FetchMarketData(pdt, symb, exc, inv, ts, te);
