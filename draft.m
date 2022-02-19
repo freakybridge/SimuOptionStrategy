@@ -44,6 +44,8 @@ ifd_55 = BaseClass.DataSource.iFinD('meyqh055', '913742');
 ifd_55.LogOut();
 
 
+jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue', 'D:\Python\Env\MachineLearn\Scripts\python.exe');
+[is_err, cale] = jq.FetchCalendar();
 
 
 % 

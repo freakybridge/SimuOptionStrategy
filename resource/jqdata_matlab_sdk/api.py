@@ -5,12 +5,12 @@ import numpy as np
 
 
 # 获取日历
-def fetch_calendar(usr, pwd):
+def fetch_all_trade_day(usr, pwd):
     try:
         auth(usr, pwd)
         res = get_all_trade_days()
         logout()
-        return False, "", trans_datetime_2_string(res, '%Y-%m-%d')
+        return False, "", [__trans_datetime_2_string(res, '%Y-%m-%d')]
 
     except Exception as err:
         return True, err.args[0], None
@@ -38,10 +38,10 @@ def fetch_option_chain(usr, pwd, ud_symb):
         strike = tuple(res.exercise_price)
         unit = tuple(res.contract_unit)
         start_trade_date = tuple(
-            trans_datetime_2_string(
+            __trans_datetime_2_string(
                 res.list_date, '%Y-%m-%d'))
         end_trade_date = tuple(
-            trans_datetime_2_string(
+            __trans_datetime_2_string(
                 res.last_trade_date,
                 '%Y-%m-%d'))
         ins = [
@@ -72,7 +72,7 @@ def fetch_min_bar(usr, pwd, symb, fds, freq, enddt, cnt):
             df=True)
         logout()
 
-        dt = tuple(trans_datetime_2_string(res.date, '%Y-%m-%d %H:%M'))
+        dt = tuple(__trans_datetime_2_string(res.date, '%Y-%m-%d %H:%M'))
         open = tuple(res.open)
         high = tuple(res.high)
         low = tuple(res.low)
@@ -107,7 +107,7 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
             fill_paused=True)
         logout()
 
-        dt = tuple(trans_datetime_2_string(res.index, '%Y-%m-%d'))
+        dt = tuple(__trans_datetime_2_string(res.index, '%Y-%m-%d'))
         open = tuple(res.open)
         high = tuple(res.high)
         low = tuple(res.low)
@@ -157,7 +157,7 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
         md = md.join(nv)
         md = md.join(nv_adj)
 
-        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
+        dt = tuple(__trans_datetime_2_string(md.index, '%Y-%m-%d'))
         nv = tuple(md.nv)
         nv_adj = tuple(md.nv_adj)
         open = tuple(md.open)
@@ -219,7 +219,7 @@ def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
 
         settle.columns = ['settle']
         md = md.join(settle)
-        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
+        dt = tuple(__trans_datetime_2_string(md.index, '%Y-%m-%d'))
         open = tuple(md.open)
         high = tuple(md.high)
         low = tuple(md.low)
@@ -276,7 +276,7 @@ def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
             md.iloc[i, 8] = price.settle_price[0]
         logout()
 
-        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
+        dt = tuple(__trans_datetime_2_string(md.index, '%Y-%m-%d'))
         open = tuple(md.open)
         high = tuple(md.high)
         low = tuple(md.low)
@@ -295,35 +295,6 @@ def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
 
 
 # 日期转换
-def trans_datetime_2_string(in_, fmt):
+def __trans_datetime_2_string(in_, fmt):
     return [datetime.strftime(in_[i], fmt) for i in range(np.size(in_))]
 
-
-if __name__ == '__main__':
-    # a1, b1, c1 = fetch_day_index_bar(
-    #    '18162753893', '1101BXue', '000300.XSHG', '2022-01-02', '2022-01-15')
-    # a2, b2, c2 = fetch_day_etf_bar(
-    #    '18162753893', '1101BXue', '510050.XSHG', '2022-01-02', '2022-01-15')
-    # a3, b3, c3 = fetch_day_future_bar(
-    #    '18162753893', '1101BXue', 'AU2206.XSGE', 'au', '2022-01-02', '2022-01-10')
-
-    a4, b4, c4 = fetch_day_option_bar(
-        '18162753893', '1101BXue', '10003852.XSHG', '2022-01-02', '2022-01-10')
-
-    pass
-    # fetch_min_bar('18162753893', '1101BXue', '510050.XSHG', ['date', 'open', 'high', 'low', 'close', 'volume', 'money'], '5m', '2022-02-17 15:30:00', 50)
-    # fetch_min_bar('18162753893',
-    #               '1101BXue',
-    #               '10003852.XSHG',
-    #               ['date',
-    #                'open',
-    #                'high',
-    #                'low',
-    #                'close',
-    #                'volume',
-    #                'money',
-    #                'open_interest'],
-    #               '5m',
-    #               '2022-02-17 15:30:00',
-    #               50)
-    # fetch_calendar('18162753893', '1101BXue')
