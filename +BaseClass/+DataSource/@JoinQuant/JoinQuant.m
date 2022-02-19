@@ -26,7 +26,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
             obj = obj@BaseClass.DataSource.DataSource();
             obj.user = ur;
             obj.password = pwd;
-            obj.py_directory = py_dir_;      
+            obj.py_directory = py_dir_;
 
             % 交易所转换
             import EnumType.Exchange;
@@ -42,12 +42,12 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
             try
                 pyenv('Version', obj.py_directory);
             catch
-            end               
+            end
             fprintf('DataSource [%s] Ready.\r', obj.name);
             obj.ImportFunc();
 
         end
-    
+
         % 登出
         function LogOut(~)
         end
@@ -73,13 +73,13 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
         % 获取分钟 / 日级数据
         [is_err, md] = FetchMinMd(obj, symb, exc, inv, ts_s, ts_e, err_fmt);
         [is_err, md] = FetchDailyMd(obj, symb, exc, ts_s, ts_e, fields, err_fmt);
-        
+
         % 获取行情数据
         [is_err, md] = FetchMdEtf(obj, symb, exc, inv, ts_s, ts_e);
         [is_err, md] = FetchMdFuture(obj, symb, exc, inv, ts_s, ts_e);
         [is_err, md] = FetchMdIndex(obj, symb, exc, inv, ts_s, ts_e);
         [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e);
-        
+
         % 获取期权/期货合约列表
         [is_err, ins] = FetchChainOption(obj, opt_s, ins_local);
         [is_err, ins] = FetchChainFuture(obj, fut_s, ins_local);
@@ -94,7 +94,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
         end
 
         % analysis api result
-        function [is_err, err_code, err_msg, data] = AnalysisApiResult(~, res)   
+        function [is_err, err_code, err_msg, data] = AnalysisApiResult(~, res)
             is_err = res.cell{1};
             if (~is_err)
                 err_code = 0;
@@ -106,7 +106,9 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
                         case 'py.str'
                             val = cellfun(@char, cell(buffer{i}), 'UniformOutput', false);
                         case 'double'
-                            val = cell(buffer{2});
+                            val = cell(buffer{i});
+                        case 'py.int'
+                            val = num2cell(cellfun(@(x) x.double, cell(buffer{i})));
                         otherwise
                             error('Unexpected type, pelase check.')
                     end

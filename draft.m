@@ -46,7 +46,7 @@ ifd_55.LogOut();
 
 jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue', 'D:\Python\Env\MachineLearn\Scripts\python.exe');
 [is_err, cale] = jq.FetchCalendar();
-
+[is_err, ins] = jq.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
 
 % 
 % [~, md_w] = wd.FetchMarketData(pdt, symb, exc, inv, ts, te);
