@@ -147,14 +147,7 @@ variety = db(loc(2) + 1 : loc(3) - 1);
 exchange = EnumType.Exchange.ToEnum(db(loc(3) + 1 : end));
 
 % gen sample
-switch upper(variety)
-    case {'159919', '510050', '510300', 'IO'}
-        asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, variety, exchange, 'Symbol', 'SECNAME', inv, 100, EnumType.CallOrPut.Call, 1000, datestr(now()),  datestr(now()));
-
-    otherwise
-        asset = BaseClass.Asset.Asset.Selector(EnumType.Product.Option, variety, exchange, 'Symbol', 'SECNAME', inv, 100, EnumType.CallOrPut.Call, 1000, datestr(now()),  datestr(now()), ...
-            'Future Symbol', 'Future SECNAME', 100, datestr(now()),  datestr(now()), 0.12, 1, 0.05);
-end
+asset = BaseClass.Asset.Option.Option.Sample(variety, exchange, inv, []);
 
 % sav
 for i = 1 : length(tbs)
