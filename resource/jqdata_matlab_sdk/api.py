@@ -2,7 +2,6 @@
 from jqdatasdk import *
 from datetime import datetime
 import numpy as np
-import pandas as pd
 
 
 # 获取日历
@@ -11,7 +10,7 @@ def fetch_calendar(usr, pwd):
         auth(usr, pwd)
         res = get_all_trade_days()
         logout()
-        return False, "", TransDatetime2Str(res, '%Y-%m-%d')
+        return False, "", trans_datetime_2_string(res, '%Y-%m-%d')
 
     except Exception as err:
         return True, err.args[0], None
@@ -38,9 +37,11 @@ def fetch_option_chain(usr, pwd, ud_symb):
         call_or_put = tuple(res.contract_type)
         strike = tuple(res.exercise_price)
         unit = tuple(res.contract_unit)
-        start_trade_date = tuple(TransDatetime2Str(res.list_date, '%Y-%m-%d'))
+        start_trade_date = tuple(
+            trans_datetime_2_string(
+                res.list_date, '%Y-%m-%d'))
         end_trade_date = tuple(
-            TransDatetime2Str(
+            trans_datetime_2_string(
                 res.last_trade_date,
                 '%Y-%m-%d'))
         ins = [
@@ -71,19 +72,19 @@ def fetch_min_bar(usr, pwd, symb, fds, freq, enddt, cnt):
             df=True)
         logout()
 
-        dt = tuple(TransDatetime2Str(res.date, '%Y-%m-%d %H:%M'))
+        dt = tuple(trans_datetime_2_string(res.date, '%Y-%m-%d %H:%M'))
         open = tuple(res.open)
         high = tuple(res.high)
         low = tuple(res.low)
         close = tuple(res.close)
         vol = tuple(res.volume)
         amt = tuple(res.money)
-        if (fds.count('open_interest')):
+        if fds.count('open_interest'):
             oi = tuple(res.open_interest)
         else:
             oi = tuple(np.zeros(np.size(dt)))
 
-        return False, "False", [dt, open, high, low, close, vol, amt, oi]
+        return False, '', [dt, open, high, low, close, vol, amt, oi]
 
     except Exception as err:
         return True, err.args[0], None
@@ -106,7 +107,7 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
             fill_paused=True)
         logout()
 
-        dt = tuple(TransDatetime2Str(res.index, '%Y-%m-%d'))
+        dt = tuple(trans_datetime_2_string(res.index, '%Y-%m-%d'))
         open = tuple(res.open)
         high = tuple(res.high)
         low = tuple(res.low)
@@ -114,7 +115,7 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
         vol = tuple(res.volume)
         amt = tuple(res.money)
 
-        return False, "False", [dt, open, high, low, close, vol, amt]
+        return False, '', [dt, open, high, low, close, vol, amt]
 
     except Exception as err:
         return True, err.args[0], None
@@ -156,7 +157,7 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
         md = md.join(nv)
         md = md.join(nv_adj)
 
-        dt = tuple(TransDatetime2Str(md.index, '%Y-%m-%d'))
+        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
         nv = tuple(md.nv)
         nv_adj = tuple(md.nv_adj)
         open = tuple(md.open)
@@ -166,7 +167,7 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
         vol = tuple(md.volume)
         amt = tuple(md.money)
 
-        return False, "False", [
+        return False, '', [
             dt, nv, nv_adj, open, high, low, close, vol, amt]
 
     except Exception as err:
@@ -218,7 +219,7 @@ def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
 
         settle.columns = ['settle']
         md = md.join(settle)
-        dt = tuple(TransDatetime2Str(md.index, '%Y-%m-%d'))
+        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
         open = tuple(md.open)
         high = tuple(md.high)
         low = tuple(md.low)
@@ -230,18 +231,71 @@ def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
         settle = tuple(settle.settle)
         st_stock = tuple(md.st_stock)
 
-        return False, "False", [dt, open, high, low, close,
-                                vol, amt, oi, pre_settle, settle, st_stock]
+        return False, '', [dt, open, high, low, close,
+                           vol, amt, oi, pre_settle, settle, st_stock]
 
     except Exception as err:
         return True, err.args[0], None
 
+
 # 获取每日期权行情
+def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
+    try:
+        auth(usr, pwd)
+        md = get_price(
+            symb,
+            start_date=dt_s,
+            end_date=dt_e,
+            frequency='daily',
+            fields=[
+                'open',
+                'high',
+                'low',
+                'close',
+                'volume',
+                'money',
+                'open_interest'],
+            skip_paused=True,
+            fq='pre',
+            count=None,
+            panel=False,
+            fill_paused=True)
+        md['pre_settle'] = 0
+        md['settle'] = 0
+        for i in range(md.iloc[:, 0].size):
+            price = opt.run_query(
+                query(
+                    opt.OPT_DAILY_PRICE.pre_settle,
+                    opt.OPT_DAILY_PRICE.settle_price).filter(
+                    opt.OPT_DAILY_PRICE.code == symb,
+                    opt.OPT_DAILY_PRICE.date == datetime.strftime(
+                        md.index[i],
+                        '%Y-%m-%d')).order_by(
+                    opt.OPT_DAILY_PRICE.date.desc()).limit(10))
+            md.iloc[i, 7] = price.pre_settle[0]
+            md.iloc[i, 8] = price.settle_price[0]
+        logout()
+
+        dt = tuple(trans_datetime_2_string(md.index, '%Y-%m-%d'))
+        open = tuple(md.open)
+        high = tuple(md.high)
+        low = tuple(md.low)
+        close = tuple(md.close)
+        vol = tuple(md.volume)
+        amt = tuple(md.money)
+        oi = tuple(md.open_interest)
+        pre_settle = tuple(md.pre_settle)
+        settle = tuple(md.settle)
+
+        return False, '', [dt, open, high, low, close,
+                           vol, amt, oi, pre_settle, settle]
+
+    except Exception as err:
+        return True, err.args[0], None
+
 
 # 日期转换
-
-
-def TransDatetime2Str(in_, fmt):
+def trans_datetime_2_string(in_, fmt):
     return [datetime.strftime(in_[i], fmt) for i in range(np.size(in_))]
 
 
@@ -250,8 +304,12 @@ if __name__ == '__main__':
     #    '18162753893', '1101BXue', '000300.XSHG', '2022-01-02', '2022-01-15')
     # a2, b2, c2 = fetch_day_etf_bar(
     #    '18162753893', '1101BXue', '510050.XSHG', '2022-01-02', '2022-01-15')
-    a3, b3, c3 = fetch_day_future_bar(
-        '18162753893', '1101BXue', 'AU2206.XSGE', 'au', '2022-01-02', '2022-01-10')
+    # a3, b3, c3 = fetch_day_future_bar(
+    #    '18162753893', '1101BXue', 'AU2206.XSGE', 'au', '2022-01-02', '2022-01-10')
+
+    a4, b4, c4 = fetch_day_option_bar(
+        '18162753893', '1101BXue', '10003852.XSHG', '2022-01-02', '2022-01-10')
+
     pass
     # fetch_min_bar('18162753893', '1101BXue', '510050.XSHG', ['date', 'open', 'high', 'low', 'close', 'volume', 'money'], '5m', '2022-02-17 15:30:00', 50)
     # fetch_min_bar('18162753893',
