@@ -131,7 +131,7 @@ for i = 1 : length(upd_lst)
     % 载入行情摘要
     this = upd_lst(i);
     info = ins(1, :);
-    sample = BaseClass.Asset.Option.Option.Sample(this.product, this.variety, this.exchange, inv, info);
+    sample = BaseClass.Asset.Option.Option.Sample(this.variety, this.exchange, inv, info);
     views = obj.db.LoadOverviews(sample);
 
     % 更新
@@ -562,7 +562,7 @@ for i = 1 : length(upd_lst)
     % 载入行情摘要
     this = upd_lst(i);
     info = ins(1, :);
-    sample = BaseClass.Asset.Option.Option.Sample(this.product, this.variety, this.exchange, inv, info);
+    sample = BaseClass.Asset.Option.Option.Sample(this.variety, this.exchange, inv, info);
     views = obj.db.LoadOverviews(sample);
 
     % 更新
