@@ -298,3 +298,7 @@ def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
 def __trans_datetime_2_string(in_, fmt):
     return [datetime.strftime(in_[i], fmt) for i in range(np.size(in_))]
 
+
+# debug
+if __name__ == '__main__':
+    fetch_day_etf_bar('1816275', pwd, symb, dt_s, dt_e)

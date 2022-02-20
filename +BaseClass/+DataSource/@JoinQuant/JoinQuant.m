@@ -56,7 +56,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
     methods (Static, Hidden)
         % 获取api流量时限
         function ret = FetchApiDateLimit()
-            ret = 3 * 365;
+            ret = inf * 365;
         end
     end
 
@@ -116,7 +116,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
                 end
             else
                 err_code = -1;
-                err_msg = res.cell{2};
+                err_msg = char(res.cell{2});
                 data = [];
             end
         end

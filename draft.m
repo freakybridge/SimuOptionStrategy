@@ -43,13 +43,23 @@ ifd_55 = BaseClass.DataSource.iFinD('meyqh055', '913742');
 [~, md_i55] = ifd_55.FetchMarketData(pdt, symb, exc, inv, ts, te);
 ifd_55.LogOut();
 
+ds_j = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue', 'D:\Python\Env\MachineLearn\Scripts\python.exe');
+ds_w = BaseClass.DataSource.Wind();
+ds_i = BaseClass.DataSource.iFinD('merqh001', '146457');
+ds_t = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f718475266f7ad0b');
 
-jq = BaseClass.DataSource.JoinQuant('18162753893', '1101BXue', 'D:\Python\Env\MachineLearn\Scripts\python.exe');
-[is_err, cale] = jq.FetchCalendar();
-[is_err, ins] = jq.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
+pdt = EnumType.Product.Index;
+symb = '000300';
+exc = EnumType.Exchange.SSE;
+inv = EnumType.Interval.day;
+ts = '2022-02-07 09:30';
+te = '2022-02-18 15:00';
+[~, md_j] = ds_j.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_w] = ds_w.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_i] = ds_i.FetchMarketData(pdt, symb, exc, inv, ts, te);
+[~, md_t] = ds_t.FetchMarketData(pdt, symb, exc, inv, ts, te);
 
-ifd_51 = BaseClass.DataSource.iFinD('meyqh051', '266742');
-[is_err, ins] = ifd_51.FetchChain(EnumType.Product.Option, '510050', EnumType.Exchange.SSE, []);
+
 
 % 
 % [~, md_w] = wd.FetchMarketData(pdt, symb, exc, inv, ts, te);
@@ -59,17 +69,7 @@ ifd_51 = BaseClass.DataSource.iFinD('meyqh051', '266742');
 % [~, md_t] = tsh.FetchMarketData(pdt, symb, exc, inv, ts, te);
 % 
 
-cd('E:\Quant\SimuOptionStrategy')
-pe = pyenv('Version', 'D:\Python\Env\MachineLearn\Scripts\python.exe'); 
-dir_home = cd;
-cd('E:\Quant\SimuOptionStrategy\resource\jqdata_matlab_sdk');
-import py.api.*;
-cd(dir_home);
-ret = py.api.fetch_calendar("18162753893", "1101BXue");
-ins = py.api.fetch_option_chain("18162753893", "1101BXue", '510050.XSHG');
-dt = ins.cell{3};
-dt = char(dt{2});
-py.datetime.date(dt)
+
 
 
 
