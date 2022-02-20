@@ -10,9 +10,17 @@ switch inv
         [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching etf [%s.%s] minitue market data');
         
     case EnumType.Interval.day
-        [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...
-            'nav, NAV_adj, open, high, low, close, amt, volume', ...
-            'Fetching etf [%s.%s] daily market data');
+        symb = sprintf('%s.%s', symb, obj.exchanges(Utility.ToString(exc)));
+        ts_s = datestr(ts_s, 'yyyy-mm-dd HH:MM:SS');
+        ts_e = datestr(ts_e, 'yyyy-mm-dd HH:MM:SS');
+        [is_err, obj.err.code, obj.err.msg, data] = obj.AnalysisApiResult(py.api.fetch_day_etf_bar(obj.user, obj.password, symb, ts_s, ts_e));
+        if (~is_err)
+            md = [datenum(data(:, 1)), cell2mat(data(:, 2 : end))];
+            md(logical(sum(isnan(md), 2)), :) = [];
+        else
+            md = [];
+             obj.DispErr(sprintf('Fetching etf [%s] daily market data', symb));
+        end
         
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);
