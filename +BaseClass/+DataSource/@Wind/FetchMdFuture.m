@@ -13,6 +13,9 @@ switch inv
         [is_err, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, ...
             'open, high, low, close, volume, amt, oi, pre_settle, settle, st_stock', ...
             'Fetching future [%s.%s] daily market data');
+        if (~isempty(md))
+            md(isnan(md(:, 11)), 11) = 0;
+        end
         
     otherwise
         error('Unexpected "interval" for [%] market data fetching, please check.', symb);

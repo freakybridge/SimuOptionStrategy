@@ -13,14 +13,18 @@ switch inv
         
     case EnumType.Interval.day
         [is_err, md] = obj.FetchDailyMd(symb, exc_tmp, ts_s, ts_e, 'fut_daily', {'trade_date', 'open', 'high', 'low', 'close', 'vol', 'amount', 'oi', 'pre_settle', 'settle'}, 'Fetching future [%s%s] daily market data');
-        if (~isempty(md) && exc_i ~= EnumType.Exchange.CFFEX)            
-            symb = regexp(symb, '\D*', 'match');
-            symb = symb{:};
-            for i = 1 : size(md, 1)
-                res = obj.api.query('fut_wsr', 'trade_date', datestr(md(i, 1), 'yyyymmdd'), 'symbol', symb);
-                md(i, 11) = res.vol;
-            end     
-        end        
+        if (~isempty(md))
+            if (exc_i ~= EnumType.Exchange.CFFEX)
+                symb = regexp(symb, '\D*', 'match');
+                symb = symb{:};
+                for i = 1 : size(md, 1)
+                    res = obj.api.query('fut_wsr', 'trade_date', datestr(md(i, 1), 'yyyymmdd'), 'symbol', symb);
+                    md(i, 11) = res.vol;
+                end
+            else
+                md(:, 11) = 0;
+            end
+        end
         
         % ÐÞÕý³É½»¶î
         if (~is_err)
