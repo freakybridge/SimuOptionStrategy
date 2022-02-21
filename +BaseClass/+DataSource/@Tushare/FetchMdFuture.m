@@ -31,6 +31,6 @@ switch inv
             md(:, 7) = md(:, 7) * 10000;
         end
     otherwise
-        error('Unexpected "interval" for [%] market data fetching, please check.', symb);
+        error('Unexpected "interval" for [%s] market data fetching, please check.', symb);
 end
 end
