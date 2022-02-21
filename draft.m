@@ -50,7 +50,7 @@ ds_t = BaseClass.DataSource.Tushare('c5ccec0957ff2142dc1aaa2d6c34f6db1cf7cc41f71
 
 pdt = EnumType.Product.ETF;
 symb = '159919';
-exc = EnumType.Exchange.SSE;
+exc = EnumType.Exchange.SZSE;
 inv = EnumType.Interval.day;
 ts = '2022-01-07 09:30';
 te = '2022-02-18 15:00';
