@@ -3,7 +3,6 @@
 %       1.首次加入
 function [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e)
 
-persistent calendar;
 exc = obj.exchanges(Utility.ToString(exc));
 switch inv
     case EnumType.Interval.min1
@@ -24,14 +23,14 @@ switch inv
             [is_err, obj.err.code, obj.err.msg, last_td_dt] = obj.AnalysisApiResult(py.api.fetch_option_last_tradedate(obj.user, obj.password, symb, exc));
             last_td_dt = str2double(datestr(last_td_dt, 'yyyymmdd'));
             
-            if (isempty(calendar))
-                [~, calendar] = obj.FetchCalendar();
+            if (isempty(obj.calendar))
+                [~, obj.calendar] = obj.FetchCalendar();
             end
             for i = 1 : size(md, 1)
-                s = find(calendar(:, 5) == md(i, 1), 1, 'first');
-                e = find(calendar(:, 1) == last_td_dt, 1, 'first');
+                s = find(obj.calendar(:, 5) == md(i, 1), 1, 'first');
+                e = find(obj.calendar(:, 1) == last_td_dt, 1, 'first');
                 rem_n = e - s + 1;
-                rem_t = sum(calendar(s : e, 2));
+                rem_t = sum(obj.calendar(s : e, 2));
                 md(i, 11 : 12) = [rem_n, rem_t];
             end
             

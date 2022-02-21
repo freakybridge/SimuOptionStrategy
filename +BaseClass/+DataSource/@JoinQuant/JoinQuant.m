@@ -10,6 +10,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
         dir_sdk char = '.\resource\jqdata_matlab_sdk';
         url char = 'https://dataapi.joinquant.com/apis';
         token char;
+        calendar double;
     end
     properties (Constant)
         name char = 'JoinQuant';
