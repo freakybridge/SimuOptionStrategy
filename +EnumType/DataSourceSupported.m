@@ -3,6 +3,8 @@
 classdef DataSourceSupported < EnumType.BaseEnum
     enumeration
         iFinD;
+        JoinQuant;
+        Tushare;
         Wind;
     end        
     
@@ -14,8 +16,12 @@ classdef DataSourceSupported < EnumType.BaseEnum
             switch upper(in_)
                 case {'IFIND'}
                     ret = EnumType.DataSourceSupported.iFinD;
+                case {'JOINQUANT'}
+                    ret = EnumType.DataSourceSupported.JoinQuant;
                 case {'WIND'}
                     ret = EnumType.DataSourceSupported.Wind;
+                case {'TUSHARE'}
+                    ret = EnumType.DataSourceSupported.Tushare;
                 otherwise
                     error('Unsupported "datasource" please check.');
             end

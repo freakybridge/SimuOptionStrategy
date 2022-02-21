@@ -28,6 +28,7 @@ classdef DataManager < handle
             obj.AddDs('ifind', 'meyqh052', '193976');
             obj.AddDs('ifind', 'meyqh055', '913742');
             obj.AddDs('ifind', '00256770', '30377546');
+            obj.AddDs('joinquant', '18162753893', '1101BXue');
             obj.ds = obj.AutoSwitchDataSource();
 
             % ÅäÖÃ¸ùÄ¿Â¼

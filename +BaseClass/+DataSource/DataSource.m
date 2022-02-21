@@ -76,12 +76,16 @@ classdef DataSource < handle
     
     methods (Static)
         % ·´ÉäÆ÷
-        function obj = Selector(api, user, pwd)
+        function obj = Selector(api, varargin)
             switch EnumType.DataSourceSupported.ToEnum(api)
                 case EnumType.DataSourceSupported.iFinD
-                    obj = BaseClass.DataSource.iFinD(user, pwd);
+                    obj = BaseClass.DataSource.iFinD(varargin{1}, varargin{2});
+                    
                 case EnumType.DataSourceSupported.Wind
                     obj = BaseClass.DataSource.Wind();
+                    
+                case EnumType.DataSourceSupported.JoinQuant
+                    obj = BaseClass.DataSource.JoinQuant(varargin{1}, varargin{2});
                     
                 otherwise
                     error("Unsupported datasource api, please check.");

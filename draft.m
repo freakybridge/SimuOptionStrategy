@@ -8,11 +8,9 @@ import EnumType.Product;
 import EnumType.Exchange;
 
 
-% dir_tb = 'C:\Users\freakybridge\Desktop\taobao';
 % dir_rt = "E:\OneDrive\hisdata";
 % dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 
-dir_tb = 'C:\Users\dell\Desktop\taobao';
 dir_rt = "D:\OneDrive\hisdata";
 dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 

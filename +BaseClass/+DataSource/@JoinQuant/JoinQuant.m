@@ -5,7 +5,7 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
     properties (Access = private)
         user char;
         password char;
-        py_directory char;
+        py_directory char = 'D:\Python\Env\MachineLearn\Scripts\python.exe';
         dir_home char = cd;
         dir_sdk char = '.\resource\jqdata_matlab_sdk';
         url char = 'https://dataapi.joinquant.com/apis';
@@ -21,13 +21,12 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
 
     methods
         % 构造函数
-        function obj = JoinQuant(ur, pwd, py_dir_)
+        function obj = JoinQuant(ur, pwd)
             % JoinQuant 构造此类的实例
             %   此处显示详细说明
             obj = obj@BaseClass.DataSource.DataSource();
             obj.user = ur;
             obj.password = pwd;
-            obj.py_directory = py_dir_;
 
             % 交易所转换
             import EnumType.Exchange;
