@@ -144,7 +144,7 @@ for i = 1 : length(upd_lst)
         view = views(ismember(views.TABLENAME, info.SYMBOL{:}), :);
         if (~isempty(view) && view.COUNTS)
             if ((inv == EnumType.Interval.day && datenum(view.TS_END) < datenum(info.END_TRADE_DATE{:}, 'yyyy-mm-dd')) || (inv == EnumType.Interval.min5 && datenum(view.TS_END) < datenum(info.END_TRADE_DATE{:}, 'yyyy-mm-dd HH:MM')))
-                asset = Utility.SampleOption(this.product, this.variety, this.exchange, inv, info);
+                asset = BaseClass.Asset.Option.Option.Sample(this.variety, this.exchange, inv, info);
                 [mark, ~, ~] = obj.NeedUpdate(asset, datenum(view.TS_START), datenum(view.TS_END));
                 if (~mark)
                     continue;
@@ -153,7 +153,7 @@ for i = 1 : length(upd_lst)
                 continue;
             end
         else
-            asset = Utility.SampleOption(this.product, this.variety, this.exchange, inv, info);
+            asset = BaseClass.Asset.Option.Option.Sample(this.variety, this.exchange, inv, info);
         end
 
         % check local csv md

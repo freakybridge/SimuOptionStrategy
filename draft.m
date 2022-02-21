@@ -4,8 +4,6 @@ tic;
 
 import Apps.DataManager;
 import BaseClass.Asset.Asset;
-import EnumType.Product;
-import EnumType.Exchange;
 
 
 % dir_rt = "E:\OneDrive\hisdata";
