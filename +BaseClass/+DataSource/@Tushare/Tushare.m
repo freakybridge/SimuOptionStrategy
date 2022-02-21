@@ -5,6 +5,7 @@ classdef Tushare < BaseClass.DataSource.DataSource
     properties (Access = private)
         token char;
         api;
+        calendar double;
     end
     properties (Constant)
         name char = 'Tushare';

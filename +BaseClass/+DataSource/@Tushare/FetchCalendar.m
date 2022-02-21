@@ -15,11 +15,11 @@ try
     end
     
     % 整理
-    dt_natural = cellfun(@(x) datenum(x, 'yyyymmdd'), res.cal_date);
+    dt_natural = datenum(res.cal_date, 'yyyymmdd');
     dt_trading = dt_natural(logical(res.is_open));
     
     % 合并
-    cal = arrayfun(@(x) str2double(datestr(x, 'yyyymmdd')), dt_natural);
+    cal = str2double(cellstr(datestr(dt_natural, 'yyyymmdd')));
     cal(:, 5) = dt_natural;
     [~, loc] = ismember(dt_trading, dt_natural);
     cal(loc, 2) = 1;
