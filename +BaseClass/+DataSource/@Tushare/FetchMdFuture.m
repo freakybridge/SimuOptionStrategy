@@ -19,7 +19,7 @@ switch inv
                 symb = symb{:};
                 for i = 1 : size(md, 1)
                     res = obj.api.query('fut_wsr', 'trade_date', datestr(md(i, 1), 'yyyymmdd'), 'symbol', symb);
-                    md(i, 11) = res.vol;
+                    md(i, 11) = sum(res.vol);
                 end
             else
                 md(:, 11) = 0;
