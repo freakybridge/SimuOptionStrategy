@@ -24,7 +24,7 @@ try
     end
     
     % ºÏ²¢
-    cal = arrayfun(@(x) str2double(datestr(x, 'yyyymmdd')), dt_natural);
+    cal = str2double(cellstr(datestr(dt_natural, 'yyyymmdd')));
     cal(:, 5) = dt_natural;
     [~, loc] = ismember(dt_trading, dt_natural);
     cal(loc, 2) = 1;
