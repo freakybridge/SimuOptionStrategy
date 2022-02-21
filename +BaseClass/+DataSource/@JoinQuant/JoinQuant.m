@@ -160,6 +160,18 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
             end
             rows = multi * hours * tdays;
         end
+        
+        % 下载分钟数据
+        function [is_err, md] = FetchMin(obj, symb, exc, inv, ts_s, ts_e, cnt, fields, errfmt)
+            [is_err, obj.err.code, obj.err.msg, data] = obj.AnalysisApiResult(py.api.fetch_min_bar(obj.user, obj.password, symb, exc, fields, inv, ts_e, int64(cnt)));            
+            if (~is_err)
+                md = [datenum(data(:, 1)), cell2mat(data(:, 2 : end))];
+                md = md(md(:, 1) >= datenum(ts_s) & md(:, 1) <= datenum(ts_e), :);
+            else
+                md = [];
+                obj.DispErr(sprintf(errfmt, symb));
+            end
+        end
     end
 
 end

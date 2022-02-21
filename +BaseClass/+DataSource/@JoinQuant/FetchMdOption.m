@@ -3,17 +3,21 @@
 %       1.首次加入
 function [is_err, md] = FetchMdOption(obj, symb, exc, inv, ts_s, ts_e)
 
+% 预处理
+ts_s = datestr(ts_s, 'yyyy-mm-dd HH:MM:SS');
+ts_e = datestr(ts_e, 'yyyy-mm-dd HH:MM:SS');
+cnt = obj.CalcFetchingRows(ts_s, ts_e, inv, exc);
 exc = obj.exchanges(Utility.ToString(exc));
+
+% 下载
 switch inv
     case EnumType.Interval.min1
-        [is_err, md] = obj.FetchMinMd(symb, exc, 1, ts_s, ts_e,  'Fetching option [%s.%s] minitue market data');
+        [is_err, md] = FetchMin(obj, symb, exc, '1m', ts_s, ts_e, cnt, {'date', 'open', 'high', 'low', 'close', 'volume', 'money', 'open_interest'},  'Fetching option [%s.%s] minitue market data');
         
     case EnumType.Interval.min5
-        [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching option [%s.%s] minitue market data');
+        [is_err, md] = FetchMin(obj, symb, exc, '5m', ts_s, ts_e, cnt, {'date', 'open', 'high', 'low', 'close', 'volume', 'money', 'open_interest'},  'Fetching option [%s.%s] minitue market data');
         
     case EnumType.Interval.day
-        ts_s = datestr(ts_s, 'yyyy-mm-dd HH:MM:SS');
-        ts_e = datestr(ts_e, 'yyyy-mm-dd HH:MM:SS');
         [is_err, obj.err.code, obj.err.msg, data] = obj.AnalysisApiResult(py.api.fetch_day_option_bar(obj.user, obj.password, symb, exc, ts_s, ts_e));
         if (~is_err)
             % 整理
@@ -36,10 +40,10 @@ switch inv
             
         else
             md = [];
-            obj.DispErr(sprintf('Fetching option [%s] daily market data', symb));
+            obj.DispErr(sprintf('Fetching option [%s.%s] daily market data', symb, exc));
         end
         
     otherwise
-        error('Unexpected "interval" for [%] market data fetching, please check.', symb);
+        error('Unexpected "interval" for [%s] market data fetching, please check.', symb);
 end
 end
