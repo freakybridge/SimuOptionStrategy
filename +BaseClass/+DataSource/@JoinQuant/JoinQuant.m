@@ -121,6 +121,45 @@ classdef JoinQuant < BaseClass.DataSource.DataSource
                 data = [];
             end
         end
+        
+        % 计算下载行数
+        function rows = CalcFetchingRows(obj, ts_s, ts_e, inv, exc)
+            % 确定系数
+            switch inv
+                case EnumType.Interval.min1
+                    multi = 60;
+                    
+                case EnumType.Interval.min5
+                    multi = 12;
+                    
+                case EnumType.Interval.day
+                    rows = 0;
+                    return;
+                    
+                otherwise
+                    error('Unexpected "interval" for fetching rows caculation, please check.');
+            end
+            
+            % 判断交易日个数
+            if (isempty(obj.calendar))
+                [~, obj.calendar] = obj.FetchCalendar();
+            end
+            tdays = obj.calendar(obj.calendar(:, 1) >= str2double(datestr(ts_s, 'yyyymmdd')) & obj.calendar(:, 1) <= str2double(datestr(ts_e, 'yyyymmdd')), :);
+            tdays = sum(tdays(:, 2));
+            
+            % 计算
+            switch exc
+                case {EnumType.Exchange.SSE, EnumType.Exchange.SZSE}
+                    hours = 4;
+                case {EnumType.Exchange.CZCE, EnumType.Exchange.DCE, EnumType.Exchange.INE, EnumType.Exchange.SHFE, EnumType.Exchange.DCE}
+                    hours = 10;
+                case EnumType.Exchange.CFFEX
+                    hours = 5;
+                otherwise
+                    error('Unexpected "exchange" for fetching rows caculation, please check.');
+            end
+            rows = multi * hours * tdays;
+        end
     end
 
 end

@@ -74,6 +74,7 @@ def fetch_option_last_tradedate(usr, pwd, symb, exc):
     except Exception as err:
         return True, err.args[0], None
 
+
 # 获取分钟行情
 def fetch_min_bar(usr, pwd, symb, exc, fds, freq, enddt, cnt):
     try:
@@ -84,7 +85,7 @@ def fetch_min_bar(usr, pwd, symb, exc, fds, freq, enddt, cnt):
             cnt,
             unit=freq,
             fields=fds,
-            include_now=False,
+            include_now=True,
             end_dt=enddt,
             fq_ref_date=None,
             df=True)
