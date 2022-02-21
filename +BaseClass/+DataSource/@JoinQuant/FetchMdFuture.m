@@ -16,10 +16,9 @@ switch inv
         [is_err, obj.err.code, obj.err.msg, data] = obj.AnalysisApiResult(py.api.fetch_day_future_bar(obj.user, obj.password, symb, exc, ts_s, ts_e));
         if (~is_err)
             md = [datenum(data(:, 1)), cell2mat(data(:, 2 : end))];
-            md(logical(sum(isnan(md), 2)), :) = [];
         else
             md = [];
-             obj.DispErr(sprintf('Fetching etf [%s] daily market data', symb));
+             obj.DispErr(sprintf('Fetching future [%s] daily market data', symb));
         end
         
     otherwise
