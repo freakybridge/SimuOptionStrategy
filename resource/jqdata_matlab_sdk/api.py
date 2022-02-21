@@ -1,6 +1,8 @@
 # This is api for join quant financial DataSource
 from jqdatasdk import *
 import numpy as np
+import pandas as pd
+import re
 
 
 # 获取日历
@@ -62,12 +64,12 @@ def fetch_option_chain(usr, pwd, ud_symb):
 
 
 # 获取分钟行情
-def fetch_min_bar(usr, pwd, symb, fds, freq, enddt, cnt):
+def fetch_min_bar(usr, pwd, symb, exc, fds, freq, enddt, cnt):
     try:
         # 读取
         auth(usr, pwd)
         res = get_bars(
-            symb,
+            ('%s.%s') % (symb, exc),
             cnt,
             unit=freq,
             fields=fds,
@@ -107,11 +109,11 @@ def fetch_min_bar(usr, pwd, symb, fds, freq, enddt, cnt):
 
 
 # 获取每日指数行情
-def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
+def fetch_day_index_bar(usr, pwd, symb, exc, dt_s, dt_e):
     try:
         auth(usr, pwd)
         res = get_price(
-            symb,
+            ('%s.%s') % (symb, exc),
             start_date=dt_s,
             end_date=dt_e,
             frequency='daily',
@@ -148,12 +150,12 @@ def fetch_day_index_bar(usr, pwd, symb, dt_s, dt_e):
 
 
 # 获取每日ETF行情
-def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
+def fetch_day_etf_bar(usr, pwd, symb, exc, dt_s, dt_e):
     try:
         # 读取
         auth(usr, pwd)
         md = get_price(
-            symb,
+            ('%s.%s') % (symb, exc),
             start_date=dt_s,
             end_date=dt_e,
             frequency='daily',
@@ -172,7 +174,7 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
                 finance.FUND_NET_VALUE.day,
                 finance.FUND_NET_VALUE.net_value,
                 finance.FUND_NET_VALUE.refactor_net_value).filter(
-                finance.FUND_NET_VALUE.code == symb[0 : symb.find('.')],
+                finance.FUND_NET_VALUE.code == symb,
                 finance.FUND_NET_VALUE.day >= md[:1].index[0].strftime('%Y-%m-%d'),
                 finance.FUND_NET_VALUE.day <= md[-1:].index[0].strftime('%Y-%m-%d')
             ).order_by(finance.FUND_NET_VALUE.day.asc()).limit(50000))
@@ -201,12 +203,12 @@ def fetch_day_etf_bar(usr, pwd, symb, dt_s, dt_e):
 
 
 # 获取每日期货行情
-def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
+def fetch_day_future_bar(usr, pwd, symb, exc, dt_s, dt_e):
     try:
         # 读取
         auth(usr, pwd)
         md = get_price(
-            symb,
+            ('%s.%s') % (symb, exc),
             start_date=dt_s,
             end_date=dt_e,
             frequency='daily',
@@ -228,18 +230,22 @@ def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
         if md.iloc[:, 0].size == 0:
             return False, '', [[], [], [], [], [], [], [], [], [], [], []]
 
-        st_stock = finance.run_query(
-            query(finance.FUT_WAREHOUSE_RECEIPT.day,
-                  finance.FUT_WAREHOUSE_RECEIPT.warehouse_receipt_number).filter(
-                finance.FUT_WAREHOUSE_RECEIPT.underlying_code == var,
-                finance.FUT_WAREHOUSE_RECEIPT.day >= md[:1].index[0].strftime('%Y-%m-%d'),
-                finance.FUT_WAREHOUSE_RECEIPT.day <= md[-1:].index[0].strftime('%Y-%m-%d'))
-            .order_by(finance.FUT_WAREHOUSE_RECEIPT.day.asc()))
-        st_stock = st_stock.groupby('day').sum()
+        var = symb[0 : re.search("\d", symb).start()]
+        if var.upper() == 'IF' or var.upper() == 'IH' or var.upper() == 'IC' or var.upper() == 'T' or var.upper() == 'TF':
+            st_stock = pd.DataFrame({'day': md.index.date, 'warehouse_receipt_number': np.zeros(md.iloc[:, 0].size)})
+        else :
+            st_stock = finance.run_query(
+                query(finance.FUT_WAREHOUSE_RECEIPT.day,
+                      finance.FUT_WAREHOUSE_RECEIPT.warehouse_receipt_number).filter(
+                    finance.FUT_WAREHOUSE_RECEIPT.underlying_code == var,
+                    finance.FUT_WAREHOUSE_RECEIPT.day >= md[:1].index[0].strftime('%Y-%m-%d'),
+                    finance.FUT_WAREHOUSE_RECEIPT.day <= md[-1:].index[0].strftime('%Y-%m-%d'))
+                .order_by(finance.FUT_WAREHOUSE_RECEIPT.day.asc()))
+            st_stock = st_stock.groupby('day').sum()
 
         settle = get_extras(
             'futures_sett_price',
-            symb,
+            ('%s.%s') % (symb, exc),
             start_date=dt_s,
             end_date=dt_e,
             df=True,
@@ -274,12 +280,12 @@ def fetch_day_future_bar(usr, pwd, symb, var, dt_s, dt_e):
 
 
 # 获取每日期权行情
-def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
+def fetch_day_option_bar(usr, pwd, symb, exc, dt_s, dt_e):
     try:
         # 获取
         auth(usr, pwd)
         md = get_price(
-            symb,
+            ('%s.%s') % (symb, exc),
             start_date=dt_s,
             end_date=dt_e,
             frequency='daily',
@@ -305,7 +311,7 @@ def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
                 opt.OPT_DAILY_PRICE.date,
                 opt.OPT_DAILY_PRICE.pre_settle,
                 opt.OPT_DAILY_PRICE.settle_price).filter(
-                opt.OPT_DAILY_PRICE.code == symb,
+                opt.OPT_DAILY_PRICE.code == ('%s.%s') % (symb, exc),
                 opt.OPT_DAILY_PRICE.date >= md[:1].index[0].strftime('%Y-%m-%d'),
                 opt.OPT_DAILY_PRICE.date <= md[-1:].index[0].strftime('%Y-%m-%d')
             ).order_by(
@@ -329,8 +335,7 @@ def fetch_day_option_bar(usr, pwd, symb, dt_s, dt_e):
         pre_settle = tuple(md.pre_settle)
         settle = tuple(md.settle_price)
 
-        return False, '', [dt, po, ph, pl, pc,
-                           vol, amt, oi, pre_settle, settle]
+        return False, '', [dt, po, ph, pl, pc, vol, amt, oi, pre_settle, settle]
 
     except Exception as err:
         return True, err.args[0], None
@@ -343,22 +348,23 @@ def __trans_datatime_2_string(in_, fmt):
 
 # debug
 if __name__ == '__main__':
+
     a1, b1, c1 = fetch_all_trade_day('18162753893', '1101BXue')
 
     a2, b2, c2 = fetch_day_index_bar(
-        '18162753893', '1101BXue', '000300.XSHG', '2021-01-01 09:30:00', '2021-02-15 09:30:00')
+        '18162753893', '1101BXue', '000300', 'XSHG', '2021-01-01 09:30:00', '2021-02-15 09:30:00')
 
     a3, b3, c3 = fetch_day_etf_bar(
-        '18162753893', '1101BXue', '510050.XSHG', '2021-01-01 09:30:00', '2021-02-15 09:30:00')
+        '18162753893', '1101BXue', '510050', 'XSHG', '2021-01-01 09:30:00', '2021-02-15 09:30:00')
 
     a4, b4, c4 = fetch_day_future_bar(
-        '18162753893', '1101BXue', 'CU2206.XSGE', 'CU', '2022-01-01 09:30:00', '2022-02-15 09:30:00')
+        '18162753893', '1101BXue', 'CU2206', 'XSGE', '2022-01-01 09:30:00', '2022-02-15 09:30:00')
 
     a5, b5, c5 = fetch_day_option_bar(
-        '18162753893', '1101BXue', '10003852.XSHG', '2022-01-01 09:30:00', '2022-02-15 09:30:00')
+        '18162753893', '1101BXue', '10003852', 'XSHG', '2022-01-01 09:30:00', '2022-02-15 09:30:00')
 
     a6, b6, c6 = fetch_min_bar(
-        '18162753893', '1101BXue', '10003852.XSHG',
+        '18162753893', '1101BXue', '10003852', 'XSHG',
         ['date', 'open', 'high', 'low', 'close', 'volume', 'money', 'open_interest'],
         '5m', '2022-02-15 09:30:00', 50)
 

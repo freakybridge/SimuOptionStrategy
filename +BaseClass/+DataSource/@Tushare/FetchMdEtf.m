@@ -12,8 +12,8 @@ switch inv
         [is_err, md] = obj.FetchMinMd(symb, exc, 5, ts_s, ts_e, 'Fetching etf [%s.%s] minitue market data');
         
     case EnumType.Interval.day
-        [is_err_a, nv] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'fund_nav', {'nav_date', 'unit_nav', 'adj_nav'}, 'Fetching eft [%s%s] net value data');
-        [is_err_b, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'fund_daily', {'trade_date', 'open', 'high', 'low', 'close', 'vol', 'amount'}, 'Fetching eft [%s%s] net value data');
+        [is_err_a, nv] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'fund_nav', {'nav_date', 'unit_nav', 'adj_nav'}, 'Fetching eft [%s%s] market data');
+        [is_err_b, md] = obj.FetchDailyMd(symb, exc, ts_s, ts_e, 'fund_daily', {'trade_date', 'open', 'high', 'low', 'close', 'vol', 'amount'}, 'Fetching etf [%s%s] net value data');
         if (~isempty(nv) && ~isempty(md))
             is_err = is_err_a | is_err_b;
             [~, loc1, loc2] = intersect(nv(:, 1), md(:, 1));
@@ -24,6 +24,9 @@ switch inv
                 md(:, 8) = md(:, 8) * 100;
                 md(:, 9) = md(:, 9) * 1000;
             end
+        else
+            is_err = true;
+            md = [];
         end
         
     otherwise
