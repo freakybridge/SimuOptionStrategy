@@ -30,9 +30,9 @@ switch inv
                 rem_n = e - s + 1;
                 rem_t = sum(calendar(s : e, 2));
                 md(i, 11 : 12) = [rem_n, rem_t];
-            end 
+            end
             
-        % 修正成交额
+            % 修正成交额
             md(:, 7) = md(:, 7) * 10000;
         end
         

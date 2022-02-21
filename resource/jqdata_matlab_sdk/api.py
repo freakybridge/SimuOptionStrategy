@@ -63,6 +63,17 @@ def fetch_option_chain(usr, pwd, ud_symb):
         return True, err.args[0], None
 
 
+# 获取单个期权最后交易日
+def fetch_option_last_tradedate(usr, pwd, symb, exc):
+    try:
+        auth(usr, pwd)
+        res = opt.run_query(query(opt.OPT_CONTRACT_INFO.last_trade_date).filter(opt.OPT_CONTRACT_INFO.code == ('%s.%s') % (symb, exc)))
+        logout()
+        return False, "", [[res.last_trade_date[0].strftime('%Y-%m-%d')]]
+
+    except Exception as err:
+        return True, err.args[0], None
+
 # 获取分钟行情
 def fetch_min_bar(usr, pwd, symb, exc, fds, freq, enddt, cnt):
     try:
@@ -369,4 +380,6 @@ if __name__ == '__main__':
         '5m', '2022-02-15 09:30:00', 50)
 
     a7, b7, c7 = fetch_option_chain('18162753893', '1101BXue', '510050.XSHG')
+
+    a8, b8, c8 = fetch_option_last_tradedate('18162753893', '1101BXue', '10003852', 'XSHG')
     pass
