@@ -250,6 +250,9 @@ classdef DataManager < handle
                     
                     % 读取数据 / 整理数据
                     md = obj.db.FetchRawData(curr_db, curr_tb);
+                    if (isempty(md))
+                        continue;
+                    end
                     md(:, 1) = [];
                     switch pdt
                         case EnumType.Product.ETF
