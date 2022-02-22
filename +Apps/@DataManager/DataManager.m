@@ -8,12 +8,12 @@ classdef DataManager < handle
         db  BaseClass.Database.Database = BaseClass.Database.Database.Selector('mss', 'sa', 'bridgeisbest');
         ds  BaseClass.DataSource.DataSource= BaseClass.DataSource.DataSource.Selector('wind', nan, nan);
         dr  Apps.DataRecorder = Apps.DataRecorder();
-
+        
         ds_pool struct;
         ds_pointer(1, 1) double;
         dir_root char;
     end
-
+    
     % 公开方法
     methods
         % 构造函数
@@ -30,11 +30,11 @@ classdef DataManager < handle
             obj.AddDs('ifind', '00256770', '30377546');
             obj.AddDs('joinquant', '18162753893', '1101BXue');
             obj.ds = obj.AutoSwitchDataSource();
-
+            
             % 配置根目录
             obj.dir_root = dir_;
         end
-
+        
         % 载入行情 / 载入本地Csv行情 / 载入在线行情
         LoadMd(obj, asset, sw_csv);
         function [md, mk_upd, dt_s, dt_e] = LoadMdViaCsv(obj, asset)
@@ -58,27 +58,27 @@ classdef DataManager < handle
                 return;
             end
         end
-
+        
         % 载入合约列表
         instrus = LoadChain(obj, pdt, var, exc);
-
+        
         % 载入日历
         cal = LoadCalendar(obj);
-
+        
         % 备份数据库
         DatabaseBackup(obj, dir_sav);
-
+        
         % 数据库还原
         DatabaseRestore(obj, dir_bak);
-
+        
         % 更新程序
         Update(obj);
     end
-
+    
     methods (Access = private)
         % 淘宝载入行情
         LoadMdViaTaobaoExcel(obj, asset, dir_tb);
-
+        
         % 添加备选数据源
         function AddDs(obj, nm, usr, pwd)
             tmp = struct;
@@ -92,7 +92,7 @@ classdef DataManager < handle
                 obj.ds_pool(end + 1) = tmp;
             end
         end
-
+        
         % 入选可用数据源
         function ret = AutoSwitchDataSource(obj)
             loc = find(isnan([obj.ds_pool.status]), 1, 'first');
@@ -106,7 +106,7 @@ classdef DataManager < handle
                 error("All dataSource failure, please check.");
             end
         end
-
+        
         % 设置数据源故障
         function SetDsFailure(obj)
             obj.ds_pool(obj.ds_pointer).status = -1;
@@ -145,7 +145,7 @@ classdef DataManager < handle
                 else
                     error('Unexpected "product" for update start point determine, please check.');
                 end
-                                
+                
                 %  判定起点
                 if (md_s - dt_s_o >= 1)
                     dt_s = dt_s_o;
@@ -197,6 +197,117 @@ classdef DataManager < handle
             
         end
     end
+    
+    methods (Hidden)
+        function DatabaseBackupOldVer(obj, dir_rt, db_tar_prefix)
+            % 预处理
+            tb_ig_lst = {'CodeList', '000188.SH', 'sysdiagrams'};
+            
+            % 读取目标数据库
+            dbs = obj.db.FetchAllDbs();
+            for i = length(dbs) : -1 : 1
+                this = dbs{i};
+                for j = db_tar_prefix
+                    if (contains(this, j{:}))
+                        mark = false;
+                        break;
+                    else
+                        mark = true;
+                    end
+                end
+                if (mark)
+                    dbs(i)= [];
+                end
+            end
+            
+            % 逐一读取数据
+            for i = 1 : length(dbs)
+                tbs = obj.db.FetchAllTables(dbs{i});
+                tbs = setdiff(tbs, tb_ig_lst);
+                
+                for j = 1 : length(tbs)
+                    % 预处理
+                    curr_db = dbs{i};
+                    curr_tb = tbs{j};
+                    
+                    % 生成资产 / 品种 / 交易所
+                    [pdt, var, exc, symbol] = BasicInfo(curr_db, curr_tb);
+                    inv = EnumType.Interval.day;
+                    
+                    % 生成合约
+                    switch pdt
+                        case {EnumType.Product.ETF, EnumType.Product.Index}
+                            asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, inv);
+                        case EnumType.Product.Option
+                            asset = BaseClass.Asset.Option.Option.Sample(var, exc, inv, []);
+                            
+                        case EnumType.Product.Future
+                            symbol = curr_tb(1 : strfind(curr_tb, '.') - 1);
+                            asset = BaseClass.Asset.Asset.Selector(pdt, var, exc, symbol, 'sec_name', inv, 10000, datestr(now()), datestr(now()), 0.12, 1, 0.5);
+                    end
+                    asset.symbol = symbol;
 
+                    
+                    % 读取数据 / 整理数据
+                    md = obj.db.FetchRawData(curr_db, curr_tb);
+                    md(:, 1) = [];
+                    switch pdt
+                        case EnumType.Product.ETF
+                            md(logical(sum(isnan(md), 2)), :) = [];
+                            
+                        case EnumType.Product.Index
+                            md(logical(sum(isnan(md), 2)), :) = [];
+                            
+                        case EnumType.Product.Option
+                            md = md(:, [1 : 10, 20 : 21]);
+                            
+                        case EnumType.Product.Future
+                            md(:, [8, 13]) = [];
+                            md(isnan(md)) = 0;
+                        otherwise
+                            error('unexpected condition');
+                    end
+                    
+                    % 保存
+                    fprintf('Saving [%s]@[%s], table [%i/%i], database [%i/%i], please wait ...\r', curr_tb, curr_db, j, length(tbs), i, length(dbs));
+                    asset.MergeMarketData(md);
+                    obj.dr.SaveMarketData(asset, dir_rt);
+                end
+                
+            end
+            
+            % 基础信息
+            function [pdt_, var_, exc_, sym_] = BasicInfo(db_, tb_)
+                loc_ = strfind(db_, '_');
+                if (isempty(loc_))
+                    if (strcmp(db_, 'Fund'))
+                        pdt_ = EnumType.Product.ETF;
+                        loc_ = strfind(tb_, '.');
+                        var_ = tb_(1 : loc_(1) - 1);
+                        switch var_
+                            case '510050'
+                                exc_ = EnumType.Exchange.SSE;
+                            case '510300'
+                                exc_ = EnumType.Exchange.SSE;
+                            case '159919'
+                                exc_ = EnumType.Exchange.SZSE;
+                        end
+                    else
+                        pdt_ = EnumType.Product.ToEnum(db_);
+                        loc_ = strfind(tb_, '.');
+                        var_ = tb_(1 : loc_(1) - 1);
+                        exc_ = EnumType.Exchange.ToEnum(tb_(loc_(1) + 1 : end));
+                    end
+                    sym_ = var_;
+                else
+                    pdt_ = EnumType.Product.ToEnum(db_(1 : loc_(1) - 1));
+                    var_ = db_(loc_(1) + 1 : loc_(2) - 1);
+                    exc_ = EnumType.Exchange.ToEnum(db_(loc_(2) + 1 : end));
+                    sym_ = tb_;
+                end
+            end
+            
+        end
+    end
 end
 
