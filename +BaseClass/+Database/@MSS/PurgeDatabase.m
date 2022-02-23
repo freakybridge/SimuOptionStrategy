@@ -2,42 +2,24 @@
 % v1.3.0.20220113.beta
 %       首次加入
 function ret = PurgeDatabase(obj, varargin)
+
 % 确定端口
 conn = obj.SelectConn(obj.db_default);
 
-% 确定前缀
-prefix = cell(length(varargin), 1);
-for i = 1 : length(varargin)
-    prefix{i} = [varargin{i}, '%'];
+% 确定需要清理的数据库
+dbs = obj.FetchDbsWithPrefix(varargin{:});
+
+% 逐一清理
+mark = false(length(dbs), 1);
+for i = 1 : length(dbs)
+    fprintf('Purging database [%s], %i/%i, please wait ...\r', dbs{i}, i, length(dbs));
+    cr = exec(conn, sprintf('DROP DATABASE [%s];', dbs{i}));
+    if (isempty(cr.Message))
+        mark(i) = true;
+    end    
 end
 
-% 生成语句
-sql = repmat(' name LIKE ''%s'' OR', 1,  length(varargin));
-sql(end - 1 : end) = [];
-sql = sprintf('DECLARE dbs CURSOR FAST_FORWARD FOR SELECT name FROM sysdatabases WHERE %s;', sql);
-sql = sprintf(sql, prefix{:});
+% 返回
+ret = all(mark);
 
-sql = sprintf( ...
-    " BEGIN " ...
-    + "    %s " ...
-    + "    DECLARE @db varchar(128)" ...
-    + "    OPEN dbs" ...
-    + "    WHILE 1=1" ...
-    + "    BEGIN " ...
-    + "        FETCH NEXT FROM dbs INTO @db" ...
-    + "        if(@@fetch_status!=0) BREAK" ...
-    + "        EXEC('DROP DATABASE [' + @db + ']')" ...
-    + "    END " ...
-    + "    CLOSE dbs " ...
-    + "    DEALLOCATE dbs " ...
-    + " END", ...
-    sql);
-cr = exec(conn, sql);
-
-% return
-if (strcmpi(cr.Message, '该语句没有返回结果集。'))
-    ret = true;
-else
-    ret = false;
-end
 end

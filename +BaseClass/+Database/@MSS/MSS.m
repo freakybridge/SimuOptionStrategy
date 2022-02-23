@@ -163,8 +163,9 @@ classdef MSS < BaseClass.Database.Database
         md = LoadBarDayIndex(obj, asset);
         md = LoadBarDayOption(obj, asset);
                 
-        % 读取 全部数据库 / 当前库所有表 / 获取原始数据
+        % 读取 全部数据库 / 固定前缀数据库 / 当前库所有表 / 获取原始数据
         ret = FetchAllDbs(obj);
+        ret = FetchDbsWithPrefix(obj, varargin);
         ret = FetchAllTables(obj, db);
         ret = FetchRawData(obj, db, tb);
 

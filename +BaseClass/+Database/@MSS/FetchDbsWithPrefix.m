@@ -1,7 +1,7 @@
-% 获取所有数据库
+% 获取固定前缀数据库
 % v1.3.0.20220113.beta
 %       1.首次添加
-function ret = FetchAllDbs(obj)
+function ret = FetchDbsWithPrefix(obj, varargin)
 
 % 库名
 db = obj.db_default;
@@ -16,15 +16,12 @@ end
 % 生成语句
 sql = repmat(' name LIKE ''%s'' OR', 1,  length(varargin));
 sql(end - 1 : end) = [];
-sql = sprintf('DECLARE dbs CURSOR FAST_FORWARD FOR SELECT name FROM sysdatabases WHERE %s;', sql);
+sql = sprintf('SELECT name FROM sysdatabases WHERE %s;', sql);
 sql = sprintf(sql, prefix{:});
 
 % 载入
 try
-    sql = 'SELECT NAME FROM MASTER.DBO.SYSDATABASES ORDER BY NAME';
-    setdbprefs('DataReturnFormat', 'numeric');
-    ret = fetch(conn, sql);
-    ret = table2array(ret);
+    ret = table2cell(fetch(conn, sql));
 catch
     ret = cell(0);
 end

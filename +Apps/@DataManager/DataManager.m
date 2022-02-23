@@ -316,7 +316,7 @@ classdef DataManager < handle
         % Çå³ıÊı¾İ¿â
         function PurgeDatabase(obj, varargin)
             if (obj.db.PurgeDatabase(varargin{:}))
-                disp('Database purge processure accomplished');
+                disp('Database purge processure accomplished.');
             else
                 disp('Database purge processure failure, please check.');
             end
