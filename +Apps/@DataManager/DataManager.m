@@ -302,13 +302,13 @@ classdef DataManager < handle
                         var_ = tb_(1 : loc_(1) - 1);
                         exc_ = EnumType.Exchange.ToEnum(tb_(loc_(1) + 1 : end));
                     end
-                    sym_ = var_;
                 else
                     pdt_ = EnumType.Product.ToEnum(db_(1 : loc_(1) - 1));
                     var_ = db_(loc_(1) + 1 : loc_(2) - 1);
-                    exc_ = EnumType.Exchange.ToEnum(db_(loc_(2) + 1 : end));
-                    sym_ = tb_;
+                    exc_ = EnumType.Exchange.ToEnum(db_(loc_(2) + 1 : end));                
                 end
+                
+                sym_ = tb_(1 : strfind(tb_, '.') - 1);
             end
             
         end
