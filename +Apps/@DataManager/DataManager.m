@@ -76,8 +76,6 @@ classdef DataManager < handle
     end
     
     methods (Access = private)
-        % 淘宝载入行情
-        LoadMdViaTaobaoExcel(obj, asset, dir_tb);
         
         % 添加备选数据源
         function AddDs(obj, nm, usr, pwd)
@@ -198,7 +196,10 @@ classdef DataManager < handle
         end
     end
     
-    methods (Hidden)
+    methods (Hidden)        
+        % 淘宝载入行情
+        LoadMdViaTaobaoExcel(obj, asset, dir_tb, dir_alt);
+        
         % 备份老版本数据库
         function DatabaseBackupOldVer(obj, dir_rt, db_tar_prefix)
             % 预处理

@@ -1,4 +1,5 @@
 % DataManager / LoadChain 获取合约列表
+% ins = LoadChain(obj, pdt, var, exc)
 % v1.3.0.20220113.beta
 %      1.修改逻辑，提升效率
 %      2.改名修正逻辑
