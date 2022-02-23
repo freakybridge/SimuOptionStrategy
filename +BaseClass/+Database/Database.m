@@ -195,6 +195,9 @@ classdef Database < handle
         % Create Overviews / Overviews Trigger
         ret = CreateTableOverviews(obj, db);
         ret = CreateTriggerOverviews(obj, db, tb);
+        
+        % 按照前缀清理数据库
+        ret = PurgeDatabase(obj, varargin);
 
     end
 

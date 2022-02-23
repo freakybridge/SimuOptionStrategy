@@ -15,10 +15,10 @@ dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
 % dm.Update();
 % dm.DatabaseBackup('C:\Users\freakybridge\Desktop\test');
-% dm.DatabaseRestore('D:\OneDrive\hisdata\test');
+dm.DatabaseRestore('D:\OneDrive\hisdata\test');
 toc;
 
-dm.PurgeDatabase();
+% dm.PurgeDatabase('1D', '5MIN');
 
 % db_target = {'Fund', 'Future', 'Index', 'Option'};
 % dm.DatabaseBackupOldVer('C:\Users\freakybridge\Desktop\test', db_target)

@@ -314,28 +314,12 @@ classdef DataManager < handle
         end
         
         % 清除数据库
-        function PurgeDatabase(obj, prefix)
-            if (obj.db.PurgeDatabase(prefix))
+        function PurgeDatabase(obj, varargin)
+            if (obj.db.PurgeDatabase(varargin{:}))
                 disp('Database purge processure accomplished');
             else
                 disp('Database purge processure failure, please check.');
             end
-%                         BEGIN
-%              DECLARE dbs CURSOR FAST_FORWARD FOR SELECT name FROM sysdatabases WHERE name LIKE '1D%'OR name LIKE '5MIN%' 
-% 
-%              DECLARE @db varchar(128)
-%              OPEN dbs
-%              while 1=1 --开始循环
-%              BEGIN
-%               FETCH NEXT FROM dbs INTO @db; --赋值到变量中
-%               if(@@fetch_status!=0) BREAK;--如果没有结果退出循环
-%               --EXEC('DROP DATABASE ' + @db)
-%               EXEC('DROP DATABASE [' + @db + ']')
-%              END
-%              CLOSE dbs --关闭游标
-%              DEALLOCATE dbs --释放游标
-% 
-%             END
         end
         
     end
