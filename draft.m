@@ -13,9 +13,9 @@ dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeisbest');
 % dm = DataManager(dir_rt, 'mss', 'sa', 'bridgeinmfc');
 
 
-% dm.Update();
+dm.Update();
 % dm.DatabaseBackup('C:\Users\freakybridge\Desktop\test');
-dm.DatabaseRestore(dir_rt);
+% dm.DatabaseRestore(dir_rt);
 toc;
 
 % dm.PurgeDatabase('1D', '5MIN');
